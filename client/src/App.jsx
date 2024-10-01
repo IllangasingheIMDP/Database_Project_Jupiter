@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
+
 import LoginForm from './pages/Login';
 import Home from './pages/Home';
 import { AuthProvider } from './context/AuthContext';
@@ -16,6 +16,7 @@ function App() {
     <AuthProvider>
     <Router>
     <Routes>
+    <Route path="/" element={<LoginForm></LoginForm>} />
     <Route path="/login" element={<LoginForm></LoginForm>} />
     <Route path="/home" element={<ProtectedRoute><Home></Home></ProtectedRoute>} />
 
