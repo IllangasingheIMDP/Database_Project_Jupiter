@@ -12,7 +12,7 @@ dotenv.config();
 // rest object
 const app = express();
 
-// Middlewares
+// Middlewares in here
 //Middleware for cross platform
 app.use(cors());
 // Middleware to parse incoming JSON requests
