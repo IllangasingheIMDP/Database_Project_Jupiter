@@ -6,7 +6,7 @@ const db = require('./config/db');
 // Import the routes
 const userRoutes = require('./routes/userRoute');
 
-// dotenv config
+// dotenv  config
 dotenv.config();
 
 // rest object
