@@ -23,6 +23,7 @@ const LoginForm = () => {
 
     try {
       dispatch(showLoading());
+      
       const res = await axios.post('http://localhost:5555/users/login', {
         username,
         password
@@ -36,7 +37,7 @@ const LoginForm = () => {
         setAlertMessage(res.data.message); // Show success message with custom alert
         setTimeout(() => {
           navigate('/home');
-        }, 2000); 
+        }, 1000); 
       } else {
         setAlertMessage(res.data.message); // Show error message with custom alert
       }

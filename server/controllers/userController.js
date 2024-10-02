@@ -22,14 +22,14 @@ const userController = {
           .status(404)
           .send({ message: "User not found", success: false });
       }
-      //const isMatch = await bcrypt.compare(req.body.password, user.Password);
-      const isMatch=(req.body.password===user.Password)
+      const isMatch = await bcrypt.compare(req.body.password, user.Password);
+      //const isMatch=(req.body.password===user.Password)
       if (!isMatch) {
         return res
           .status(400)
           .send({ message: "Invalid Email or Password", success: false });
       } 
-      const token = jwt.sign({ username: user.User_Name }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ username: user.User_Name,authlevel:user.Auth_Level }, process.env.JWT_SECRET, {
         expiresIn: "1d",
       });
       res.status(200).send({ message: "Login Success", success: true, token });
@@ -62,7 +62,7 @@ const userController = {
       const newUser={
         userId:req.body.userId,
         username: req.body.username,
-        password: req.body.password,
+        password: hashedPassword,
         employeeId:req.body.employeeId,
         authLevel:req.body.authLevel
       }
@@ -90,6 +90,7 @@ const userController = {
         });
       });
       user.Password = undefined;
+      
       if (!user) {
         return res
           .status(404)
