@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
     <>
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-1/5 bg-purple-500 text-white min-h-screen">
+        <div className="w-1/5 bg-yellow-800 text-white min-h-screen">
           
           <div className="p-4 text-xl">
             {SidebarMenu.map((menu, index) => {
