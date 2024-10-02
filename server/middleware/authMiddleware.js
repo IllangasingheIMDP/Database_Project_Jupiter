@@ -14,6 +14,7 @@ module.exports = async (req, res, next) => {
       }
 
       req.body.username = decoded.username;
+      req.body.authlevel=decoded.authlevel;
       
       next();
     });
