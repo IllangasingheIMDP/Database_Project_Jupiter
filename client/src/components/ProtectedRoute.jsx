@@ -28,6 +28,7 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
 
       if (res.data.success) {
         dispatch(setUser(res.data.data));
+        console.log(res.data.data);
         
       } else {
         localStorage.clear();
