@@ -6,6 +6,8 @@ const db = require('./config/db');
 // Import the routes
 const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
+const employeeRoute=require('./routes/employeeRoute');
+
 
 // dotenv  config
 dotenv.config();
@@ -39,6 +41,7 @@ const port = process.env.PORT;
 // User routes
 app.use('/users', userRoutes);
 app.use('/',authRoute);
+app.use('/employeeTable',employeeRoute);
 
 // Root route (for testing)
 app.get('/', (req, res) => {
