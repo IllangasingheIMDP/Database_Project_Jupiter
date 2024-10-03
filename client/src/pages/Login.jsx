@@ -24,7 +24,7 @@ const LoginForm = () => {
     try {
       dispatch(showLoading());
       
-      const res = await axios.post('http://localhost:5555/users/login', {
+      const res = await axios.post('http://localhost:5555/login', {
         username,
         password
     });

@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
   const getUser = async () => {
     try {
       dispatch(showLoading());
-      const res = await axios.post('http://localhost:5555/users/getUserData',
+      const res = await axios.post('http://localhost:5555/getUserData',
         { token: localStorage.getItem('token') },
         {
           headers: {
