@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./config/db');
 
-// Import the routes
+// Import the h routes
 const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
 const employeeTableRoute=require('./routes/employeeTableRoute');
