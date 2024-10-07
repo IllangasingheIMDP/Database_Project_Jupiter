@@ -10,11 +10,14 @@ module.exports = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     JWT.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).send({ message: 'Auth Failed: Token expired', success: false });
+        }
         return res.status(401).send({ message: 'Auth Failed: Invalid token', success: false });
       }
 
       req.body.username = decoded.username;
-      req.body.authlevel=decoded.authlevel;
+      req.body.authlevel = decoded.authlevel;
       
       next();
     });
