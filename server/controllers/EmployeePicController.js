@@ -1,4 +1,4 @@
-const employeePicModel = require('../models/employeeModel');
+const employeePicModel = require('../models/EmployeePicModel');
 
 const employeePicController={
     getAllEmployeePic:async (req,res)=>{

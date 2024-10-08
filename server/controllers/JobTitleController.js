@@ -1,4 +1,4 @@
-const JobTitleModel = require('../models/employeeModel');
+const JobTitleModel = require('../models/JobTitleModel');
 
 const JobTitleController={
     getAllJobTitles:async (req,res)=>{
