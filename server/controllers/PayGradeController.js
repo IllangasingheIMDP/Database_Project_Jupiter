@@ -1,4 +1,4 @@
-const PayGradeModel = require('../models/employeeModel');
+const PayGradeModel = require('../models/PayGradeModel');
 
 const PayGradeController={
     getAllGrades:async (req,res)=>{
