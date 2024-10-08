@@ -7,6 +7,7 @@ const db = require('./config/db');
 const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
 const employeeTableRoute=require('./routes/employeeTableRoute');
+const dependantInfoRoute = require('./routes/dependantInfoRoute');
 
 
 // dotenv  config
@@ -42,7 +43,7 @@ const port = process.env.PORT;
 app.use('/users', userRoutes);
 app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
-
+app.use('/dependant',dependantInfoRoute);
 // Root route (for testing)
 app.get('/', (req, res) => {
   res.send('Welcome to the Express App!');

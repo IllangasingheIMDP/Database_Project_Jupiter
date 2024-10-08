@@ -49,7 +49,7 @@ const Layout = ({ children }) => {
             {SidebarMenu.map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <div key={menu.path || index} className={`menu-item ${isActive && "bg-gray-300"} p-2 rounded-md my-2`}>
+                <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-gray-300"} p-2 rounded-md my-2`}>
                   <i className={`${menu.icon} mr-2`}></i>
                   <Link to={menu.path}>{menu.name}</Link>
                 </div>
@@ -71,7 +71,7 @@ const Layout = ({ children }) => {
             </div>
             
           </div>
-          <div className="p-4">
+          <div className="p-4 h-screen">
             {children}
           </div>
         </div>

@@ -16,8 +16,10 @@ module.exports = async (req, res, next) => {
         return res.status(401).send({ message: 'Auth Failed: Invalid token', success: false });
       }
 
-      req.body.username = decoded.username;
-      req.body.authlevel = decoded.authlevel;
+      req.user = {
+        username: decoded.username,
+        authlevel: decoded.authlevel
+      };
       
       next();
     });

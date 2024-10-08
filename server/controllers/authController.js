@@ -41,7 +41,7 @@ const authController = {
     authenticate:async (req,res)=>{
       try {
         const user = await new Promise((resolve, reject) => {
-          UserModel.findByUserName(req.body.username, (err, result) => {
+          UserModel.findByUserName(req.user.username, (err, result) => {
             if (err) {
               reject(err);
             } else {
