@@ -19,7 +19,7 @@ const employeeController={
     },
     getEmployeebyId:async (req,res)=>{
         const employee=await new Promise((resolve,reject)=>{
-            employeeModel.findByEmployeeId(req.body.employeeId,(err,result)=>{
+            employeeModel.findByEmployeeId(req.query.employeeId,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const employeeController={
     createNewEmployee: async (req,res)=>{
         try{
           const existingEmployee = await new Promise((resolve, reject) => {
-            employeeModel.findByEmployeeId(req.body.employeeId, (err, result) => {
+            employeeModel.findByEmployeeId(req.query.employeeId, (err, result) => {
               if (err) {
                 reject(err);
               } else {

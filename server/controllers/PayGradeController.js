@@ -19,7 +19,7 @@ const PayGradeController={
     },
     getPayGradeById:async (req,res)=>{
         const grades=await new Promise((resolve,reject)=>{
-            PayGradeModel.findBypaygradeid(req.body.PayGrade_ID,(err,result)=>{
+            PayGradeModel.findBypaygradeid(req.query.PayGrade_ID,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const PayGradeController={
     createNewPayGrade: async (req,res)=>{
         try{
           const existingGrade = await new Promise((resolve, reject) => {
-            PayGradeModel.findBypaygradeid(req.body.PayGrade_ID, (err, result) => {
+            PayGradeModel.findBypaygradeid(req.query.PayGrade_ID, (err, result) => {
               if (err) {
                 reject(err);
               } else {

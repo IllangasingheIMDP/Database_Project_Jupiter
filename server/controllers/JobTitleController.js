@@ -19,7 +19,7 @@ const JobTitleController={
     },
     getJobTitlebyId:async (req,res)=>{
         const jobtitles=await new Promise((resolve,reject)=>{
-            JobTitleModel.findByJobTitleId(req.body.Title_ID,(err,result)=>{
+            JobTitleModel.findByJobTitleId(req.query.Title_ID,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const JobTitleController={
     createNewJobTitle: async (req,res)=>{
         try{
           const existingJobTitle = await new Promise((resolve, reject) => {
-            JobTitleModel.findByJobTitleId(req.body.Title_ID, (err, result) => {
+            JobTitleModel.findByJobTitleId(req.query.Title_ID, (err, result) => {
               if (err) {
                 reject(err);
               } else {

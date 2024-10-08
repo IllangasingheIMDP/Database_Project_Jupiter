@@ -19,7 +19,7 @@ const employmet_StatusController={
     },
     getEmployeeStatusbyId:async (req,res)=>{
         const Status=await new Promise((resolve,reject)=>{
-            employment_StatusModel.findByEmployeeStatusById(req.body.Employment_Stat_ID,(err,result)=>{
+            employment_StatusModel.findByEmployeeStatusById(req.query.Employment_Stat_ID,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const employmet_StatusController={
     createNewStatus: async (req,res)=>{
         try{
           const existingStatus = await new Promise((resolve, reject) => {
-            employment_StatusModel.findByEmployeeStatusById(req.body.Employment_Stat_ID, (err, result) => {
+            employment_StatusModel.findByEmployeeStatusById(req.query.Employment_Stat_ID, (err, result) => {
               if (err) {
                 reject(err);
               } else {

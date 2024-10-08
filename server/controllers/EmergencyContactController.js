@@ -1,7 +1,7 @@
 const EmergencyContactModel = require('../models/EmergencyContactModel');
 
 const EmergencyContactController={
-    getAllEmployee:async (req,res)=>{
+    getAllContact:async (req,res)=>{
         const Contacts=await new Promise((resolve,reject)=>{
             EmergencyContactModel.findAll((err,result)=>{
                 if(err){
@@ -19,7 +19,7 @@ const EmergencyContactController={
     },
     getContactbyId:async (req,res)=>{
         const Contacts=await new Promise((resolve,reject)=>{
-            EmergencyContactModel.findByEmergencyContactId(req.body.Contact_ID,(err,result)=>{
+            EmergencyContactModel.findByEmergencyContactId(req.query.Contact_ID,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const EmergencyContactController={
     createNewContact: async (req,res)=>{
         try{
           const existingContact = await new Promise((resolve, reject) => {
-            EmergencyContactModel.findByEmergencyContactId(req.body.Contact_ID, (err, result) => {
+            EmergencyContactModel.findByEmergencyContactId(req.query.Contact_ID, (err, result) => {
               if (err) {
                 reject(err);
               } else {

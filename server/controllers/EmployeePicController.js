@@ -19,7 +19,7 @@ const employeePicController={
     },
     getEmployeePicbyId:async (req,res)=>{
         const employeePics=await new Promise((resolve,reject)=>{
-            employeePicModel.findByEmployeePicId(req.body.Pic_ID,(err,result)=>{
+            employeePicModel.findByEmployeePicId(req.query.Pic_ID,(err,result)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -113,7 +113,7 @@ const employeePicController={
     createNewEmployeePic: async (req,res)=>{
         try{
           const existingEmployeePic = await new Promise((resolve, reject) => {
-            employeePicModel.findByEmployeePicId(req.body.Pic_ID, (err, result) => {
+            employeePicModel.findByEmployeePicId(req.query.Pic_ID, (err, result) => {
               if (err) {
                 reject(err);
               } else {
