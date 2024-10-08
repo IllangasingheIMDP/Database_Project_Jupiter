@@ -17,22 +17,35 @@ const employeeController={
             return res.status(200).send({success:true,data:employees});
         }
     },
-    getEmployeebyId:async (req,res)=>{
-        const employee=await new Promise((resolve,reject)=>{
-            employeeModel.findByEmployeeId(req.body.employeeId,(err,result)=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
+    getEmployeebyId: async (req, res) => {
+        try {
+          const employeeId = req.query.employeeId; // Get employeeId from query params
+          
+          if (!employeeId) {
+            return res.status(400).send({ message: "employeeId is required", success: false });
+          }
+      
+          const employee = await new Promise((resolve, reject) => {
+            employeeModel.findByEmployeeId(employeeId, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
             });
-        });
-        if(!employee){
-            return res.status(404).send({message:"Employee not found",success:false});
-        }else{
-            return res.status(200).send({success:true,data:employee});
+          });
+      
+          if (!employee) {
+            return res.status(404).send({ message: "Employee not found", success: false });
+          } else {
+            return res.status(200).send({ success: true, data: employee });
+          }
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
         }
-    },
+      },
+      
     deletemployeebyId:async (req,res)=>{
         try{
             const employeeId=req.body.employeeId;
