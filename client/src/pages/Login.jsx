@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {  useNavigate,Link} from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import CustomAlert from '../components/CustomAlert'; // Assuming you have a CustomAlert component
-import backgroundImage from '../public/background.png'
+import backgroundImage from '../../public/background.png'
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '../redux/features/alertSlice';
 import axios from 'axios';

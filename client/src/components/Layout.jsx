@@ -43,21 +43,21 @@ const Layout = ({ children }) => {
     <>
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-1/5 bg-yellow-800 text-white min-h-screen">
+        <div className="w-1/5 bg-yellow-700 text-white min-h-screen">
           
           <div className="p-4 text-xl">
             {SidebarMenu.map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-gray-300"} p-2 rounded-md my-2`}>
+                <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
                   <i className={`${menu.icon} mr-2`}></i>
                   <Link to={menu.path}>{menu.name}</Link>
                 </div>
               );
             })}
-            <div className="menu-item p-2 rounded-md my-2 bg-white text-black cursor-pointer" onClick={handleLogout}>
+            <div className="menu-item  p-2 rounded-md my-2 bg-yellow-100 text-black cursor-pointer hover:bg-yellow-200" onClick={handleLogout}>
               <i className="fa-solid fa-right-from-bracket mr-2"></i>
-              <span>Logout</span>
+              <span >Logout</span>
             </div>
           </div>
         </div>
