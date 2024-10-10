@@ -1,1 +1,1 @@
-# FastX-2.0
+# Jupiter Apparels
