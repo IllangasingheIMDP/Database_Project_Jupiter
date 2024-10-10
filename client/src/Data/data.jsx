@@ -2,27 +2,32 @@
 export const employeeMenu = [
     {
       name: 'Dashboard',
-      path: '/employee/dashboard',
+      path: '#',
       icon: "fa-solid fa-house"
     },
     {
+      name: 'Profile',
+      path: "/home",
+      icon: 'fa-solid fa-clipboard-list'
+    },
+    {
       name: 'Edit Personal Info ',
-      path: "/employee/editInfo",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
       name: 'Request Leave ',
-      path: "/employee/reqLeave",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
         name: 'Approve/Reject Leave',
-        path: "/employee/reqLeave",
+        path: "#",
         icon: 'fa-solid fa-clipboard-list'
       },
     {
       name: 'Generate Reports ',
-      path: "/employee/genReport",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     
@@ -32,17 +37,22 @@ export const employeeMenu = [
   export const adminMenu = [
     {
       name: 'Customize Leave Allowances',
-      path: '/admin/custLeaveAllow',
+      path: '#',
       icon: "fa-solid fa-house"
     },
     {
+      name: 'Profile',
+      path: "/home",
+      icon: 'fa-solid fa-clipboard-list'
+    },
+    {
       name: 'Edit Table Attributes ',
-      path: '/admin/editTables',
+      path: '#',
       icon: 'fa-solid fa-user-doctor'
     },
     {
       name: 'Add New Employee ',
-      path: '/admin/addNew',
+      path: '#',
       icon: 'fa-solid fa-user'
     },
     
@@ -51,22 +61,27 @@ export const employeeMenu = [
     
     {
       name: 'Dashboard',
-      path: '/hrManager/dashboard',
+      path: '#',
       icon: 'fa-solid fa-user-doctor'
     },
     {
+      name: 'Profile',
+      path: "/home",
+      icon: 'fa-solid fa-clipboard-list'
+    },
+    {
         name: 'Edit Personal Info',
-        path: '/hrManager/editInfo',
+        path: '#',
         icon: "fa-solid fa-house"
       },
     {
       name: 'Add New Employee ',
-      path: '/hrManager/addNew',
+      path: '#',
       icon: 'fa-solid fa-user'
     },
     {
         name: 'Generate Reports  ',
-        path: '/hrManager/genReport',
+        path: '#',
         icon: 'fa-solid fa-user'
       },
     

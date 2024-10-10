@@ -7,6 +7,7 @@ const db = require('./config/db');
 const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
 const employeeTableRoute=require('./routes/employeeTableRoute');
+const profileRoute=require('./routes/profileRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
 
 
@@ -44,6 +45,7 @@ app.use('/users', userRoutes);
 app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
 app.use('/dependant',dependantInfoRoute);
+app.use('/profile',profileRoute);
 // Root route (for testing)
 app.get('/', (req, res) => {
   res.send('Welcome to the Express App!');

@@ -28,7 +28,7 @@ const authController = {
             .send({ message: "Invalid Email or Password", success: false });
         } 
         const token = jwt.sign({ username: user.User_Name,authlevel:user.Auth_Level }, process.env.JWT_SECRET, {
-          expiresIn: "15m",
+          expiresIn: "45m",
         });
         res.status(200).send({ message: "Login Success", success: true, token });
       } catch (error) {
