@@ -136,43 +136,48 @@ const handleClose = () => {setShowTeamModal(false)
           <div className='w-1/4'>
             <div className="mb-4 rounded-lg items-center flex justify-start flex-col bg-yellow-100 h-fit">
               <div className="text-center items-center flex flex-col">
-              <img
-                src={picData ? `${picData}` : 'fav.png'}
-               alt="avatar"
-                 className="rounded-circle px-2 w-fit h-52 mt-3"
-/>
-                <p className="text-muted mb-1 font-bold pt-2">{user.Auth_Level}</p>
-                <p className="text-muted mb-4">{userData.Initials+" "+userData.Last_Name}</p>
+              
+                {
+                   user?.Auth_Level!=='Admin User' ? <><img
+                   src={picData ? `${picData}` : 'fav.png'}
+                  alt="avatar"
+                    className="rounded-circle px-2 w-fit h-52 mt-3"
+   />
+                   <p className="text-muted mb-1 font-bold pt-2">{user.Auth_Level}</p>
+                   <p className="text-muted mb-4">{userData.Initials+" "+userData.Last_Name}</p></> :<p className="text-muted mb-1 text-3xl h-32 items-center flex justify-center font-bold pt-2">{user.Auth_Level}</p>
+                }
               </div>
             </div>
-            <div className='rounded-lg bg-yellow-200 h-64 flex flex-col justify-start items-center '>
+            {
+              user?.Auth_Level!=='Admin User' ? <div className='rounded-lg bg-yellow-200 h-64 flex flex-col justify-start items-center '>
             
-            <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
-            
-             <div className='w-3/4 text-2xl'>Team View</div> 
-              <div className='w-fit h-1/2 ml-2 right-3'>
-              <img src={popupIcon} className='h-full ' alt="" />
-            </div>
-              </Button>{' '}
+              <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
               
-              <Button variant="outline-success" onClick={handleDependant} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
-            
-             <div className='w-3/4 text-2xl'>Dependants</div> 
-              <div className='w-fit h-1/2 ml-2 mr-0'>
-              <img src={popupIcon} className='h-full ' alt="" />
-            </div>
-              </Button>{' '}
-
-              <Button variant="outline-success" onClick={handleEmergency} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700  flex flex-row justify-center items-center h-20 rounded-lg'>
-            
-            <div className='w-3/4 text-2xl'>Emergency Contacts</div> 
-             <div className='w-fit h-1/2 ml-2 mr-0'>
-             <img src={popupIcon} className='h-full ' alt="" />
-           </div>
-             </Button>{' '}
-            
+               <div className='w-3/4 text-2xl'>Team View</div> 
+                <div className='w-fit h-1/2 ml-2 right-3'>
+                <img src={popupIcon} className='h-full ' alt="" />
+              </div>
+                </Button>{' '}
+                
+                <Button variant="outline-success" onClick={handleDependant} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
               
-            </div>
+               <div className='w-3/4 text-2xl'>Dependants</div> 
+                <div className='w-fit h-1/2 ml-2 mr-0'>
+                <img src={popupIcon} className='h-full ' alt="" />
+              </div>
+                </Button>{' '}
+  
+                <Button variant="outline-success" onClick={handleEmergency} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700  flex flex-row justify-center items-center h-20 rounded-lg'>
+              
+              <div className='w-3/4 text-2xl'>Emergency Contacts</div> 
+               <div className='w-fit h-1/2 ml-2 mr-0'>
+               <img src={popupIcon} className='h-full ' alt="" />
+             </div>
+               </Button>{' '}
+              
+                
+              </div> : <></>
+            }
           </div>
     
           {/* Right side: Full Name List */}
