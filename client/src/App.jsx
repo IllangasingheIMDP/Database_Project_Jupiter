@@ -19,7 +19,7 @@ function App() {
     <Routes>
     <Route path="/" element={<LoginForm></LoginForm>} />
     <Route path="/login" element={<LoginForm></LoginForm>} />
-    <Route path="/home" element={<ProtectedRoute allowedRoles={['Employee','Admin User','HR Manager']}><Home></Home></ProtectedRoute>} />
+    <Route path="/home" element={<ProtectedRoute allowedRoles={['Employee','Admin User','HR Manager','Second Manager']}><Home></Home></ProtectedRoute>} />
 
     </Routes>
     </Router>

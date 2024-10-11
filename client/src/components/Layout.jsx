@@ -36,7 +36,7 @@ const Layout = ({ children }) => {
   // Sidebar menu based on user type
   const SidebarMenu = user?.Auth_Level==='Admin User'
     ? adminMenu
-    : user?.Auth_Level==='Employee' ? employeeMenu : user?.Auth_Level==='HR Manager' ? hrManagerMenu : "";
+    : user?.Auth_Level==='Employee' || user?.Auth_Level==='Second Manager' ? employeeMenu : user?.Auth_Level==='HR Manager' ? hrManagerMenu : "";
    
 
   return (
