@@ -52,7 +52,12 @@ export const employeeMenu = [
     },
     {
       name: 'Add New Employee ',
-      path: '#',
+      path: '/add-new-employee',
+      icon: 'fa-solid fa-user'
+    },
+    {
+      name: 'Manage Custom Fields',
+      path: '/manage-custom-field',
       icon: 'fa-solid fa-user'
     },
     
