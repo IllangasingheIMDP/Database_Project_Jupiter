@@ -2,6 +2,56 @@ const db = require('../config/db');
 
 // User model
 const EmployeeModel = {
+  // Load dropdown data
+  get_dropdown_options: (callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_get_employee_dropdown_options(), "$") AS result';
+    db.query(query, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
+
+  // Load available_custom_fields data
+  get_available_custom_fields: (callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_get_available_custom_fields(), "$") AS result';
+    db.query(query, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
+
+  //Create new CustomField
+  createNewCustomField: (Data, callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_createNewCustomField(?), "$") AS result';
+    const queryParams = [
+        Data.name,
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
+
+  //Delete CustomField
+  deleteCustomField: (Data, callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_deleteCustomField(?), "$") AS result';
+    const queryParams = [
+        Data.name,
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
+
   // Find all users
   findAll: (callback) => {
     const query = 'SELECT * FROM employee';
@@ -23,11 +73,10 @@ const EmployeeModel = {
       callback(null, result[0]);
     });
   },
-  //Create new user
+  //Create new Employee
   createEmployee: (employeeData, callback) => {
-    const query = 'INSERT INTO employee (Employee_ID, NIC, Initials, First_Name, Last_Name, Date_of_Birth, Gender, Marital_Status, Phone, Email_Work, Email_Private, Address, Pic_ID, Dept_ID, Title_ID, PayGrade_ID, Employment_Stat_ID, PF_Number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const query = 'SELECT add_employee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     const queryParams = [
-        employeeData.employeeId,
         employeeData.nic,
         employeeData.initials,
         employeeData.firstName,
@@ -39,12 +88,15 @@ const EmployeeModel = {
         employeeData.emailWork,
         employeeData.emailPrivate,
         employeeData.address,
-        employeeData.picId,
-        employeeData.deptId,
-        employeeData.titleId,
-        employeeData.paygradeId,
-        employeeData.employmentStatId,
+        employeeData.picturePath,
+        employeeData.dept,
+        employeeData.title,
+        employeeData.paygrade,
+        employeeData.employmentStat,
         employeeData.PFNumber,
+        employeeData.supervisor,
+        employeeData.dependent_info,
+        employeeData.emergency_contacts_info,
     ];
     db.query(query, queryParams, (err, result) => {
       if (err) {

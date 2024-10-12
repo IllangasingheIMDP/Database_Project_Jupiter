@@ -1,6 +1,85 @@
 const employeeModel = require('../models/employeeModel');
 
 const employeeController={
+
+    get_dropdown_options:async (req,res)=>{
+      const data=await new Promise((resolve,reject)=>{
+          employeeModel.get_dropdown_options((err,result)=>{
+              if(err){
+                  reject(err);
+              }else{
+                  resolve(result);
+              }
+          });
+      });
+      console.log(data);
+      if(!data.success){
+          return res.status(400).send({message:data.data, success:data.success});
+      }else{
+          return res.status(200).send({success:true,data:data.data});
+      }
+    },
+
+    get_available_custom_fields:async (req,res)=>{
+      const data=await new Promise((resolve,reject)=>{
+          employeeModel.get_available_custom_fields((err,result)=>{
+              if(err){
+                  reject(err);
+              }else{
+                  resolve(result);
+              }
+          });
+      });
+      console.log(data);
+      if(!data.success){
+          return res.status(400).send({message:data.data, success:data.success});
+      }else{
+          return res.status(200).send({success:true, data:data.data});
+      }
+    },
+
+    createNewCustomField: async (req, res) => {
+      try {
+        // Build the employee data
+        const Data = {
+          name: req.body.name,
+        };
+    
+        // Save data
+        employeeModel.createNewCustomField(Data, (err, result) => {
+          if (err) {
+            return res.status(500).send({ message: 'Internal Server Error :' , error: err });
+          }
+          res.status(200).send({ message: result.data, success: result.success });
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Internal Server Error : ${error.message}` });
+      }
+    },
+
+    deleteCustomField: async (req, res) => {
+      try {
+        // Build the employee data
+        const Data = {
+          name: req.body.name,
+        };
+    
+        // Save data
+        employeeModel.deleteCustomField(Data, (err, result) => {
+          if (err) {
+            return res.status(500).send({ message: 'Internal Server Error :' , error: err });
+          }
+          res.status(200).send({ message: result.data, success: result.success });
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Internal Server Error : ${error.message}` });
+      }
+    },
+
+
+
     getAllEmployee:async (req,res)=>{
         const employees=await new Promise((resolve,reject)=>{
             employeeModel.findAll((err,result)=>{
@@ -123,56 +202,54 @@ const employeeController={
     
 
 
-    createNewEmployee: async (req,res)=>{
-        try{
-          const existingEmployee = await new Promise((resolve, reject) => {
-            employeeModel.findByEmployeeId(req.body.employeeId, (err, result) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(result);
-              }
-            });
-          });
-          if (existingEmployee) {
-            return res
-              .status(401)
-              .send({ message: "employee Already Exist", success: false });
-          }
-          
-          
-         
-          const employeeData={
-            employeeId:req.body.employeeId,
-            nic:req.body.nic,
-            initials:req.body.initials,
-            firstName:req.body.firstName,
-            lastName:req.body.lastName,
-            dateOfBirth:req.body.dateOfBirth,
-            gender:req.body.gender,
-            maritalStatus:req.body.maritalStatus,
-            phone:req.body.phone,
-            emailWork:req.body.emailWork,
-            emailPrivate:req.body.emailPrivate,
-            address:req.body.address,
-            picId:req.body.picId,
-            deptId:req.body.deptId,
-            titleId:req.body.titleId,
-            paygradeId:req.body.paygradeId,
-            employmentStatId:req.body.employmentStatId,
-            PFNumber:req.body.PFNumber,
-          }
-          employeeModel.createEmployee(employeeData,(err, result) => {
-            if (err) {
-              return res.status(500).send({ message: "Error creating employee", error: err });
-            }
-            res.status(200).send({ message: "employee created successfully", data: result });
-          })
+    createNewEmployee: async (req, res) => {
+      try {
+        // Process uploaded image
+        let picturePath = null;
+        if (req.file) {
+          picturePath = req.file.filename; // Save the filename (unique 36-character name)
         }
-        catch (error) {
-          console.log(error);
-          res.status(500).send({ message: `Error in signup CTRL ${error.message}` });
-        }
+    
+        // Parse dependents and emergency contacts if they are sent as JSON strings
+        const dependents = req.body.dependents ? JSON.parse(req.body.dependents) : [];
+        const emergencyContacts = req.body.emergency_contacts ? JSON.parse(req.body.emergency_contacts) : [];
+
+
+        // Build the employee data
+        const employeeData = {
+          nic: req.body.NIC,
+          initials: req.body.initials,
+          firstName: req.body.first_Name,
+          lastName: req.body.last_Name,
+          dateOfBirth: req.body.date_of_birth,
+          gender: req.body.gender,
+          maritalStatus: req.body.marital_status,
+          phone: req.body.phone,
+          emailWork: req.body.email_work,
+          emailPrivate: req.body.email_private,
+          address: req.body.address,
+          picturePath: picturePath,
+          dept: req.body.department,
+          title: req.body.title,
+          paygrade: req.body.paygrade,
+          employmentStat: req.body.employment_stat,
+          PFNumber: req.body.pf_number,
+          supervisor: req.body.supervisor.split(" : ")[1],
+          dependent_info: JSON.stringify(dependents),
+          emergency_contacts_info: JSON.stringify(emergencyContacts),
+        };
+    
+        // Save employee data
+        employeeModel.createEmployee(employeeData, (err, result) => {
+          if (err) {
+            return res.status(500).send({ message: 'Error creating employee', error: err });
+          }
+          res.status(200).send({ message: 'Employee created successfully', data: result });
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Error in create employee: ${error.message}` });
       }
+    }
 }
 module.exports = employeeController;
