@@ -29,7 +29,7 @@ const Home = () => {
         try {
           dispatch(showLoading());
           const res = await axios.get(
-            `http://localhost:5555/profile?employeeId=${user.Employee_ID}`,
+            `http://localhost:5555/users/profile?employeeId=${user.Employee_ID}`,
             
             {
               headers: {
