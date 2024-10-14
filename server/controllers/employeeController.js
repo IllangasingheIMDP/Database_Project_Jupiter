@@ -1,7 +1,6 @@
 const employeeModel = require('../models/employeeModel');
 
 const employeeController={
-
     get_dropdown_options:async (req,res)=>{
       const data=await new Promise((resolve,reject)=>{
           employeeModel.get_dropdown_options((err,result)=>{
@@ -12,11 +11,10 @@ const employeeController={
               }
           });
       });
-      console.log(data);
       if(!data.success){
-          return res.status(400).send({message:data.data, success:data.success});
+          return res.status(400).send({data:data.data, success:data.success});
       }else{
-          return res.status(200).send({success:true,data:data.data});
+          return res.status(200).send({success:true, data:data.data});
       }
     },
 
@@ -30,9 +28,8 @@ const employeeController={
               }
           });
       });
-      console.log(data);
       if(!data.success){
-          return res.status(400).send({message:data.data, success:data.success});
+          return res.status(400).send({data:data.data, success:data.success});
       }else{
           return res.status(200).send({success:true, data:data.data});
       }
@@ -48,13 +45,13 @@ const employeeController={
         // Save data
         employeeModel.createNewCustomField(Data, (err, result) => {
           if (err) {
-            return res.status(500).send({ message: 'Internal Server Error :' , error: err });
+            return res.status(500).send({ data: 'Internal Server Error :' , error: err });
           }
-          res.status(200).send({ message: result.data, success: result.success });
+          res.status(200).send({ data: result.data, success: result.success });
         });
       } catch (error) {
         console.log(error);
-        res.status(500).send({ message: `Internal Server Error : ${error.message}` });
+        res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
       }
     },
 
@@ -68,17 +65,15 @@ const employeeController={
         // Save data
         employeeModel.deleteCustomField(Data, (err, result) => {
           if (err) {
-            return res.status(500).send({ message: 'Internal Server Error :' , error: err });
+            return res.status(500).send({ data: 'Internal Server Error :' , error: err });
           }
-          res.status(200).send({ message: result.data, success: result.success });
+          res.status(200).send({ data: result.data, success: result.success });
         });
       } catch (error) {
         console.log(error);
-        res.status(500).send({ message: `Internal Server Error : ${error.message}` });
+        res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
       }
     },
-
-
 
     getAllEmployee:async (req,res)=>{
         const employees=await new Promise((resolve,reject)=>{
@@ -96,6 +91,7 @@ const employeeController={
             return res.status(200).send({success:true,data:employees});
         }
     },
+
     getEmployeebyId: async (req, res) => {
         try {
           const employeeId = req.query.employeeId; // Get employeeId from query params
@@ -124,7 +120,7 @@ const employeeController={
           return res.status(500).send({ message: "Server error", success: false, error: error.message });
         }
       },
-      
+
     deletemployeebyId:async (req,res)=>{
         try{
             const employeeId=req.body.employeeId;
@@ -159,6 +155,7 @@ const employeeController={
         return res.status(500).send({ message: "Server error", success: false, error: err.message });
     }
     },
+
     updateEmployeeData: async (req, res) => {
         try {
             
@@ -199,8 +196,6 @@ const employeeController={
             return res.status(500).send({ message: "Server error", success: false, error: err.message });
         }
     },
-    
-
 
     createNewEmployee: async (req, res) => {
       try {
@@ -213,6 +208,7 @@ const employeeController={
         // Parse dependents and emergency contacts if they are sent as JSON strings
         const dependents = req.body.dependents ? JSON.parse(req.body.dependents) : [];
         const emergencyContacts = req.body.emergency_contacts ? JSON.parse(req.body.emergency_contacts) : [];
+        const custom_fields = req.body.custom_values ? JSON.parse(req.body.custom_values) : [];
 
 
         // Build the employee data
@@ -237,18 +233,19 @@ const employeeController={
           supervisor: req.body.supervisor.split(" : ")[1],
           dependent_info: JSON.stringify(dependents),
           emergency_contacts_info: JSON.stringify(emergencyContacts),
+          custom_fields: JSON.stringify(custom_fields),
         };
-    
+
         // Save employee data
         employeeModel.createEmployee(employeeData, (err, result) => {
           if (err) {
-            return res.status(500).send({ message: 'Error creating employee', error: err });
+            return res.status(500).send({ data: 'Internal Server Error :' , error: err });
           }
-          res.status(200).send({ message: 'Employee created successfully', data: result });
+          res.status(200).send({ data: result.data, success: result.success });
         });
       } catch (error) {
         console.log(error);
-        res.status(500).send({ message: `Error in create employee: ${error.message}` });
+        res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
       }
     }
 }

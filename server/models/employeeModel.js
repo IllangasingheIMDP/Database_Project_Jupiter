@@ -75,7 +75,7 @@ const EmployeeModel = {
   },
   //Create new Employee
   createEmployee: (employeeData, callback) => {
-    const query = 'SELECT add_employee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const query = 'SELECT JSON_EXTRACT(add_employee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?), "$") AS result';
     const queryParams = [
         employeeData.nic,
         employeeData.initials,
@@ -97,12 +97,13 @@ const EmployeeModel = {
         employeeData.supervisor,
         employeeData.dependent_info,
         employeeData.emergency_contacts_info,
+        employeeData.custom_fields,
     ];
     db.query(query, queryParams, (err, result) => {
       if (err) {
         return callback(err);
       }
-      callback(null, result);
+      callback(null, result[0].result);
     });
   },
 
