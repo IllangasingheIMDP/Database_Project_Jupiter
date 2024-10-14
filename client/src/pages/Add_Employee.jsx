@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import CustomAlert from '../components/CustomAlert';
 
 const ADD_Employee = () => {
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [customAttributes, setCustomAttributes] = useState([]);
+  const [custom_values, setCustomValues] = useState({});
+  const [loading, setLoading] = useState(false);
+
   const [employeeData, setEmployeeData] = useState({
     NIC: '',
     initials: '',
@@ -24,6 +31,7 @@ const ADD_Employee = () => {
     dependents: [],
     emergency_contacts: [],
     picture: null,
+    custom_values: custom_values
   });
 
   const [dependent, setDependent] = useState({
@@ -31,7 +39,7 @@ const ADD_Employee = () => {
     relationship: ''
   });
 
-  const [emergencyContact, setEmergencyContact] = useState({ // New state for emergency contacts
+  const [emergencyContact, setEmergencyContact] = useState({
     first_Name: '',
     last_Name: '',
     phone: '',
@@ -39,7 +47,6 @@ const ADD_Employee = () => {
     address: '',
     relationship: ''
   });
-  
 
   const [dropdownOptions, setDropdownOptions] = useState({
     departments: [],
@@ -49,10 +56,7 @@ const ADD_Employee = () => {
     employee_list: []
   });
 
-  const [loading, setLoading] = useState(false);
-
   const detdropdonwdata = async () => {
-    setLoading(true);
     try {
       const res = await axios.get('http://localhost:5555/employeeTable/get_dropdown_options', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -76,16 +80,18 @@ const ADD_Employee = () => {
         });
       } else {
         console.log('Error: Failed to fetch dropdown data');
+        setAlertMessage('Error: Failed to fetch dropdown data');
+        setShowAlert(true);
       }
     } catch (error) {
       console.log('Error fetching dropdown data:', error);
     } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     detdropdonwdata();
+    fetchCustomAttributes();
   }, []);
 
   const handleEmployeeChange = (e) => {
@@ -98,7 +104,6 @@ const ADD_Employee = () => {
     setDependent({ ...dependent, [name]: value });
   };
 
-
   const addDependent = () => {
     if (dependent.name && dependent.relationship) {
       setEmployeeData({
@@ -108,6 +113,8 @@ const ADD_Employee = () => {
       setDependent({ name: '', relationship: '' }); // Reset dependent fields
     } else {
       console.log('Please fill in both dependent fields.');
+      setAlertMessage('Please fill in both dependent fields.');
+      setShowAlert(true);
     }
   };
 
@@ -119,7 +126,41 @@ const ADD_Employee = () => {
     });
   };
 
-   // Functions to handle emergency contacts
+  const fetchCustomAttributes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('http://localhost:5555/employeeTable/get_available_custom_fields', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (response.data.success) {
+        const customFieldsData = response.data.data.custom_fields;
+        setCustomAttributes(customFieldsData); 
+      } else {
+        console.log('Error: Failed to fetch custom fields');
+      }
+    } catch (error) {
+      console.log('Error fetching custom fields:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCustomChange = (e) => {
+    const { name, value } = e.target;
+    setCustomValues({
+      ...custom_values,
+      [name]: value,
+    });
+    setEmployeeData({
+      ...employeeData,
+      custom_values: {
+        ...custom_values,
+        [name]: value,
+      },
+    });
+  };
+
    const handleEmergencyContactChange = (e) => {
     const { name, value } = e.target;
     setEmergencyContact({ ...emergencyContact, [name]: value });
@@ -148,9 +189,10 @@ const ADD_Employee = () => {
       });
     } else {
       console.log('Please fill in all emergency contact fields.');
+      setAlertMessage('Please fill in all emergency contact fields.');
+      setShowAlert(true);
     }
   };
-  
 
   const removeEmergencyContact = (index) => {
     const updatedContacts = employeeData.emergency_contacts.filter((_, i) => i !== index);
@@ -159,9 +201,6 @@ const ADD_Employee = () => {
       emergency_contacts: updatedContacts
     });
   };
-  
-
-  
 
 // Function to handle file input change
 const handleFileChange = (e) => {
@@ -180,6 +219,8 @@ const handleSubmit = async (e) => {
   for (const key in employeeData) {
     if (key === 'dependents' || key === 'emergency_contacts') {
       formData.append(key, JSON.stringify(employeeData[key])); // Serialize arrays as JSON
+    } else if (key === 'custom_values') {
+      formData.append(key, JSON.stringify(employeeData.custom_values)); // Serialize custom attributes
     } else {
       formData.append(key, employeeData[key]);
     }
@@ -193,32 +234,38 @@ const handleSubmit = async (e) => {
       },
     });
 
-    console.log('Employee with dependents added:', response.data);
-    detdropdonwdata();
+    if (response.data.success) {
+      detdropdonwdata();
+      // Reset form after submission
+      setEmployeeData({
+        NIC: '',
+        initials: '',
+        first_Name: '',
+        last_Name: '',
+        date_of_birth: '',
+        gender: '',
+        marital_status: '',
+        phone: '',
+        email_work: '',
+        email_private: '',
+        address: '',
+        department: '',
+        title: '',
+        paygrade: '',
+        employment_stat: '',
+        pf_number: '',
+        supervisor: '',
+        dependents: [],
+        emergency_contacts: [],
+        picture: null,
+        custom_values: {},
+      });
+      setCustomValues({});  // Clear custom values
+    }
+    setAlertMessage(response.data.data);
+    setShowAlert(true);
 
-    // Reset form after submission
-    setEmployeeData({
-      NIC: '',
-      initials: '',
-      first_Name: '',
-      last_Name: '',
-      date_of_birth: '',
-      gender: '',
-      marital_status: '',
-      phone: '',
-      email_work: '',
-      email_private: '',
-      address: '',
-      department: '',
-      title: '',
-      paygrade: '',
-      employment_stat: '',
-      pf_number: '',
-      supervisor: '',
-      dependents: [],
-      emergency_contacts: [],
-      picture: null,
-    });
+    
   } catch (error) {
     console.error('Error adding employee:', error);
   }
@@ -230,6 +277,14 @@ const handleSubmit = async (e) => {
         <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }} >
           
           <h2 className="text-xl mb-4">Add Employee</h2>
+
+          {showAlert && (
+            <CustomAlert 
+              message={alertMessage} 
+              onClose={() => setShowAlert(false)} // Close alert when dismissed
+            />
+          )}
+
           <form onSubmit={handleSubmit}>
             <table className="w-full mb-4">
               <tbody>
@@ -616,11 +671,12 @@ const handleSubmit = async (e) => {
             </button>
 
             {/* Emergency Contact Table */}
-            <h3 className="text-lg mb-2">Emergency Contact List</h3>
-            <table className="w-full mb-4">
+            <h3 className="text-lg mb-2 ">Emergency Contact List</h3>
+            <table className="w-full mb-4 ">
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Phone</th>
                   <th>Relationship</th>
                   <th> </th>
                 </tr>
@@ -630,6 +686,7 @@ const handleSubmit = async (e) => {
                   employeeData.emergency_contacts.map((con, index) => (
                     <tr key={index}>
                       <td>{con.first_Name} {con.last_Name}</td>
+                      <td>{con.phone}</td>
                       <td>{con.relationship}</td>
                       <td>
                         <button type="button" onClick={() => removeEmergencyContact(index)} className="bg-red-500 text-white p-1 rounded">
@@ -653,14 +710,49 @@ const handleSubmit = async (e) => {
                         accept="image/*"
                         onChange={handleFileChange}
                         className="border p-2 w-full mb-4"
+                        required
                     />
-                  
+
+            {/* Custom Attributes Form */}
+            <h3 className="text-lg mb-2">Custom Fields</h3>
+                  {loading ? (
+                    <p>Loading custom attributes...</p>
+                  ) : (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Field</th>
+                          <th>Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {customAttributes.map((field, index) => (
+                          <tr key={index}>
+                            <td>
+                              <label>{field}: </label>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name={field}
+                                value={custom_values[field] || ''}
+                                onChange={handleCustomChange}
+                                style={{ width: '140%' }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+
+            <h1 className="text-lg mb-2"> </h1>
                     <button type="submit" className="bg-blue-500 text-white p-2 rounded-lg">Add Employee</button>
                 </form>
             </section>
         </div>
     </Layout>
-);
+  );
 };
 
 export default ADD_Employee;

@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import CustomAlert from '../components/CustomAlert';
 
 const Manage_Custom_Fields = () => {
   const [customField, setCustomField] = useState('');
   const [customFields, setCustomFields] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+
 
   const fetchCustomFields = async () => {
     setLoading(true);
@@ -41,7 +46,8 @@ const Manage_Custom_Fields = () => {
   const addCustomField = async (e) => {
     e.preventDefault();
     if (!customField) {
-      console.log('Please enter a custom field name.');
+      setAlertMessage('Please enter a custom field name.');
+      setShowAlert(true);
       return;
     }
 
@@ -56,12 +62,13 @@ const Manage_Custom_Fields = () => {
         setCustomField(''); // Reset input field
         await fetchCustomFields();  // Ensure it completes fetching before continuing
         console.log(customFields);  // Check if customFields gets updated
-      } else {
-        console.log('Error: Failed to add custom field');
       }
+      setAlertMessage(response.data.data);
 
     } catch (error) {
       console.error('Error adding custom field:', error);
+    } finally {
+      setShowAlert(true);
     }
   };
 
@@ -76,10 +83,13 @@ const Manage_Custom_Fields = () => {
       if (response.data.success) {
         fetchCustomFields(); // Refresh custom fields list
       } else {
-        console.log('Error: Failed to remove custom field');
+        setAlertMessage('Error: Failed to remove custom field');
       }
+      setAlertMessage(response.data.data);
     } catch (error) {
       console.error('Error removing custom field:', error);
+    } finally {
+      setShowAlert(true);
     }
   };
 
@@ -98,6 +108,14 @@ const Manage_Custom_Fields = () => {
             />
             <button type="submit" className="bg-blue-500 text-white p-2 rounded-lg">Add Custom Field</button>
           </form>
+
+          {showAlert && (
+            <CustomAlert 
+              message={alertMessage} 
+              onClose={() => setShowAlert(false)} // Close alert when dismissed
+            />
+          )}
+
 
           {/* Custom Fields Table */}
           <h3 className="text-lg mb-2">Custom Fields List</h3>
