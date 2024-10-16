@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showModal,setShowModal]=useState(false);
-
+  const [hasTeam,setHasTeam]=useState(false);
   const formatDateTime = (dateTime) => {
     return format(new Date(dateTime), 'yyyy-MM-dd HH:mm');
   };
@@ -93,6 +93,48 @@ const Layout = ({ children }) => {
     }, 2000);
     
   };
+  useEffect(()=>{
+    const getTeam=async()=>{
+      try {
+        dispatch(showLoading());
+        const res = await axios.get(
+          `http://localhost:5555/users/team?employeeId=${user.Employee_ID}`,
+          
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+        dispatch(hideLoading());
+        
+        if(res.data.success){
+          setHasTeam(true);
+        }else{
+          setHasTeam(false);
+        }
+       
+        
+        
+        
+      } catch (error) {
+       
+        dispatch(hideLoading());
+        if (error.response && error.response.status === 404) {
+          
+          setHasTeam(false);
+        } else {
+          // Log other errors
+          console.error('Error fetching notifications:', error);
+        }
+      }
+
+    }
+
+    getTeam();
+    
+
+  },[]);
 
   useEffect(()=>{
     const getNotifications=async()=>{
@@ -125,15 +167,27 @@ const Layout = ({ children }) => {
         return formattedData;
 
         }
+        
         if(res.data.success){
           setNotifications(arraydecoder(res.data.data));
+        }else{
+          setNotifications([]);
         }
+       
         
         
         
       } catch (error) {
+       
         dispatch(hideLoading());
-        console.log(error);
+        if (error.response && error.response.status === 404) {
+          
+          setNotifications([]); // Set to empty array if 404 (no notifications)
+          setNotifiAllRead(true);
+        } else {
+          // Log other errors
+          console.error('Error fetching notifications:', error);
+        }
       }
 
     }
@@ -144,7 +198,7 @@ const Layout = ({ children }) => {
   },[Stats])
 
   useEffect(()=>{
-    console.log(notifications)
+    
     if (notifications.length > 0) {
       const allRead = notifications.every(element => element.Status === 1);
 
@@ -153,6 +207,8 @@ const Layout = ({ children }) => {
       } else {
         setNotifiAllRead(false);
       }
+    }else{
+      setNotifiAllRead(true);
     }
   },[notifications])
 
@@ -165,18 +221,19 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex bg-red-400">
         {/* Sidebar */}
         <div className="w-1/5 bg-yellow-700 text-white min-h-screen">
           
           <div className="p-4 text-xl">
-            {SidebarMenu.map((menu, index) => {
+            {SidebarMenu.filter(menu => !(menu.name === 'Approve/Reject Leave' && !hasTeam))
+            .map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
+                <Link to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
                   <i className={`${menu.icon} mr-2`}></i>
-                  <Link to={menu.path}>{menu.name}</Link>
-                </div>
+                  {menu.name}
+                </div></Link>
               );
             })}
             <div className="menu-item  p-2 rounded-md my-2 bg-yellow-100 text-black cursor-pointer hover:bg-yellow-200" onClick={handleLogout}>
@@ -188,7 +245,7 @@ const Layout = ({ children }) => {
 
         {/* Main content area */}
         <div className="w-4/5">
-          <div className="bg-gray-100 p-4 shadow-md flex justify-between items-center h-[calc(10vh)] ">
+          <div className="bg-red-200 p-4 shadow-md flex justify-between items-center h-[calc(10vh)] ">
             <div className="flex items-center space-x-4 w-3/5">
               <i className="fa-solid fa-bell text-gray-600 cursor-pointer"></i>
               <span className="text-gray-600 text-4xl "><strong>Hello,</strong> {user?.User_Name}</span> {/* Added Hello before user name */}

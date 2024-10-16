@@ -36,7 +36,7 @@ const LoginForm = () => {
         
         setAlertMessage(res.data.message); // Show success message with custom alert
         setTimeout(() => {
-          navigate('/home');
+          navigate('/dashboard');
         }, 1000); 
       } else {
         setAlertMessage(res.data.message); // Show error message with custom alert
