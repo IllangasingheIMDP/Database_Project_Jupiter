@@ -66,6 +66,8 @@ export const employeeMenu = [
       icon: 'fa-solid fa-user'
     },
   ];
+
+  //HR Manager menu
   export const hrManagerMenu = [
     
     
@@ -95,9 +97,9 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-        name: 'Generate Reports  ',
-        path: '#',
-        icon: 'fa-solid fa-user'
+      name: 'Generate Reports  ',
+      path: '/hrmanager-genReport',
+      icon: 'fa-solid fa-user'
       },
     
   ];
