@@ -32,7 +32,7 @@ function App() {
     <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['Employee','Admin User','HR Manager','Second Manager']}><Dashboard></Dashboard></ProtectedRoute>} />
     <Route path="/edit-table-data" element={<ProtectedRoute allowedRoles={['Admin User']}><EditTableAttributes /></ProtectedRoute>} />
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
-    <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><TableDetails /></ProtectedRoute>} />
+    <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><GenRepHR /></ProtectedRoute>} />
 
     </Routes>
     </Router>
