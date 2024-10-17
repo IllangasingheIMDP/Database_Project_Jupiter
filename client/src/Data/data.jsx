@@ -97,7 +97,7 @@ export const employeeMenu = [
     },
     {
         name: 'Generate Reports  ',
-        path: '#',
+        path: '/generate-reports',
         icon: 'fa-solid fa-user'
       },
     
