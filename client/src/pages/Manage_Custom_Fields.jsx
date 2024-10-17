@@ -29,6 +29,8 @@ const Manage_Custom_Fields = () => {
         console.log('Error: Failed to fetch custom fields');
       }
     } catch (error) {
+      setAlertMessage(error.response.data.data);
+      setShowAlert(true);
       console.log('Error fetching custom fields:', error);
     } finally {
       setLoading(false);
@@ -66,6 +68,8 @@ const Manage_Custom_Fields = () => {
       setAlertMessage(response.data.data);
 
     } catch (error) {
+      setAlertMessage(error.response.data.data);
+      setShowAlert(true);
       console.error('Error adding custom field:', error);
     } finally {
       setShowAlert(true);
@@ -87,6 +91,8 @@ const Manage_Custom_Fields = () => {
       }
       setAlertMessage(response.data.data);
     } catch (error) {
+      setAlertMessage(error.response.data.data);
+      setShowAlert(true);
       console.error('Error removing custom field:', error);
     } finally {
       setShowAlert(true);

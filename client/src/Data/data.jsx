@@ -52,7 +52,7 @@ export const employeeMenu = [
     },
     {
       name: 'Edit Table Attributes ',
-      path: '#',
+      path: '/edit-table-data',
       icon: 'fa-solid fa-user-doctor'
     },
     {
@@ -65,7 +65,6 @@ export const employeeMenu = [
       path: '/manage-custom-field',
       icon: 'fa-solid fa-user'
     },
-    
   ];
   export const hrManagerMenu = [
     
