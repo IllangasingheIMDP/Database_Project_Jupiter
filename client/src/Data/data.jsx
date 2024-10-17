@@ -2,7 +2,7 @@
 export const employeeMenu = [
     {
       name: 'Dashboard',
-      path: '#',
+      path: '/dashboard',
       icon: "fa-solid fa-house"
     },
     {
@@ -36,6 +36,11 @@ export const employeeMenu = [
   // Admin Menu
   export const adminMenu = [
     {
+      name: 'Dashboard',
+      path: '/dashboard',
+      icon: "fa-solid fa-house"
+    },
+    {
       name: 'Customize Leave Allowances',
       path: '#',
       icon: "fa-solid fa-house"
@@ -63,9 +68,10 @@ export const employeeMenu = [
   ];
   export const hrManagerMenu = [
     
+    
     {
       name: 'Dashboard',
-      path: '#',
+      path: '/dashboard',
       icon: 'fa-solid fa-user-doctor'
     },
     {
@@ -80,8 +86,13 @@ export const employeeMenu = [
       },
     {
       name: 'Add New Employee ',
-      path: '#',
+      path: '/add-new-employee',
       icon: 'fa-solid fa-user'
+    },
+    {
+      name: 'Approve/Reject Leave',
+      path: "#",
+      icon: 'fa-solid fa-clipboard-list'
     },
     {
         name: 'Generate Reports  ',

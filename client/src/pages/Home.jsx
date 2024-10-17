@@ -12,6 +12,7 @@ const Home = () => {
   const [userData,setUserData]=useState([])
   const [picData,setPicData]=useState([])
   const [teamData,setTeamData]=useState([]);
+  const [customFields,setCustomFields]=useState([]);
   const [supervisorData,setSuperVisorData]=useState([])
   const [dependantData,setDependantData]=useState([])
   const [emergencyData,setEmergencyData]=useState([])
@@ -80,9 +81,15 @@ const Home = () => {
            
             setDependantData(arraydecoder(res.data.data.Dependant_Data))
             setEmergencyData(arraydecoder(res.data.data.Emergency_Contacts))
-             setSuperVisorData(res.data.data.Supervisor_Data.Supervisor)
+            {
+              res.data.data.Supervisor_Data ? setSuperVisorData(res.data.data.Supervisor_Data.Supervisor) : setSuperVisorData(null);
+              res.data.data.Team_Data ? setTeamData(arraydecoder(res.data.data.Team_Data)) : setTeamData(null);
+              res.data.data.Pic_Data ? setPicData(res.data.data.Pic_Data.pic_path) : setPicData(null);
+              res.data.data.Custom_Field_Data ? setCustomFields(res.data.data.Custom_Field_Data ) : setCustomFields([]);
+
+            } 
      
-             setTeamData(arraydecoder(res.data.data.Team_Data))
+             
              
             
             
@@ -98,7 +105,7 @@ const Home = () => {
 
         // Ensure user and Employee_ID are set
       getUserData();
-      console.log(picData)
+      
     
   }, [user, dispatch]);
   
@@ -206,6 +213,18 @@ const handleClose = () => {setShowTeamModal(false)
                       <hr />
                     </div>
                   ))}
+                  {customFields ? 
+                  customFields.map((row) => (
+                    <div key={row.Field} className='flex flex-col w-full bg-yellow-100 hover:bg-yellow-200'>
+                      
+                      <div className='flex flex-row py-4 px-2 w-full items-start'>
+                        <div className=' text-start pl-10 text-1xl w-2/5'>{row.Field.replace(/_/g, ' ')}</div> {/* Replace underscores with spaces */}
+                        <div className="text-gray-500 text-1xl font-bold w-3/5 text-start px-8">{row.Data}</div>
+                      </div>
+                      <hr />
+                    </div>
+                  )) :<></>}
+                  
               
               
               

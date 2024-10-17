@@ -29,7 +29,7 @@ const notificationController = {
         
         if (!resultData.success) {
           return res
-            .status(404)
+            .status(200)
             .send({ message: resultData.data, success: false });
         }else{
             

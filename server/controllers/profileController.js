@@ -20,18 +20,17 @@ const profileController = {
           });
         });
        
-        const firstEntry = profileInfo[0];
-
+        
     // Since the key is dynamic (it contains the function name), access it dynamically
-    const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
-    const resultData = firstEntry[resultKey];
-        if (!resultData.success) {
+    //const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+    //const resultData = firstEntry[resultKey];
+        if (!profileInfo.success) {
           return res
             .status(404)
             .send({ message: "employee not found", success: false });
         }else{
             
-            return res.status(200).send({data:resultData.data,success:true});
+            return res.status(200).send({data:profileInfo.data,success:true});
         }
 
         
