@@ -7,7 +7,7 @@ const db = require('./config/db');
 const userRoutes = require('./routes/userRoute');
 const authRoute = require('./routes/authRoute');
 const employeeTableRoute=require('./routes/employeeTableRoute');
-
+const adminRoute=require('./routes/adminRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
 
 
@@ -45,6 +45,10 @@ app.use('/users', userRoutes);
 app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
 app.use('/dependant',dependantInfoRoute);
+
+
+// Admin route
+app.use('/admin',adminRoute);
 
 // Root route (for testing)
 app.get('/', (req, res) => {

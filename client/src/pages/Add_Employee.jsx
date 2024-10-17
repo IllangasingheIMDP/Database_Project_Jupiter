@@ -267,6 +267,8 @@ const handleSubmit = async (e) => {
 
     
   } catch (error) {
+    setAlertMessage(error.response.data.data);
+    setShowAlert(true);
     console.error('Error adding employee:', error);
   }
 };

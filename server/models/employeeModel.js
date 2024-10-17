@@ -73,9 +73,10 @@ const EmployeeModel = {
       callback(null, result[0]);
     });
   },
+  
   //Create new Employee
   createEmployee: (employeeData, callback) => {
-    const query = 'SELECT JSON_EXTRACT(add_employee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?), "$") AS result';
+    const query = 'CALL add_employee(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, @result)';
     const queryParams = [
         employeeData.nic,
         employeeData.initials,
@@ -99,11 +100,21 @@ const EmployeeModel = {
         employeeData.emergency_contacts_info,
         employeeData.custom_fields,
     ];
-    db.query(query, queryParams, (err, result) => {
+
+    // First, call the stored procedure
+    db.query(query, queryParams, (err) => {
       if (err) {
         return callback(err);
       }
-      callback(null, result[0].result);
+
+      // Now, retrieve the result from the OUT parameter
+      const resultQuery = 'SELECT @result AS result';
+      db.query(resultQuery, (err, result) => {
+        if (err) {
+          return callback(err);
+        }
+        callback(null, JSON.parse(result[0].result));
+      });
     });
   },
 
