@@ -7,6 +7,7 @@ import ADD_Employee from './pages/Add_Employee';
 import Manage_CustomField from './pages/Manage_Custom_Fields';
 import EditTableAttributes from './pages/Admin/Edit_Table_Attributes';
 import TableDetails from './pages/Admin/EditTable';
+import GenRepHR from './pages/HRManager/GenRepHR'
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,6 +32,7 @@ function App() {
     <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['Employee','Admin User','HR Manager','Second Manager']}><Dashboard></Dashboard></ProtectedRoute>} />
     <Route path="/edit-table-data" element={<ProtectedRoute allowedRoles={['Admin User']}><EditTableAttributes /></ProtectedRoute>} />
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
+    <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><TableDetails /></ProtectedRoute>} />
 
     </Routes>
     </Router>
