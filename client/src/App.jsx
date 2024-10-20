@@ -12,6 +12,7 @@ import GenRepHR from './pages/HRManager/GenRepHR'
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
+import LeaveRequest from './pages/LeaveRequest';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
     <Route path="/edit-table-data" element={<ProtectedRoute allowedRoles={['Admin User']}><EditTableAttributes /></ProtectedRoute>} />
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
     <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><GenRepHR /></ProtectedRoute>} />
+    <Route path="/leaveRequest" element={<ProtectedRoute allowedRoles={['Employee','HR Manager']}><LeaveRequest></LeaveRequest></ProtectedRoute>} />
 
     </Routes>
     </Router>
