@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux'; // To get the current user's data
+import Layout from '../components/Layout';
 
 const LeaveRequest = () => {
   const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -11,6 +12,11 @@ const LeaveRequest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (new Date(Start_Date) > new Date(End_Date)) {
+      alert('Start date cannot be after the End date. Please select valid dates.');
+      return; // Stop form submission
+    }
 
     const leaveRequestData = {
       User_ID: user.User_ID, // Pass the current user's ID
@@ -27,6 +33,11 @@ const LeaveRequest = () => {
       });
       if (response.data.success) {
         alert('Leave request submitted successfully');
+
+        setLeaveType('');
+        setStartDate('');
+        setEndDate('');
+        setReason('');
       }
     } catch (error) {
       console.error('Error submitting leave request', error);
@@ -35,6 +46,7 @@ const LeaveRequest = () => {
   };
 
   return (
+    <Layout>
     <div style={containerStyles}>
       <h2 style={headingStyles}>Submit Leave Request</h2>
       <form onSubmit={handleSubmit} style={formStyles}>
@@ -50,7 +62,7 @@ const LeaveRequest = () => {
             <option value="Annual">Annual</option>
             <option value="Casual">Casual</option>
             <option value="Maternity">Maternity</option>
-            <option value="No-Pay">No-Pay</option>
+            <option value="No_Pay">No-Pay</option>
           </select>
         </div>
 
@@ -90,6 +102,7 @@ const LeaveRequest = () => {
         <button type="submit" style={buttonStyles}>Submit</button>
       </form>
     </div>
+    </Layout>
   );
 };
 
@@ -166,5 +179,6 @@ inputStyles[':focus'] = {
 buttonStyles[':hover'] = {
   backgroundColor: '#0056b3',
 };
+
 
 export default LeaveRequest;
