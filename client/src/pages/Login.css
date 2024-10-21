@@ -4,3 +4,23 @@
     margin-left: auto;
 }
   
+
+/* For Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Track color */
+    border-radius: 10px; /* Rounded corners for track */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgb(90, 90, 90); /* Scrollbar color */
+    border-radius: 10px; /* Rounded corners for scrollbar */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(70, 70, 70); /* Color when hovering over the scrollbar */
+  }
+  

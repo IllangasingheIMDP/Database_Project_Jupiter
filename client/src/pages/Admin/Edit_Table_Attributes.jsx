@@ -1,12 +1,19 @@
+// src/pages/Edit_Table_Attributes.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { useNavigate } from 'react-router-dom';
+import MaterialButton from '../../components/MaterialButton';
+import CustomAlert from '../../components/CustomAlert';
 
 const Edit_Table_Attributes = () => {
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+
   const [tables, setTables] = useState([]);
   const navigate = useNavigate();
-  
+
   // Function to fetch table names
   const fetchTableNames = async () => {
     try {
@@ -21,14 +28,14 @@ const Edit_Table_Attributes = () => {
       }
     } catch (error) {
       console.error('Error fetching table names:', error);
-      setAlertMessage(error.response.data.data);
-      setShowAlert(true);
     }
   };
 
   // Fetch table names when the component mounts
   useEffect(() => {
     fetchTableNames();
+    setAlertMessage("Caution: This function is intended for advanced users only.");
+    setShowAlert(true);
   }, []);
 
   const handleEditTable = (tableName) => {
@@ -38,21 +45,30 @@ const Edit_Table_Attributes = () => {
 
   return (
     <Layout>
-      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'>
-        <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4">Edit Tables</h2>
-          <h3 className="text-m mb-4">Please select a table to edit</h3>
+                      {showAlert && (
+            <CustomAlert 
+              message={alertMessage} 
+              onClose={() => setShowAlert(false)} // Close alert when dismissed
+            />
+          )}
+
+      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+          <h2 className="text-xl mb-4 text-white">Edit Tables</h2>
+          <h3 className="text-m mb-4 text-white">Please select a table to edit</h3>
+          
           <div>
-            {tables.map((table, index) => (
-              <button
-                key={index}
-                className="bg-green-500 text-white p-2 rounded-lg mb-2 w-full"
-                style={{ maxWidth: '250px', margin: '10px', textTransform: 'uppercase'}}
+            <center>
+              {tables.map((table, index) => (
+                <MaterialButton
+                table={table}
+                index={index}
+                is_upper={true}
+                text_color='rgb(230, 230, 230)'
                 onClick={() => handleEditTable(table)}
-              >
-                {table.replace(/_/g, ' ')}
-              </button>
-            ))}
+              />
+              ))}
+            </center>
           </div>
         </section>
       </div>
