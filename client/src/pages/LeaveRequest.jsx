@@ -22,7 +22,9 @@ const LeaveRequest = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/leaveRequest', leaveRequestData);
+      const response = await axios.post('http://localhost:5555/leaveRequest/leave-requests', leaveRequestData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
       if (response.data.success) {
         alert('Leave request submitted successfully');
       }
