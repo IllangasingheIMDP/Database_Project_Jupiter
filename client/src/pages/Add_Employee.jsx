@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
+import MaterialButton from '../components/MaterialButton';
 
 const ADD_Employee = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -275,20 +276,18 @@ const handleSubmit = async (e) => {
 
   return (
     <Layout>
-      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'>
-        <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }} >
-          
-          <h2 className="text-xl mb-4">Add Employee</h2>
-
-          {showAlert && (
+                {showAlert && (
             <CustomAlert 
               message={alertMessage} 
               onClose={() => setShowAlert(false)} // Close alert when dismissed
             />
           )}
 
+      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+          <h2 className="text-xl mb-4 text-white">Add Employee</h2>
           <form onSubmit={handleSubmit}>
-            <table className="w-full mb-4">
+            <table className="w-full mb-4 text-white">
               <tbody>
                 <tr>
                   <td><label htmlFor="NIC">NIC:</label></td>
@@ -299,6 +298,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.NIC}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -311,6 +311,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.initials}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -323,6 +324,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.first_Name}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -335,6 +337,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.last_Name}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -347,6 +350,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.date_of_birth}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -359,6 +363,7 @@ const handleSubmit = async (e) => {
                         value={employeeData.gender}
                         onChange={handleEmployeeChange}
                         className="border p-2 w-full"
+                        style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                         required
                     >
                         <option value="">Select Gender</option>
@@ -377,6 +382,7 @@ const handleSubmit = async (e) => {
                         value={employeeData.marital_status}
                         onChange={handleEmployeeChange}
                         className="border p-2 w-full"
+                        style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                         required
                     >
                         <option value="">Select Marital Status</option>
@@ -394,6 +400,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.phone}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -406,6 +413,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.email_work}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -418,6 +426,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.email_private}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -430,6 +439,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.address}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -442,6 +452,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.department}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   >
                     <option value="">None</option>
@@ -460,6 +471,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.title}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   >
                     <option value="">None</option>
@@ -478,6 +490,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.paygrade}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   >
                     <option value="">None</option>
@@ -496,6 +509,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.employment_stat}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   >
                     <option value="">None</option>
@@ -514,6 +528,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.pf_number}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
                   /></td>
                 </tr>
@@ -526,6 +541,7 @@ const handleSubmit = async (e) => {
                     value={employeeData.supervisor}
                     onChange={handleEmployeeChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   >
                     <option value="">None</option>
                     {dropdownOptions.employee_list.map((status, index) => (
@@ -536,10 +552,10 @@ const handleSubmit = async (e) => {
                 </tr>
               </tbody>
             </table>
-
+            <div style={{borderTop: '2px solid white',width: '100%', margin: '20 0px'}}></div>
             {/* Dependent Section */}
-            <h3 className="text-lg mb-2">Add Dependent</h3>
-            <table className="w-full mb-4">
+            <h3 className="text-lg mb-2 text-white">Add Dependent</h3>
+            <table className="w-full mb-4 text-white">
               <tbody>
                 <tr>
                   <td><label htmlFor="dep_name">Dependent Name:</label></td>
@@ -550,6 +566,7 @@ const handleSubmit = async (e) => {
                     value={dependent.name}
                     onChange={handleDependentChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -561,15 +578,22 @@ const handleSubmit = async (e) => {
                     value={dependent.relationship}
                     onChange={handleDependentChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
               </tbody>
             </table>
-            <button type="button" onClick={addDependent} className="bg-green-500 text-white p-2 rounded-lg mb-4">Add Dependent</button>
-
+            <MaterialButton
+              table="Add Dependent"
+              onClick={addDependent}
+              variant="success"
+              text_color="white"
+              text_size="14px"
+              margin="2px"
+            />
             {/* Dependents Table */}
-            <h3 className="text-lg mb-2">Dependents List</h3>
-            <table className="w-full mb-4">
+            <h3 className="text-lg mb-2 text-white">Dependents List</h3>
+            <table className="w-full mb-4 text-white">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -584,7 +608,14 @@ const handleSubmit = async (e) => {
                       <td>{dep.name}</td>
                       <td>{dep.relationship}</td>
                       <td>
-                        <button type="button" onClick={() => removeDependent(index)} className="bg-red-500 text-white p-1 rounded">Remove</button>
+                      <MaterialButton
+                        table="Remove"
+                        onClick={() => removeDependent(index)}
+                        variant="delete"
+                        text_color="white"
+                        text_size="12px"
+                        margin="0px"
+                      />
                       </td>
                     </tr>
                   ))
@@ -595,10 +626,10 @@ const handleSubmit = async (e) => {
                 )}
               </tbody>
             </table>
-            
+            <div style={{borderTop: '2px solid white',width: '100%', margin: '20 0px'}}></div>
             {/* Emergency Contacts Section */}
-            <h3 className="text-lg mb-2">Add Emergency Contacts</h3>
-            <table className="w-full mb-4">
+            <h3 className="text-lg mb-2 text-white">Add Emergency Contacts</h3>
+            <table className="w-full mb-4 text-white">
               <tbody>
                 <tr>
                   <td><label htmlFor="con_fname">First Name:</label></td>
@@ -609,6 +640,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.first_Name}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -620,6 +652,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.last_Name}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -631,6 +664,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.phone}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -642,6 +676,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.email}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -653,6 +688,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.address}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
                 <tr>
@@ -664,17 +700,24 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.relationship}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
               </tbody>
             </table>
-            <button type="button" onClick={addEmergencyContact} className="bg-green-500 text-white p-2 rounded-lg mb-4">
-              Add Emergency Contact
-            </button>
+            <MaterialButton
+              table="Add Emergency Contact"
+              onClick={addEmergencyContact}
+              variant="success"
+              text_color="white"
+              text_size="14px"
+              margin="2px"
+            />
+
 
             {/* Emergency Contact Table */}
-            <h3 className="text-lg mb-2 ">Emergency Contact List</h3>
-            <table className="w-full mb-4 ">
+            <h3 className="text-lg mb-2 text-white ">Emergency Contact List</h3>
+            <table className="w-full mb-4  text-white">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -691,9 +734,15 @@ const handleSubmit = async (e) => {
                       <td>{con.phone}</td>
                       <td>{con.relationship}</td>
                       <td>
-                        <button type="button" onClick={() => removeEmergencyContact(index)} className="bg-red-500 text-white p-1 rounded">
-                          Remove
-                        </button>
+                      <MaterialButton
+                        table="Remove"
+                        onClick={() => removeEmergencyContact(index)}
+                        variant="delete"
+                        text_color="white"
+                        text_size="12px"
+                        margin="0px"
+                      />
+
                       </td>
                     </tr>
                   ))
@@ -706,32 +755,34 @@ const handleSubmit = async (e) => {
             </table>
 
             {/* Picture Upload Section */}
-            <h3 className="text-lg mb-2">Upload Picture</h3>
+            <h3 className="text-lg mb-2 text-white">Upload Picture</h3>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
-                        className="border p-2 w-full mb-4"
+                        className="border p-2 w-full mb-4 text-white"
                         required
                     />
 
+
+            <div style={{borderTop: '2px solid white',width: '100%', margin: '20 0px'}}></div>
             {/* Custom Attributes Form */}
-            <h3 className="text-lg mb-2">Custom Fields</h3>
+            <h3 className="text-lg mb-2 text-white">Custom Fields</h3>
                   {loading ? (
                     <p>Loading custom attributes...</p>
                   ) : (
-                    <table>
+                    <table className="w-full mb-4  text-white">
                       <thead>
                         <tr>
-                          <th>Field</th>
-                          <th>Data</th>
+                          <th></th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {customAttributes.map((field, index) => (
                           <tr key={index}>
                             <td>
-                              <label>{field}: </label>
+                              <label htmlFor="con_fname">{field}: </label>
                             </td>
                             <td>
                               <input
@@ -739,7 +790,7 @@ const handleSubmit = async (e) => {
                                 name={field}
                                 value={custom_values[field] || ''}
                                 onChange={handleCustomChange}
-                                style={{ width: '140%' }}
+                                style={{ width: '100%', backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", border: '2px solid white', borderRadius:"5px"}}
                               />
                             </td>
                           </tr>
@@ -748,8 +799,15 @@ const handleSubmit = async (e) => {
                     </table>
                   )}
 
-            <h1 className="text-lg mb-2"> </h1>
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-lg">Add Employee</button>
+            <h1 className="text-lg mb-2 text-white"> </h1>
+                    <MaterialButton
+                      table="Add Employee"
+                      onClick={handleSubmit}
+                      text_color="white"
+                      text_size="16px"
+                      margin="0px"
+                    />
+
                 </form>
             </section>
         </div>

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Layout from '../../components/Layout';
 import CustomAlert from '../../components/CustomAlert';
+import MaterialButton from '../../components/MaterialButton';
 
 const EditTable = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -113,16 +114,16 @@ const handleDeleteRow = async (row) => {
 
   return (
     <Layout>
-      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'>
-        <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4" style={{ textTransform: 'uppercase' }}>Editing Table: {tableName}</h2>
-
-          {showAlert && (
+                      {showAlert && (
             <CustomAlert 
               message={alertMessage} 
               onClose={() => setShowAlert(false)} // Close alert when dismissed
             />
           )}
+
+      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
+      <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+          <h2 className="text-xl mb-4 text-white" style={{ textTransform: 'uppercase' }}>Editing Table: {tableName}</h2>
 
           {/* Wrapping table in a scrollable container */}
           <div style={{ maxWidth: '100%', overflowX: 'auto', overflowY: 'auto' }}>
@@ -130,7 +131,7 @@ const handleDeleteRow = async (row) => {
               <thead>
                 <tr>
                   {tableData.length > 0 && Object.keys(tableData[0]).map((column) => (
-                    <th key={column} className="border border-gray-400 p-2">{column.toUpperCase()}</th>
+                    <th key={column} className="border border-gray-400 p-2 text-white">{column.toUpperCase()}</th>
                   ))}
                   <th className="border border-gray-400 p-2"></th>
                 </tr>
@@ -139,22 +140,39 @@ const handleDeleteRow = async (row) => {
                 {tableData.map((row, rowIndex) => (
                   <tr key={rowIndex} className="border border-gray-400">
                     {Object.values(row).map((value, index) => (
-                      <td key={index} className="border border-gray-400 p-2">{value}</td>
+                      <td key={index} className="border border-gray-400 p-2 text-white">{value}</td>
                     ))}
                     <td className="border border-gray-400 p-2">
-                      <button className="bg-green-500 text-white p-2" style={{ margin: '2px' }} onClick={() => openEditPopup(row)}>Edit</button>
-                      <button className="bg-red-500 text-white p-2" style={{ margin: '2px' }} onClick={() => handleDeleteRow(row)}>Delete</button>
+                      <MaterialButton
+                        table="Edit"
+                        index={rowIndex}
+                        is_upper={true}
+                        text_color='rgb(230, 230, 230)'
+                        variant="success"
+                        margin='2px'
+                        onClick={() => openEditPopup(row)}
+                      />
+                      <MaterialButton
+                        table="Delete"
+                        index={rowIndex + 1} // Ensure unique key if needed
+                        is_upper={true}
+                        text_color='rgb(230, 230, 230)'
+                        variant="delete"
+                        margin='2px'
+                        onClick={() => handleDeleteRow(row)}
+                      />
                     </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
 
           {isPopupOpen && (
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center">
+            <div className="fixed inset-0 bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-5  flex justify-center items-center">
               <div
-                className="bg-white p-5 rounded-lg"
+                className="bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-5 rounded-lg"
                 style={{
                   maxHeight: '80vh',
                   overflowY: 'auto',
@@ -163,18 +181,33 @@ const handleDeleteRow = async (row) => {
               >
                 {Object.keys(editRow).map((column) => (
                   <div key={column} className="mb-2">
-                    <label>{column.toUpperCase()}:</label>
+                    <label className="text-white">{column.toUpperCase()}:</label>
                     <input
                       type="text"
                       value={editRow[column]}
                       onChange={(e) => handleInputChange(e, column)}
                       className="border p-2 w-full"
+                      style={{ backgroundColor: 'black', color: "white"}}
                       //readOnly={['Branch_ID', 'Field_ID', 'Dept_ID', 'Employee_ID', 'NIC', 'Pic_ID', 'Employment_Stat_ID', 'Title_ID', 'Request_ID', 'User_ID', 'Organization_ID', 'PayGrade_ID'].includes(column)}
                     />
                   </div>
                 ))}
-                <button className="bg-blue-500 text-white p-2 rounded-lg mr-2" onClick={handleSaveChanges}>Save</button>
-                <button className="bg-red-500 text-white p-2 rounded-lg" onClick={closeEditPopup}>Cancel</button>
+                <MaterialButton
+                  table="Save"
+                  index={0} // Unique index for the Save button
+                  is_upper={true}
+                  text_color='rgb(255, 255, 255)' // White text color
+                  variant="success" // Green button for save action
+                  onClick={handleSaveChanges}
+                />
+                <MaterialButton
+                  table="Cancel"
+                  index={1} // Unique index for the Cancel button
+                  is_upper={true}
+                  text_color='rgb(255, 255, 255)' // White text color
+                  variant="delete" // Red button for cancel action
+                  onClick={closeEditPopup}
+                />
               </div>
             </div>
           )}

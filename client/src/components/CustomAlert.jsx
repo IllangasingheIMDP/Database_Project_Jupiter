@@ -25,7 +25,7 @@ const CustomAlert = ({ message, onClose }) => {
     message.toLowerCase().includes('error') ||
     message.toLowerCase().includes('invalid')
     ? { backgroundColor: 'red', color: 'white' } // Error styles
-    : message.toLowerCase().includes('warning')
+    : message.toLowerCase().includes('warning') || message.toLowerCase().includes('caution')
     ? { backgroundColor: 'orange', color: 'black' } // Warning styles
     : { backgroundColor: 'green', color: 'white' }; // Success styles
 

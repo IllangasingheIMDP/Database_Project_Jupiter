@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
+import MaterialButton from '../components/MaterialButton';
 
 const Manage_Custom_Fields = () => {
   const [customField, setCustomField] = useState('');
@@ -101,9 +102,16 @@ const Manage_Custom_Fields = () => {
 
   return (
     <Layout>
-      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'>
-        <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4">Add Custom Field</h2>
+                      {showAlert && (
+            <CustomAlert 
+              message={alertMessage} 
+              onClose={() => setShowAlert(false)} // Close alert when dismissed
+            />
+          )}
+          
+      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+          <h2 className="text-xl mb-4 text-white">Add Custom Field</h2>
           <form onSubmit={addCustomField}>
             <input
               type="text"
@@ -111,24 +119,24 @@ const Manage_Custom_Fields = () => {
               onChange={handleInputChange}
               className="border p-2 w-full mb-4"
               placeholder="Enter custom field name"
+              style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
             />
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded-lg">Add Custom Field</button>
+            <MaterialButton
+                table="Add Custom Field"
+                onClick={addCustomField}
+                variant="success"
+                text_color="white"
+                text_size="16px"
+                margin="0px"
+              />
           </form>
 
-          {showAlert && (
-            <CustomAlert 
-              message={alertMessage} 
-              onClose={() => setShowAlert(false)} // Close alert when dismissed
-            />
-          )}
-
-
           {/* Custom Fields Table */}
-          <h3 className="text-lg mb-2">Custom Fields List</h3>
+          <h3 className="text-lg mb-2 text-white">Custom Fields List</h3>
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table className="w-full mb-4">
+            <table className="w-full mb-4 text-white">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -141,13 +149,14 @@ const Manage_Custom_Fields = () => {
                     <tr key={field.id}>
                       <td>{field.name}</td>
                       <td>
-                        <button 
-                          type="button" 
-                          onClick={() => removeCustomField(field.name)} 
-                          className="bg-red-500 text-white p-1 rounded"
-                        >
-                          Remove
-                        </button>
+                      <MaterialButton
+                        table="Remove"
+                        onClick={() => removeCustomField(field.name)}
+                        variant="delete"
+                        text_color="white"
+                        text_size="14px"
+                        margin="0px"
+                      />
                       </td>
                     </tr>
                   ))
