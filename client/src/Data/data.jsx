@@ -17,7 +17,7 @@ export const employeeMenu = [
     },
     {
       name: 'Request Leave ',
-      path: "#",
+      path: "/leaveRequest",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
