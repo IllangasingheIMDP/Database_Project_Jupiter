@@ -72,12 +72,13 @@ const LeaveRequestModel = {
 
   // Find user by ID
   findByUserId: (UserId, callback) => {
-    const query = 'SELECT * FROM leave_request WHERE User_ID = ?';
+    const query = 'SELECT db_get_leave_requests_by_user(?) AS result';
     db.query(query, [UserId], (err, result) => {
       if (err) {
         return callback(err);
       }
-      callback(null, result[0]);
+      const leaveRequest = result[0]?.result;
+      callback(null, leaveRequest);
     });
   },
   
