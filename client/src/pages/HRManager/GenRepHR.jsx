@@ -9,6 +9,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Accordion from 'react-bootstrap/Accordion';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Card from 'react-bootstrap/Card';
 import './GenRepHR.css';
   
 
@@ -24,7 +25,10 @@ const GenRepHR = () => {
       <div>
         <h1 class='centered-title'>Generating reports</h1>
       </div>
-      <div> </div>
+
+      <div style={{ margin: "20px 0" }}>
+        {/* This div adds space */}
+      </div>
 
       <Tabs
       defaultActiveKey="organization"
@@ -33,7 +37,20 @@ const GenRepHR = () => {
       justify
     >
         <Tab eventKey="organization" title="Organizational details">
-          C
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Department Details</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Branch Details</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
         </Tab>
 
         <Tab eventKey="employee" title="Employee details">
@@ -106,15 +123,69 @@ const GenRepHR = () => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="1">
-              <Accordion.Header>Accordion Item #2</Accordion.Header>
+              <Accordion.Header>Employee details by Department</Accordion.Header>
               <Accordion.Body>
               </Accordion.Body>
             </Accordion.Item>
+              <Accordion.Item eventKey="2">
+              <Accordion.Header>Employee details by Branch</Accordion.Header>
+              <Accordion.Body>
+                
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>Employee details by Pay Grade</Accordion.Header>
+              <Accordion.Body>
+                
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>Dependent details of Employees</Accordion.Header>
+              <Accordion.Body>
+                
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+            <Accordion.Header>Emergency Contact details of Employees</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
           </Accordion>
         </Tab>
 
         <Tab eventKey="leave" title="Leave details">
-          Tab content for Leave Table
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Leave details of an Employee</Accordion.Header>
+            <Accordion.Body>
+            <Card style={{ width: '18rem' }}>
+              <Card.Body>
+                <Card.Title>Card Title</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">Card Subtitle</Card.Subtitle>
+                <Card.Text>
+                  Some quick example text to build on the card title and make up the
+                  bulk of the card's content.
+                </Card.Text>
+                <Card.Link href="#">Card Link</Card.Link>
+                <Card.Link href="#">Another Link</Card.Link>
+              </Card.Body>
+            </Card>
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Leave details</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Leave request details</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
         </Tab>
       </Tabs>
 
