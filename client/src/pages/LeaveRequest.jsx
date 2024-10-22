@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux'; // To get the current user's data
 import Layout from '../components/Layout';
+import CustomAlert from '../components/CustomAlert';
+import MaterialButton from '../components/MaterialButton'; 
 
 const LeaveRequest = () => {
   const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -9,12 +11,19 @@ const LeaveRequest = () => {
   const [Start_Date, setStartDate] = useState('');
   const [End_Date, setEndDate] = useState('');
   const [Reason, setReason] = useState('');
+  
+  // State for leave requests
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
+  // Handle form submission for leave request
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (new Date(Start_Date) > new Date(End_Date)) {
-      alert('Start date cannot be after the End date. Please select valid dates.');
+      setAlertMessage('Warning! Start date cannot be after the End date. Please select valid dates.');
+      setShowAlert(true);
       return; // Stop form submission
     }
 
@@ -32,153 +41,162 @@ const LeaveRequest = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
-        alert('Leave request submitted successfully');
-
+        setAlertMessage('Leave request submitted successfully');
         setLeaveType('');
         setStartDate('');
         setEndDate('');
         setReason('');
+      } else {
+        setAlertMessage('Failed to submit leave request');
       }
     } catch (error) {
       console.error('Error submitting leave request', error);
-      alert('Failed to submit leave request');
+      setAlertMessage('Error: Failed to submit leave request');
+    } finally {
+      setShowAlert(true); // Show the alert
+    }
+  };
+
+  // Function to fetch leave requests
+  const fetchLeaveRequests = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5555/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (response.data.success) {
+        setLeaveRequests(response.data.data); // Assuming the data structure returned includes the leave requests
+      } else {
+        setAlertMessage('Failed to fetch leave requests');
+      }
+    } catch (error) {
+      console.error('Error fetching leave requests', error);
+      setAlertMessage('Error: Failed to fetch leave requests');
+    } finally {
+      setShowAlert(true); // Show the alert
     }
   };
 
   return (
     <Layout>
-    <div style={containerStyles}>
-      <h2 style={headingStyles}>Submit Leave Request</h2>
-      <form onSubmit={handleSubmit} style={formStyles}>
-        <div style={inputContainerStyles}>
-          <label style={labelStyles}>Leave Type</label>
-          <select
-            value={Leave_Type}
-            onChange={(e) => setLeaveType(e.target.value)}
-            required
-            style={inputStyles}
-          >
-            <option value="">Select Leave Type</option>
-            <option value="Annual">Annual</option>
-            <option value="Casual">Casual</option>
-            <option value="Maternity">Maternity</option>
-            <option value="No_Pay">No-Pay</option>
-          </select>
-        </div>
+      {/* Alert System */}
+      {showAlert && (
+        <CustomAlert 
+          message={alertMessage} 
+          onClose={() => setShowAlert(false)} // Close alert when dismissed
+        />
+      )}
+      
+      <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', }}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+          <h2 className="text-x1 mb-4 text-white">Submit Leave Request</h2>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="text-white mb-2 block">Leave Type</label>
+              <select
+                value={Leave_Type}
+                onChange={(e) => setLeaveType(e.target.value)}
+                required
+                className="border p-2 w-full mb-4"
+                style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor: 'white', borderRadius: "8px" }}
+              >
+                <option value="">Select Leave Type</option>
+                <option value="Annual">Annual</option>
+                <option value="Casual">Casual</option>
+                <option value="Maternity">Maternity</option>
+                <option value="No_Pay">No-Pay</option>
+              </select>
+            </div>
 
-        <div style={inputContainerStyles}>
-          <label style={labelStyles}>Start Date</label>
-          <input
-            type="date"
-            value={Start_Date}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-            style={inputStyles}
+            <div className="mb-4">
+              <label className="text-white mb-2 block">Start Date</label>
+              <input
+                type="date"
+                value={Start_Date}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+                className="border p-2 w-full"
+                style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor: 'white', borderRadius: "8px" }}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-white mb-2 block">End Date</label>
+              <input
+                type="date"
+                value={End_Date}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+                className="border p-2 w-full"
+                style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor: 'white', borderRadius: "8px" }}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-white mb-2 block">Reason</label>
+              <textarea
+                value={Reason}
+                onChange={(e) => setReason(e.target.value)}
+                required
+                className="border p-2 w-full"
+                style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor: 'white', borderRadius: "8px", height: '120px', resize: 'none' }}
+                placeholder="Enter the reason for leave..."
+              ></textarea>
+            </div>
+
+            <MaterialButton
+              table="Submit"
+              variant="success"
+              text_color="white"
+              text_size="16px"
+              margin="0px"
+              onClick={handleSubmit}
+            />
+          </form>
+
+          {/* Button to fetch and display leave requests */}
+          <MaterialButton
+            table="View Leave Requests"
+            variant="info" // Choose a suitable variant for this button
+            text_color="white"
+            text_size="16px"
+            margin="10px 0"
+            onClick={fetchLeaveRequests} // Fetch requests on button click
           />
-        </div>
 
-        <div style={inputContainerStyles}>
-          <label style={labelStyles}>End Date</label>
-          <input
-            type="date"
-            value={End_Date}
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-            style={inputStyles}
-          />
-        </div>
-
-        <div style={inputContainerStyles}>
-          <label style={labelStyles}>Reason</label>
-          <textarea
-            value={Reason}
-            onChange={(e) => setReason(e.target.value)}
-            required
-            style={{ ...inputStyles, height: '120px', resize: 'none' }}
-            placeholder="Enter the reason for leave..."
-          ></textarea>
-        </div>
-
-        <button type="submit" style={buttonStyles}>Submit</button>
-      </form>
-    </div>
+          {/* Leave Requests Table */}
+          {leaveRequests.length > 0 && (
+            <div className="mt-5">
+              <h3 className="text-lg mb-2 text-white">Your Leave Requests</h3>
+              <table className="w-full mb-4 text-white">
+                <thead>
+                  <tr>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaveRequests.map((request, index) => (
+                    <tr key={index}>
+                      <td>{request.Leave_Type}</td>
+                      <td>{new Date(request.Start_Date).toLocaleDateString()}</td>
+                      <td>{new Date(request.End_Date).toLocaleDateString()}</td>
+                      <td>{request.Reason}</td>
+                      <td>{request.Status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
     </Layout>
   );
 };
-
-// Inline styling
-
-const containerStyles = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minHeight: '100vh',
-  backgroundColor: '#f4f4f9',
-  padding: '40px',
-};
-
-const formStyles = {
-  maxWidth: '600px',
-  width: '100%',
-  padding: '30px',
-  border: '1px solid #e0e0e0',
-  borderRadius: '12px',
-  backgroundColor: '#fff',
-  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-  fontFamily: 'Arial, sans-serif',
-};
-
-const headingStyles = {
-  textAlign: 'center',
-  fontSize: '24px',
-  color: '#333',
-  fontWeight: 'bold',
-  marginBottom: '20px',
-};
-
-const inputContainerStyles = {
-  marginBottom: '20px',
-};
-
-const labelStyles = {
-  display: 'block',
-  marginBottom: '10px',
-  fontSize: '16px',
-  fontWeight: '600',
-  color: '#555',
-};
-
-const inputStyles = {
-  width: '100%',
-  padding: '12px',
-  border: '1px solid #ccc',
-  borderRadius: '6px',
-  fontSize: '16px',
-  color: '#333',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.3s',
-};
-
-const buttonStyles = {
-  backgroundColor: '#007BFF',
-  color: '#fff',
-  padding: '14px 20px',
-  border: 'none',
-  borderRadius: '6px',
-  fontSize: '18px',
-  cursor: 'pointer',
-  width: '100%',
-  transition: 'background-color 0.3s',
-};
-
-// Add hover and focus effects
-inputStyles[':focus'] = {
-  borderColor: '#007BFF',
-};
-
-buttonStyles[':hover'] = {
-  backgroundColor: '#0056b3',
-};
-
 
 export default LeaveRequest;
