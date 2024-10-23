@@ -11,7 +11,7 @@ const LeaveRequest = () => {
   const [Start_Date, setStartDate] = useState('');
   const [End_Date, setEndDate] = useState('');
   const [Reason, setReason] = useState('');
-  
+
   // State for leave requests
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [alertMessage, setAlertMessage] = useState('');
@@ -33,11 +33,10 @@ const LeaveRequest = () => {
     }
 
     if (new Date(Start_Date).getTime() === new Date(End_Date).getTime()) {
-  setAlertMessage('Warning! Start date and End date cannot be the same. Please select valid dates.');
-  setShowAlert(true);
-  return; // Stop form submission
-}
-
+      setAlertMessage('Warning! Start date and End date cannot be the same. Please select valid dates.');
+      setShowAlert(true);
+      return; // Stop form submission
+    }
 
     const leaveRequestData = {
       User_ID: user.User_ID, // Pass the current user's ID
@@ -45,7 +44,7 @@ const LeaveRequest = () => {
       Start_Date,
       End_Date,
       Reason,
-      Status: 'Reject', // Default
+      Status: 'Pending', // Default
     };
 
     try {
@@ -78,7 +77,14 @@ const LeaveRequest = () => {
       });
 
       if (response.data.success) {
-        setLeaveRequests(response.data.data[0].result.data); // Assuming the data structure returned includes the leave requests
+        const fetchedRequests = response.data.data[0]?.result?.data || []; // Ensure proper data structure handling
+        setLeaveRequests(fetchedRequests);
+
+        // Check if there are no leave requests
+        if (fetchedRequests.length === 0) {
+          setFetchAlertMessage('Warning! You have no leave requests');
+          setShowFetchAlert(true); // Show an alert if no requests are found
+        }
       } else {
         setFetchAlertMessage('Failed to fetch leave requests');
         setShowFetchAlert(true);
@@ -91,6 +97,7 @@ const LeaveRequest = () => {
       setLoading(false); // Hide loading feedback
     }
   };
+
   const tableCellStyle = {
     border: '1px solid white', // Adds horizontal and vertical borders
     padding: '8px', // Optional padding for better readability
@@ -197,8 +204,11 @@ const LeaveRequest = () => {
           {/* Loading spinner */}
           {loading && <div className="text-white">Loading...</div>}
           
+          {/* Display message when there are no leave requests */}
+          {!loading && leaveRequests.length === 0 && (
+            <div className="text-white mt-5">  </div>
+          )}
 
-          {/* Leave Requests Table */}
           {/* Leave Requests Table */}
           {leaveRequests.length > 0 && !loading && (
             <div className="mt-5">
