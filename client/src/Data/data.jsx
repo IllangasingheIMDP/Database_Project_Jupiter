@@ -11,23 +11,8 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-      name: 'Edit Personal Info ',
-      path: "#",
-      icon: 'fa-solid fa-clipboard-list'
-    },
-    {
       name: 'Request Leave ',
       path: "/leaveRequest",
-      icon: 'fa-solid fa-clipboard-list'
-    },
-    {
-        name: 'Approve/Reject Leave',
-        path: "#",
-        icon: 'fa-solid fa-clipboard-list'
-      },
-    {
-      name: 'Generate Reports ',
-      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     
