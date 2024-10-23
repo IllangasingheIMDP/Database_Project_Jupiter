@@ -17,6 +17,11 @@ const LeaveRequest = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
+  // Separate state for showing alerts for fetching requests
+  const [fetchAlertMessage, setFetchAlertMessage] = useState('');
+  const [showFetchAlert, setShowFetchAlert] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state for fetch requests
+
   // Handle form submission for leave request
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +31,13 @@ const LeaveRequest = () => {
       setShowAlert(true);
       return; // Stop form submission
     }
+
+    if (new Date(Start_Date).getTime() === new Date(End_Date).getTime()) {
+  setAlertMessage('Warning! Start date and End date cannot be the same. Please select valid dates.');
+  setShowAlert(true);
+  return; // Stop form submission
+}
+
 
     const leaveRequestData = {
       User_ID: user.User_ID, // Pass the current user's ID
@@ -53,37 +65,53 @@ const LeaveRequest = () => {
       console.error('Error submitting leave request', error);
       setAlertMessage('Error: Failed to submit leave request');
     } finally {
-      setShowAlert(true); // Show the alert
+      setShowAlert(true); // Show the alert for submission
     }
   };
 
   // Function to fetch leave requests
   const fetchLeaveRequests = async () => {
+    setLoading(true); // Show loading spinner or feedback
     try {
       const response = await axios.get(`http://localhost:5555/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
       if (response.data.success) {
-        setLeaveRequests(response.data.data); // Assuming the data structure returned includes the leave requests
+        setLeaveRequests(response.data.data[0].result.data); // Assuming the data structure returned includes the leave requests
       } else {
-        setAlertMessage('Failed to fetch leave requests');
+        setFetchAlertMessage('Failed to fetch leave requests');
+        setShowFetchAlert(true);
       }
     } catch (error) {
       console.error('Error fetching leave requests', error);
-      setAlertMessage('Error: Failed to fetch leave requests');
+      setFetchAlertMessage('Error: Failed to fetch leave requests');
+      setShowFetchAlert(true);
     } finally {
-      setShowAlert(true); // Show the alert
+      setLoading(false); // Hide loading feedback
     }
+  };
+  const tableCellStyle = {
+    border: '1px solid white', // Adds horizontal and vertical borders
+    padding: '8px', // Optional padding for better readability
+    textAlign: 'center', // Center-aligns text in the table cells
   };
 
   return (
     <Layout>
-      {/* Alert System */}
+      {/* Alert System for submitting requests */}
       {showAlert && (
         <CustomAlert 
           message={alertMessage} 
           onClose={() => setShowAlert(false)} // Close alert when dismissed
+        />
+      )}
+      
+      {/* Separate alert for fetching requests */}
+      {showFetchAlert && (
+        <CustomAlert 
+          message={fetchAlertMessage} 
+          onClose={() => setShowFetchAlert(false)} // Close alert for fetching leave requests
         />
       )}
       
@@ -92,6 +120,7 @@ const LeaveRequest = () => {
           <h2 className="text-x1 mb-4 text-white">Submit Leave Request</h2>
           
           <form onSubmit={handleSubmit}>
+            {/* Form Inputs */}
             <div className="mb-4">
               <label className="text-white mb-2 block">Leave Type</label>
               <select
@@ -165,34 +194,40 @@ const LeaveRequest = () => {
             onClick={fetchLeaveRequests} // Fetch requests on button click
           />
 
+          {/* Loading spinner */}
+          {loading && <div className="text-white">Loading...</div>}
+          
+
           {/* Leave Requests Table */}
-          {leaveRequests.length > 0 && (
+          {/* Leave Requests Table */}
+          {leaveRequests.length > 0 && !loading && (
             <div className="mt-5">
               <h3 className="text-lg mb-2 text-white">Your Leave Requests</h3>
-              <table className="w-full mb-4 text-white">
+              <table className="w-full mb-4 text-white" style={{ borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th>Leave Type</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Reason</th>
-                    <th>Status</th>
+                    <th style={tableCellStyle}>Leave Type</th>
+                    <th style={tableCellStyle}>Start Date</th>
+                    <th style={tableCellStyle}>End Date</th>
+                    <th style={tableCellStyle}>Reason</th>
+                    <th style={tableCellStyle}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {leaveRequests.map((request, index) => (
                     <tr key={index}>
-                      <td>{request.Leave_Type}</td>
-                      <td>{new Date(request.Start_Date).toLocaleDateString()}</td>
-                      <td>{new Date(request.End_Date).toLocaleDateString()}</td>
-                      <td>{request.Reason}</td>
-                      <td>{request.Status}</td>
+                      <td style={tableCellStyle}>{request.Leave_Type}</td>
+                      <td style={tableCellStyle}>{new Date(request.Start_Date).toLocaleDateString()}</td>
+                      <td style={tableCellStyle}>{new Date(request.End_Date).toLocaleDateString()}</td>
+                      <td style={tableCellStyle}>{request.Reason}</td>
+                      <td style={tableCellStyle}>{request.Status}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+
         </section>
       </div>
     </Layout>

@@ -77,8 +77,7 @@ const LeaveRequestModel = {
       if (err) {
         return callback(err);
       }
-      const leaveRequest = result[0]?.result;
-      callback(null, leaveRequest);
+      callback(null, result);
     });
   },
   
