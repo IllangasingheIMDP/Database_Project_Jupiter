@@ -44,6 +44,47 @@ const userController = {
       console.log(error);
       res.status(500).send({ message: `Error in signup CTRL ${error.message}` });
     }
+  },
+  changePassword: async (req,res)=>{
+    try{
+      
+      
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.userData.password, salt);
+     
+      const userData={
+        userId:req.body.userData.userId,
+       
+        password: hashedPassword,
+        
+      }
+      const result = await new Promise((resolve, reject) => {
+        UserModel.updatePassword(userData, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+      const firstEntry=result[0];
+    const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+    const resultData = firstEntry[resultKey];
+      
+      if (resultData.success) {
+        return res
+          .status(200)
+          .send({ message: "password changed successfully", success: true });
+      }else{
+        
+        return res.status(500).send({message:resultData.data.message,success:false});
+        
+      }
+    }
+    catch (error) {
+      console.log(error);
+      res.status(500).send({ message: `Error in signup CTRL ${error.message}` });
+    }
   }
  
 
