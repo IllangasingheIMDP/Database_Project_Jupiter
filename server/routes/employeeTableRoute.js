@@ -20,19 +20,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });  // Define upload using multer
 
-router.get('/all',authMiddleware,employeeController.getAllEmployee);
-router.get('/',authMiddleware,employeeController.getEmployeebyId);
-router.delete('/',authMiddleware,employeeController.deletemployeebyId);
-router.put('/',authMiddleware,employeeController.updateEmployeeData);
-router.post('/',authMiddleware,employeeController.createNewEmployee);
+router.get('/all',authMiddleware(['Admin User',"HR Manager","Second Manager"]),employeeController.getAllEmployee);
+router.get('/',authMiddleware(['Admin User',"HR Manager","Second Manager"]),employeeController.getEmployeebyId);
+router.delete('/',authMiddleware(['Admin User',"HR Manager"]),employeeController.deletemployeebyId);
+router.put('/',authMiddleware(['Admin User',"HR Manager"]),employeeController.updateEmployeeData);
+router.post('/',authMiddleware(['Admin User',"HR Manager"]),employeeController.createNewEmployee);
 
-router.post('/add_employee',authMiddleware, upload.single('picture'), employeeController.createNewEmployee);
+router.post('/add_employee',authMiddleware(['Admin User',"HR Manager"]), upload.single('picture'), employeeController.createNewEmployee);
 
-router.get('/get_dropdown_options',authMiddleware,employeeController.get_dropdown_options);
+router.get('/get_dropdown_options',authMiddleware(['Admin User',"HR Manager"]),employeeController.get_dropdown_options);
 
-router.get('/get_available_custom_fields',authMiddleware,employeeController.get_available_custom_fields);
-router.post('/add_custom_field',authMiddleware, employeeController.createNewCustomField);
-router.post('/delete_custom_field',authMiddleware,employeeController.deleteCustomField);
+router.get('/get_available_custom_fields',authMiddleware(['Admin User',"HR Manager"]),employeeController.get_available_custom_fields);
+router.post('/add_custom_field',authMiddleware(['Admin User']), employeeController.createNewCustomField);
+router.post('/delete_custom_field',authMiddleware(['Admin User']),employeeController.deleteCustomField);
 
 module.exports = router;
 
