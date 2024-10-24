@@ -37,7 +37,7 @@ export const employeeMenu = [
     },
     {
       name: 'Customize Leave Allowances',
-      path: '#',
+      path: '/customizeleaves',
       icon: "fa-solid fa-house"
     },
     {
