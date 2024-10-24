@@ -57,6 +57,36 @@ const LeaveRequestController={
         }
       },
 
+
+      getLeaveRequestbySupervisorId: async (req, res) => {
+        try {
+          const SupervisorUserID = req.query.User_ID; // Get user ID from query params
+          
+          if (!SupervisorUserID) {
+            return res.status(400).send({ message: "User ID is required", success: false });
+          }
+      
+          const leave_request = await new Promise((resolve, reject) => {
+            leaveRequestModel.findBySuperVisorUserID(SupervisorUserID, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
+          });
+      
+          if (!leave_request) {
+            return res.status(404).send({ message: "You have no leave requests yet", success: false });
+          } else {
+            return res.status(200).send({ success: true, data: leave_request });
+          }
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+        }
+      },
+
     
 
     /*
