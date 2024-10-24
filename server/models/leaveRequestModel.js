@@ -80,6 +80,16 @@ const LeaveRequestModel = {
       callback(null, result);
     });
   },
+
+  findBySuperVisorUserID: (SupervisorUserID, callback) => {
+    const query = 'SELECT db_get_leave_requests_by_supervisor(?) AS result';
+    db.query(query, [SupervisorUserID], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, result);
+    });
+  },
   
   /*
   //Create new Employee

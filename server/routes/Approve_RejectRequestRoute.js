@@ -4,9 +4,7 @@ const authMiddleware=require('../middleware/authMiddleware');
 const LeaveRequestControllerr=require('../controllers/LeaveRequestController');
 
 
-router.get('/getLeave-requests', authMiddleware,LeaveRequestControllerr.getLeaveRequestbyId);
-router.post('/leave-requests',authMiddleware,LeaveRequestControllerr.createNewLeaveRequest);
-
+router.get('/manage_leaves', authMiddleware,LeaveRequestControllerr.getLeaveRequestbySupervisorId);
 
 
 
