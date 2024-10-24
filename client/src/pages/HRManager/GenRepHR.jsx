@@ -216,7 +216,6 @@ const GenRepHR = () => {
                               </option>
                             ))}
                           </Form.Select>
-                          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md="4" controlId="titSelE2">
                           <Form.Label>Title</Form.Label>
