@@ -5,10 +5,15 @@ import Layout from '../components/Layout'
 import favepic from '../../public/fav.png'
 import popupIcon from '../../public/new-tab.png'
 import Button from 'react-bootstrap/Button';
+import CustomAlert from '../components/CustomAlert';
 import Modal from 'react-bootstrap/Modal'
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
+import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 const Home = () => {
   const user = useSelector((state) => state.user.user);
+  
+  const [newPwd,setNewPwd]=useState('')
+  const [confirmPwd,setConfirmPwd]=useState('')
   const [userData,setUserData]=useState([])
   const [picData,setPicData]=useState([])
   const [teamData,setTeamData]=useState([]);
@@ -19,8 +24,10 @@ const Home = () => {
   
   const [showTeamModal, setShowTeamModal] = useState(false); 
   const [teamView,setTeamView]=useState(false);
+  const [pwdView,setPwdView]=useState(false);
   const [emergencyView,setEmergencyView]=useState(false)
   const [dependantView,setDependantView]=useState(false);
+  const [alertMessage,setAlertMessage]=useState('')
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -94,7 +101,8 @@ const Home = () => {
             
             
           } else {
-            alert('employee not found');
+            
+            enqueueSnackbar('employee not found')
           }
         } catch (error) {
           dispatch(hideLoading());
@@ -113,6 +121,72 @@ const Home = () => {
 //   userData ? console.log(userData) : console.log("nothinig yer")
 
 // },[userData])
+const handlepwdView=async()=>{
+  setShowTeamModal(true);
+  setPwdView(true);
+}
+const handlepwdchange=async(event)=>{
+  event.preventDefault()
+
+  if (newPwd!==confirmPwd ) {
+    setNewPwd('')
+    setConfirmPwd('')
+    
+    enqueueSnackbar("password doesn't match",{ variant: 'error'})
+  }else{
+    try {
+      dispatch(showLoading());
+      const res = await axios.put(
+        `http://localhost:5555/users/password`,
+        {
+          userData:{
+            userId:user.User_ID,
+            password:newPwd
+          }
+        },
+        
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+      dispatch(hideLoading());
+      
+      if (res.data.success) {
+        
+        enqueueSnackbar(res.data.message,{ variant: 'success'})
+       
+      }else{enqueueSnackbar(res.data.message,{ variant: 'error'})
+        
+      }
+       
+    } catch (error) {
+      dispatch(hideLoading());
+      console.log(error);
+    }finally{
+      setNewPwd('')
+    setConfirmPwd('')
+    }
+  
+  
+  
+  
+  }
+ 
+
+
+
+
+  
+  
+
+
+
+
+
+
+}
 const handleTeam = async () => {setShowTeamModal(true);
 setTeamView(true);
 };
@@ -128,6 +202,7 @@ const handleClose = () => {setShowTeamModal(false)
   setDependantView(false);
   setTeamView(false)
   setEmergencyView(false)
+  setPwdView(false);
 };
 
   return (
@@ -135,13 +210,13 @@ const handleClose = () => {setShowTeamModal(false)
 
 
 
-    <Layout children={<div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'>
-      <section className='bg-gray-300 min-h-full h-full rounded-lg py-5 px-5'>
-        
+    <Layout children={<div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
+       <section className='bg-gray-950  backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+        <SnackbarProvider />
         <div className='flex flex-row justify-between h-full'>
           {/* Left side: Profile */}
           <div className='w-1/4'>
-            <div className="mb-4 rounded-lg items-center flex justify-start flex-col bg-yellow-100 h-fit">
+            <div className="mb-4 rounded-lg items-center flex justify-start flex-col  bg-opacity-100 bg-yellow-100 h-fit">
               <div className="text-center items-center flex flex-col">
               
                 {
@@ -156,9 +231,9 @@ const handleClose = () => {setShowTeamModal(false)
               </div>
             </div>
             {
-              user?.Auth_Level!=='Admin User' ? <div className='rounded-lg bg-yellow-200 h-64 flex flex-col justify-start items-center '>
+              user?.Auth_Level!=='Admin User' ? <div className='rounded-lg bg-yellow-100 h-64 flex flex-col justify-start items-center '>
             
-              <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
+              <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 bg-yellow-200 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
               
                <div className='w-3/4 text-2xl'>Team View</div> 
                 <div className='w-fit h-1/2 ml-2 right-3'>
@@ -166,7 +241,7 @@ const handleClose = () => {setShowTeamModal(false)
               </div>
                 </Button>{' '}
                 
-                <Button variant="outline-success" onClick={handleDependant} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
+                <Button variant="outline-success" onClick={handleDependant} className='w-11/12 mt-3 bg-yellow-200 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
               
                <div className='w-3/4 text-2xl'>Dependants</div> 
                 <div className='w-fit h-1/2 ml-2 mr-0'>
@@ -174,7 +249,7 @@ const handleClose = () => {setShowTeamModal(false)
               </div>
                 </Button>{' '}
   
-                <Button variant="outline-success" onClick={handleEmergency} className='w-11/12 mt-3 bg-yellow-100 hover:bg-green-700  flex flex-row justify-center items-center h-20 rounded-lg'>
+                <Button variant="outline-success" onClick={handleEmergency} className='w-11/12 mt-3 bg-yellow-200 hover:bg-green-700  flex flex-row justify-center items-center h-20 rounded-lg'>
               
               <div className='w-3/4 text-2xl'>Emergency Contacts</div> 
                <div className='w-fit h-1/2 ml-2 mr-0'>
@@ -188,20 +263,37 @@ const handleClose = () => {setShowTeamModal(false)
           </div>
     
           {/* Right side: Full Name List */}
-          <div className='w-8/12  h-full'>
-            <div className="rounded-lg pl-3 w-full py-3 pr-3 overflow-y-auto flex justify-start flex-col max-h-full bg-yellow-500" style={{
+          <div className='w-8/12 flex flex-col justify-start h-full'>
+
+          <div className='flex flex-col py-1 w-full h-1/4 rounded-lg px-1 justify-start bg-yellow-600 '>
+                      
+                      <div className='bg-yellow-100 h-1/2 flex flex-row py-4 px-2 w-full items-start hover:bg-yellow-200'>
+                        <div className='text-start pl-10 text-1xl w-2/5'>User ID</div> {/* Replace underscores with spaces */}
+                        <div className="text-gray-500 font-bold w-3/5 text-start px-8">{user.User_ID}</div>
+                      </div>
+                   
+                     <div className='w-full h-1/2 flex justify-center items-center bg-yellow-100'>
+                     <Button variant="outline-danger" onClick={handlepwdView} className='w-1/2 hover:bg-red-700  flex flex-row justify-center items-center h-3/4 rounded-lg'>
+              
+              <div className='w-3/4 text-2xl'>Change Password</div> 
+                <div className='w-fit h-1/2 ml-2 mr-0'>
+              <img src={popupIcon} className='h-full ' alt="" />
+              </div>
+                </Button> </div>
+                      
+          </div>
+                    
+
+
+          
+                   
+
+            <div className="rounded-lg px-1 w-full py-0 mt-3 overflow-y-auto flex justify-start flex-col max-h-3/4  bg-yellow-600" style={{
     scrollbarWidth: 'none', // Firefox
     msOverflowStyle: 'none', // Internet Explorer and Edge
   }}>
               {/* Multiple Full Name groups */}
-              <div className='flex flex-col w-full h-full bg-yellow-100 hover:bg-yellow-200'>
-                      
-                      <div className='flex flex-row py-4 px-2 w-full items-start'>
-                        <div className='text-start pl-10 text-1xl w-2/5'>User ID</div> {/* Replace underscores with spaces */}
-                        <div className="text-gray-500 font-bold w-3/5 text-start px-8">{user.User_ID}</div>
-                      </div>
-                      <hr />
-                    </div>
+             
               {!userData ? <div>No Data Available</div> :
                   Object.entries(userData).map(([key, value]) => (
                     <div key={key} className='flex flex-col w-full bg-yellow-100 hover:bg-yellow-200'>
@@ -232,7 +324,7 @@ const handleClose = () => {setShowTeamModal(false)
             </div>
           </div>
         </div>
-        <Modal show={showTeamModal} onHide={handleClose} className='absolute top-14 left-44 h-full' size="lg">
+        <Modal show={showTeamModal} onHide={handleClose} className='absolute  left-44 h-full' size="lg">
           {teamView ? <>
           
             <Modal.Header closeButton>
@@ -321,7 +413,7 @@ const handleClose = () => {setShowTeamModal(false)
           
           
           
-          </> : <>
+          </> : emergencyView ? <>
           <Modal.Header closeButton>
             <Modal.Title className='text-center text-green-900'>Emergency Contacts</Modal.Title>
           </Modal.Header>
@@ -372,6 +464,63 @@ const handleClose = () => {setShowTeamModal(false)
           </Modal.Footer>
           
           
+          </> : <>
+          <Modal.Header closeButton>
+            <Modal.Title className='text-center'>Change Password</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+          <div className="password-change-container animate__animated animate__fadeIn">
+                      <form id="passwordChangeForm" className="space-y-4" onSubmit={handlepwdchange}>
+                        <div className="form-group">
+                          <label
+                            htmlFor="newPassword"
+                            className="block text-lg font-medium text-gray-700"
+                          >
+                            New Password
+                          </label>
+                          <input onChange={(e)=>{
+                            setNewPwd(e.target.value)
+                          }}  
+                            type="password"
+                            className="form-control border rounded-md p-2 w-full"
+                            id="newPassword"
+                            placeholder="Enter new password"
+                            value={newPwd}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label
+                            htmlFor="confirmPassword"
+                            className="block text-lg font-medium text-gray-700"
+                          >
+                            Confirm Password
+                          </label>
+                          <input onChange={(e)=>{
+                            setConfirmPwd(e.target.value)
+                          }}
+                            value={confirmPwd}
+                            type="password"
+                            className="form-control border rounded-md p-2 w-full"
+                            id="confirmPassword"
+                            placeholder="Confirm new password"
+                            required
+                          />
+                        </div>
+                        <Button variant="warning" type="submit" className="w-full">
+                          Change Password
+                        </Button>
+                      </form>
+                    </div>
+                    <SnackbarProvider />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+          
+          
           </>}
         </Modal>
 
@@ -379,7 +528,9 @@ const handleClose = () => {setShowTeamModal(false)
 
       </section>
     </div>
-    }></Layout>
+    }>
+      
+    </Layout>
   
   )
 }
