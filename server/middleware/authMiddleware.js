@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken');
-
-module.exports = async (req, res, next) => {
+const authMiddleware = (allowedRoles = []) => {
+  return async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
@@ -20,11 +20,15 @@ module.exports = async (req, res, next) => {
         username: decoded.username,
         authlevel: decoded.authlevel
       };
-      
+      if (!allowedRoles.includes(req.user.authlevel)) {
+        return res.status(403).send({ message: 'Access Denied: Insufficient Permissions', success: false });
+      }
       next();
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'Internal Server Error', success: false });
   }
-};
+}};
+
+module.exports = authMiddleware;
