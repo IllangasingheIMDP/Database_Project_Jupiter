@@ -12,7 +12,6 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import InputGroup from 'react-bootstrap/InputGroup';
 import './GenRepHR.css';
   
 
@@ -20,14 +19,73 @@ const GenRepHR = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [titles, setTitles] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedTitle, setSelectedTitle] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleReportGeneration = async () => {
+    try {
+      const response = await axios.post('http://localhost:5555/employeeTable/generate_report', {
+        department: selectedDepartment,
+        title: selectedTitle,
+        status: selectedStatus,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,  // Corrected the syntax here
+        },
+      });
+
+      if (response.data.success) {
+        console.log('Report generated successfully:', response.data.data);
+      } else {
+        setAlertMessage('Error: Failed to generate report');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      setAlertMessage('Error: Unable to generate report');
+      setShowAlert(true);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDropdownOptions = async () => {
+      try {
+        const response = await axios.get('http://localhost:5555/employeeTable/get_dropdown_options', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,  // Added Authorization header
+          },
+        });
+      
+        console.log(response.data);  // Check the structure of the fetched data
+        if (response.data.success) {
+          setDepartments(response.data.data.departments || []);
+          setTitles(response.data.data.titles || []);
+          setStatuses(response.data.data.employment_statuses || []);  // Update here to match the returned key
+        } else {
+          console.error('Failed to fetch dropdown options');
+        }
+      } catch (error) {
+        console.error('Error fetching dropdown options:', error);
+      }
+      
+    };
+    
+    fetchDropdownOptions();
+  }, []);
+
+  // Handle the form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+    } else {
+      await handleReportGeneration();
     }
-
     setValidated(true);
   };
 
@@ -39,7 +97,7 @@ const GenRepHR = () => {
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <div>
-            <h1 className='centered-title'>Generating reports</h1>
+            <h1 class='centered-title'>Generating reports</h1>
           </div>
 
           <div style={{ margin: "20px 0" }}>
@@ -144,32 +202,49 @@ const GenRepHR = () => {
                   <Accordion.Body>
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
                       <Row className="mb-3">
-                        <Form.Group as={Col} md="4" controlId="validationCustom01">
+                        <Form.Group as={Col} md="4" controlId="depSelE2">
                           <Form.Label>Department</Form.Label>
-                          <Form.Select aria-label="Default select example">
-                            <option>All</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                          <Form.Select
+                            value={selectedDepartment}
+                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            required
+                          >
+                            <option value="">All</option>
+                            {departments.map((dept, index) => (
+                              <option key={index} value={dept}>
+                                {dept}
+                              </option>
+                            ))}
                           </Form.Select>
-                          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Group as={Col} md="4" controlId="titSelE2">
                           <Form.Label>Title</Form.Label>
-                          <Form.Select aria-label="Default select example">
-                            <option>All</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                          <Form.Select
+                            value={selectedTitle}
+                            onChange={(e) => setSelectedTitle(e.target.value)}
+                            required
+                          >
+                            <option value="">All</option>
+                            {titles.map((tit, index) => (
+                              <option key={index} value={tit}>
+                                {tit}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustomUsername">
+                        <Form.Group as={Col} md="4" controlId="statSelE2">
                           <Form.Label>Status</Form.Label>
-                          <Form.Select aria-label="Default select example">
-                            <option>All</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                          <Form.Select
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            required
+                          >
+                            <option value="">All</option>
+                            {statuses.map((stat, index) => (
+                              <option key={index} value={stat}>
+                                {stat}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
                       </Row>
