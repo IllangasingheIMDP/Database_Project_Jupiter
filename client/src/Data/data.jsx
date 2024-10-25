@@ -7,7 +7,7 @@ export const employeeMenu = [
     },
     {
       name: 'Edit Personal Info ',
-      path: "edit-personal-info",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
@@ -22,7 +22,7 @@ export const employeeMenu = [
     },
     {
       name: 'Approve / Reject Leave',
-      path: "/approve-reject-leaves",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     
@@ -78,7 +78,7 @@ export const employeeMenu = [
     },
     {
         name: 'Edit Personal Info',
-        path: "edit-personal-info",
+        path: "#",
         icon: "fa-solid fa-house"
       },
     {
@@ -88,7 +88,7 @@ export const employeeMenu = [
     },
     {
       name: 'Approve/Reject Leave',
-      path: "/approve-reject-leaves",
+      path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     {

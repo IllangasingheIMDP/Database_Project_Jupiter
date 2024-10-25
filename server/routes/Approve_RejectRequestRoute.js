@@ -5,6 +5,7 @@ const LeaveRequestControllerr=require('../controllers/LeaveRequestController');
 
 
 router.get('/manage_leaves', authMiddleware,LeaveRequestControllerr.getLeaveRequestbySupervisorId);
+router.post('/update_status', authMiddleware,LeaveRequestControllerr.setRequestStatus);
 
 
 
