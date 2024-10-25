@@ -12,7 +12,9 @@ const ManageEmployeeRequests = () => {
   const [fetchAlertMessage, setFetchAlertMessage] = useState('');
   const [showFetchAlert, setShowFetchAlert] = useState(false);
   const [loading, setLoading] = useState(false); // Loading state for fetch requests
-
+  const [statusUpdateMessage, setStatusUpdateMessage] = useState(''); // To show message after status update
+  const [showStatusAlert, setShowStatusAlert] = useState(false); // Alert for status update
+  
   // Function to fetch leave requests for employees
   const fetchEmployeeLeaveRequests = async () => {
     setLoading(true); // Show loading spinner or feedback
@@ -43,6 +45,31 @@ const ManageEmployeeRequests = () => {
     }
   };
 
+  // Function to handle status change
+  const handleStatusChange = async (request, newStatus) => {
+    try {
+      const response = await axios.put(`http://localhost:5555/approve-reject-leaves/update_status`, {
+        Request_ID: request.Request_ID, // Assuming each request has a unique ID
+        New_Status: newStatus,
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (response.data.success) {
+        setStatusUpdateMessage('Status updated successfully.');
+        setShowStatusAlert(true);
+        fetchEmployeeLeaveRequests(); // Refresh data after status update
+      } else {
+        setStatusUpdateMessage('Failed to update status.');
+        setShowStatusAlert(true);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      setStatusUpdateMessage('Error: Failed to update status.');
+      setShowStatusAlert(true);
+    }
+  };
+
   // Fetch leave requests when component mounts
   useEffect(() => {
     fetchEmployeeLeaveRequests();
@@ -61,6 +88,14 @@ const ManageEmployeeRequests = () => {
         <CustomAlert 
           message={fetchAlertMessage} 
           onClose={() => setShowFetchAlert(false)} // Close alert for fetching employee leave requests
+        />
+      )}
+
+      {/* Alert for status update */}
+      {showStatusAlert && (
+        <CustomAlert 
+          message={statusUpdateMessage} 
+          onClose={() => setShowStatusAlert(false)} // Close alert after status update
         />
       )}
       
@@ -98,7 +133,17 @@ const ManageEmployeeRequests = () => {
                       <td style={tableCellStyle}>{new Date(request.Start_Date).toLocaleDateString()}</td>
                       <td style={tableCellStyle}>{new Date(request.End_Date).toLocaleDateString()}</td>
                       <td style={tableCellStyle}>{request.Reason}</td>
-                      <td style={tableCellStyle}>{request.Status}</td>
+                      <td style={tableCellStyle}>
+                        <select
+                          value={request.Status}
+                          onChange={(e) => handleStatusChange(request, e.target.value)}
+                          style={{ backgroundColor: 'black', color: 'white', padding: '4px', border: '1px solid white' }}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

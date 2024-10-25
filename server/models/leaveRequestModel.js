@@ -90,6 +90,20 @@ const LeaveRequestModel = {
       callback(null, result);
     });
   },
+
+  editRequestStatus: (Request_ID, Status, callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_edit_request_status(?,?), "$") AS result';
+    const queryParams = [
+        Request_ID,
+        Status,
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
   
   /*
   //Create new Employee

@@ -87,6 +87,38 @@ const LeaveRequestController={
         }
       },
 
+      setRequestStatus: async (req, res) => {
+        try {
+          const RequestID = req.body.Request_ID;
+          const Status = req.body.Status;
+      
+          if (!RequestID || !Status) {
+            return res.status(400).send({ message: "Request ID and Status are required", success: false });
+          }
+      
+          const updatedStatus = await new Promise((resolve, reject) => {
+            leaveRequestModel.editRequestStatus(RequestID, Status, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
+          });
+      
+          if (!updatedStatus) {
+            return res.status(404).send({ message: "Failed to update status", success: false });
+          } else {
+            return res.status(200).send({ success: true, data: updatedStatus });
+          }
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+        }
+      },
+
+
+
     
 
     /*
