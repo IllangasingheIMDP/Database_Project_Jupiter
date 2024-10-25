@@ -8,7 +8,7 @@ import Manage_CustomField from './pages/Manage_Custom_Fields';
 import EditTableAttributes from './pages/Admin/Edit_Table_Attributes';
 import TableDetails from './pages/Admin/EditTable';
 import GenRepHR from './pages/HRManager/GenRepHR'
-
+import CustomizeLeaves from './pages/Admin/CustomizeLeaves';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
@@ -36,6 +36,11 @@ function App() {
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
     <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><GenRepHR /></ProtectedRoute>} />
     <Route path="/leaveRequest" element={<ProtectedRoute allowedRoles={['Employee','HR Manager']}><LeaveRequest></LeaveRequest></ProtectedRoute>} />
+
+
+    
+    <Route path="/customizeleaves" element={<ProtectedRoute allowedRoles={['Admin User']}><CustomizeLeaves></CustomizeLeaves></ProtectedRoute>} />
+
     
     </Routes>
     </Router>

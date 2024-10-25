@@ -39,7 +39,7 @@ const GenRepHR = () => {
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <div>
-            <h1 class='centered-title'>Generating reports</h1>
+            <h1 className='centered-title'>Generating reports</h1>
           </div>
 
           <div style={{ margin: "20px 0" }}>
