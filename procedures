@@ -1,0 +1,1015 @@
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_annual_leave_balance_report`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT
+)
+BEGIN
+    SELECT 
+        e.Employee_ID, 
+        CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) AS Full_Name,
+        es.Employment_Stat_Type AS Employment_Status,
+        pg.Pay_Grade_Level AS Pay_Grade_Level,
+        
+        lb.Annual AS Annual_Leave_Balance,
+        pg.Annual AS Annual_Leave_Entitlement,
+        (pg.Annual - lb.Annual) AS Annual_Leave_Remaining,
+        
+        lb.Casual AS Casual_Leave_Balance,
+        pg.Casual AS Casual_Leave_Entitlement,
+        (pg.Casual - lb.Casual) AS Casual_Leave_Remaining,
+
+        lb.Maternity AS Maternity_Leave_Balance,
+        pg.Maternity AS Maternity_Leave_Entitlement,
+        (pg.Maternity - lb.Maternity) AS Maternity_Leave_Remaining,
+
+        lb.No_Pay AS No_Pay_Leave_Balance,
+        pg.No_Pay AS No_Pay_Leave_Entitlement,
+        (pg.No_Pay - lb.No_Pay) AS No_Pay_Leave_Remaining,
+
+        (lb.Annual + lb.Casual + lb.Maternity + lb.No_Pay) AS Total_Leave_Balance,
+        (pg.Annual + pg.Casual + pg.Maternity + pg.No_Pay) AS Total_Leave_Entitlement,
+        ((pg.Annual - lb.Annual) + (pg.Casual - lb.Casual) + (pg.Maternity - lb.Maternity) + (pg.No_Pay - lb.No_Pay)) AS Total_Leave_Remaining
+    FROM 
+        employee e
+    LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+    LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+    LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+    LEFT JOIN leave_data_balance lb ON e.Employee_ID = lb.Employee_ID
+    LEFT JOIN pay_grade pg ON e.PayGrade_ID = pg.PayGrade_ID
+    LEFT JOIN employment_status es ON e.Employment_Stat_ID = es.Employment_Stat_ID
+    WHERE 
+        (p_branch_id = 0 OR b.Branch_ID = p_branch_id) AND
+        (p_dept_id = 0 OR d.Dept_ID = p_dept_id) AND
+        (p_org_id = 0 OR o.Organization_ID = p_org_id)
+    GROUP BY 
+        e.Employee_ID, Full_Name, Employment_Status, Pay_Grade_Level, lb.Annual, lb.Casual, lb.Maternity, lb.No_Pay, pg.Annual, pg.Casual, pg.Maternity, pg.No_Pay
+    ORDER BY 
+        e.Employee_ID;
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_approve_leave_request_report`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    IN p_start_date DATE,
+    IN p_end_date DATE,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch and format the leave request report data using the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Full_Name', Full_Name,
+            'Employment_NIC', Employment_NIC,
+            'Title', Title,
+            'Pay_Grade_Level', Pay_Grade_Level,
+            'Start_Date', Start_Date,
+            'End_Date', End_Date,
+            'Reason', Reason,
+            'Supervisor_Full_Name', Supervisor_Full_Name,
+            'Supervisor_NIC', Supervisor_NIC,
+            'Supervisor_Title', Supervisor_Title
+        )
+    ) INTO _data
+    FROM leave_requests_view AS rlrv
+    WHERE rlrv.Request_Status = 'Approve' 
+	  AND(p_branch_id = 0 OR Branch_ID = p_branch_id) 
+      AND (p_dept_id = 0 OR Dept_ID = p_dept_id) 
+      AND (p_org_id = 0 OR organization_ID = p_org_id)
+      AND (Start_Date >= p_start_date AND End_Date <= p_end_date);
+
+    -- Check if data is fetched and set success accordingly
+    IF _data IS NOT NULL THEN
+        SET success = TRUE;
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employee_detail_by_branch`(
+    IN p_branch_id INT,
+    IN p_status_id INT,
+    IN p_title_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details from the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            
+            'Full_Name', Full_Name,
+            'Employment_NIC', NIC,
+            'Photo_Path', Photo_Path,
+            'Dept_Name', Dept_Name,
+            'Branch_Name', Branch_Name,
+            'Status', Status,
+            'Title', Title
+        )
+    ) INTO _data
+    FROM employee_details_view
+    WHERE (p_branch_id = 0 OR Branch_ID = p_branch_id)
+      AND (p_status_id = 0 OR es.Employment_Stat_ID = p_status_id)
+      AND (p_title_id = 0 OR jt.Title_ID = p_title_id);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employee_detail_by_department`(
+    IN p_dep_id INT,
+    IN p_status_id INT,
+    IN p_title_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details from the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+           
+            'Full_Name', Full_Name,
+            'Employment_NIC', NIC,
+            'Photo_Path', Photo_Path,
+           
+            'Dept_Name', Dept_Name,
+            'Branch_Name', Branch_Name,
+            'Status', Status,
+            'Title', Title
+        )
+    ) INTO _data
+    FROM employee_details_view
+    WHERE (p_dep_id = 0 OR Dept_ID = p_dep_id)
+      AND (p_status_id = 0 OR es.Employment_Stat_ID = p_status_id)
+      AND (p_title_id = 0 OR jt.Title_ID = p_title_id);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employee_details`(
+    IN p_name VARCHAR(60),
+    IN p_nic VARCHAR(12),
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'error', 'An error occurred while fetching the employee details.', 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details using the given parameters
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Employee_ID', e.Employee_ID,
+            'Full_Name', CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name),
+            'NIC', e.NIC,
+            'Gender', e.Gender,
+            'Email_Work', e.Email_Work,
+            'Email_Private', e.Email_Private,
+            'Phone', e.Phone,
+            'Address', e.Address,
+            'Department', d.Dept_Name,
+            'Branch', b.Branch_Name,
+            'Organization', o.Organization_Name,
+            'Job_Title', jt.Title,
+            'Pay_Grade', pg.Pay_Grade_Level,
+            'Employment_Status', es.Employment_Stat_Type,
+            'Dependents', (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'Dependent_Name', di.Name,
+                        'Relationship', di.Relationship
+                    )
+                )
+                FROM dependent_info di
+                WHERE di.Employee_ID = e.Employee_ID
+            ),
+            'Emergency_Contact', (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'Contact_Name', CONCAT(ec.First_name, ' ', ec.Last_Name),
+                        'Relationship', ec.Relationship,
+                        'Phone', ec.Phone,
+                        'Email', ec.Email,
+                        'Address', ec.Address
+                    )
+                )
+                FROM emergency_contact ec
+                WHERE ec.Employee_ID = e.Employee_ID
+            )
+        )
+    ) INTO _data
+    FROM 
+        employee e
+    LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+    LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+    LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+    LEFT JOIN job_title jt ON e.Title_ID = jt.Title_ID
+    LEFT JOIN pay_grade pg ON e.PayGrade_ID = pg.PayGrade_ID
+    LEFT JOIN employment_status es ON e.Employment_Stat_ID = es.Employment_Stat_ID
+    WHERE (p_name = '' OR CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) LIKE CONCAT('%', p_name, '%'))
+      AND (p_nic = '' OR e.NIC = p_nic);
+
+    -- Check if data is fetched and set success accordingly
+    IF _data IS NOT NULL AND _data != 'null' THEN
+        SET success = TRUE;
+    ELSE
+        SET success = FALSE;
+        SET _data = JSON_ARRAY(); -- Set to empty array if no data found
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employee_leave_details`(
+    IN p_nic VARCHAR(20),   -- NIC to search for
+    IN p_name VARCHAR(60),  -- Full name to search for
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE leave_requests_data JSON;
+    DECLARE total_annual INT DEFAULT 0;
+    DECLARE total_casual INT DEFAULT 0;
+    DECLARE total_maternity INT DEFAULT 0;
+    DECLARE total_no_pay INT DEFAULT 0;
+    DECLARE total_leaves INT DEFAULT 0;
+    DECLARE employee_full_name VARCHAR(60);
+    DECLARE profile_pic VARCHAR(255);
+    DECLARE temp_employee_ID CHAR(36);
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch Employee_ID based on NIC or Name
+    IF p_nic IS NOT NULL AND p_nic != '' THEN
+        SELECT Employee_ID INTO temp_employee_ID
+        FROM employee e 
+        WHERE e.NIC = p_nic;
+    ELSEIF p_name IS NOT NULL AND p_name != '' THEN
+        SELECT Employee_ID INTO temp_employee_ID
+        FROM employee e 
+        WHERE CONCAT(e.First_Name, ' ', e.Last_Name) LIKE CONCAT('%', p_name, '%');
+    END IF;
+
+    -- Check if Employee_ID was found
+    IF temp_employee_ID IS NULL THEN
+        -- If not found, rollback and set result message
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'message', 'Employee not found');
+    ELSE
+        -- If found, you can log a message (for debugging purposes)
+        SELECT CONCAT('Employee ID found: ', temp_employee_ID) AS debug_message; -- Logging statement
+    END IF;
+
+    -- Fetch employee details including remaining leave counts and profile picture
+    SELECT 
+        CONCAT(e.First_Name, ' ', e.Last_Name), 
+        e.NIC,
+        ldb.Annual,
+        ldb.Casual,
+        ldb.Maternity,
+        ldb.No_Pay,
+        ldb.Total_Leave_Count,
+        ep.path
+    INTO 
+        employee_full_name, 
+        p_nic,
+        total_annual, 
+        total_casual, 
+        total_maternity, 
+        total_no_pay, 
+        total_leaves, 
+        profile_pic
+    FROM 
+        employee e
+    JOIN 
+			  leave_data_balance ldb ON e.Employee_ID = ldb.Employee_ID
+	left join employee_pic ep on ep.Pic_ID=e.Pic_ID
+    WHERE 
+        e.Employee_ID = temp_employee_ID;
+
+    -- Create JSON object for employee details
+    SET _data = JSON_OBJECT(
+        'Full_Name', employee_full_name,
+        'NIC', p_nic,
+        'Remaining_Annual', total_annual,
+        'Remaining_Casual', total_casual,
+        'Remaining_Maternity', total_maternity,
+        'Remaining_No_Pay', total_no_pay,
+        'Total_Leave_Count', total_leaves,
+        'Profile_Pic', profile_pic
+    );
+
+    -- Fetch leave requests for the employee
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Start_Date', lr.Start_Date,
+            'End_Date', lr.End_Date,
+            'Reason', lr.Reason,
+            'Status', lr.Status
+        )
+    ) INTO leave_requests_data
+    FROM leave_request lr
+    JOIN user u ON lr.User_ID = u.User_ID
+    WHERE u.Employee_ID = temp_employee_ID;  -- Match the employee ID
+
+    -- Create result JSON
+    SET result = JSON_OBJECT(
+        'success', TRUE,
+        'data', _data,
+        'leave_requests_of_user', leave_requests_data
+    );
+
+    -- Commit the transaction
+    COMMIT;
+
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_by_pay_grade`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details by pay grade from the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Employee_ID', Employee_ID,
+            'Employee_Name', Employee_Name,
+            'Pay_Grade', Pay_Grade,
+            'Dept_Name', Dept_Name,
+            'Branch_Name', Branch_Name
+        )
+    ) INTO _data
+    FROM employee_details_view
+    WHERE (p_branch_id = 0 OR Branch_Name = p_branch_id)
+      AND (p_dept_id = 0 OR Dept_Name = p_dept_id)
+      AND (p_org_id = 0 OR Organization_Name = p_org_id);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_by_status`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details by employment status from the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Employee_ID', Employee_ID,
+            'Employee_Name', Employee_Name,
+            'Employment_Status', Employment_Status,
+            'Dept_Name', Dept_Name,
+            'Branch_Name', Branch_Name
+        )
+    ) INTO _data
+    FROM employee_details_view
+    WHERE (p_branch_id = 0 OR Branch_Name = p_branch_id)
+      AND (p_dept_id = 0 OR Dept_Name = p_dept_id)
+      AND (p_org_id = 0 OR Organization_Name = p_org_id);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_by_title`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee details by job title from the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Employee_ID', Employee_ID,
+            'Employee_Name', Employee_Name,
+            'Job_Title', Job_Title,
+            'Dept_Name', Dept_Name,
+            'Branch_Name', Branch_Name
+        )
+    ) INTO _data
+    FROM employee_details_view
+    WHERE (p_branch_id = 0 OR Branch_Name = p_branch_id)
+      AND (p_dept_id = 0 OR Dept_Name = p_dept_id)
+      AND (p_org_id = 0 OR Organization_Name = p_org_id);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_emergency_contact`(
+    IN p_name VARCHAR(60),
+    IN p_nic VARCHAR(20),
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee contact details using the given parameters
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            
+            'Employee_Name', CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name),
+            'NIC', e.NIC,
+            'Contact_Name', CONCAT(ec.First_Name, ' ', ec.Last_Name),
+            'Relationship', ec.Relationship,
+            'Phone', ec.Phone,
+            'Email', ec.Email,
+            'Address', ec.Address
+        )
+    ) INTO _data
+    FROM employee e
+    LEFT JOIN emergency_contact ec ON e.Employee_ID = ec.Employee_ID
+    LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+    LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+    LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+    WHERE (p_branch_id = 0 OR b.Branch_ID = p_branch_id)
+      AND (p_dept_id = 0 OR d.Dept_ID = p_dept_id)
+      AND (p_org_id = 0 OR o.Organization_ID = p_org_id)
+      AND (p_name = '' OR CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) LIKE CONCAT('%', p_name, '%'))
+      AND (p_nic = '' OR e.NIC = p_nic);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_supervisor`(
+    IN p_name VARCHAR(60),
+    IN p_nic VARCHAR(12),
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee supervisor details using the given parameters
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            
+            'Employee_Name', CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name),
+			'NIC', e.NIC,
+            'Employee_Title', jt.Title,
+            
+            'Supervisor_Name', CONCAT(s.Initials, ' ', s.First_Name, ' ', s.Last_Name),
+             'NIC', s.NIC,
+            'Supervisor_Title', jt_sup.Title
+        )
+    ) INTO _data
+    FROM employee e
+    LEFT JOIN employee_supervisor sup ON e.Employee_ID = sup.Employee_ID
+    LEFT JOIN employee s ON sup.Supervisor_ID = s.Employee_ID
+    LEFT JOIN job_title jt ON e.Title_ID = jt.Title_ID
+    LEFT JOIN job_title jt_sup ON s.Title_ID = jt_sup.Title_ID
+    LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+    LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+    LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+    WHERE (p_branch_id = 0 OR b.Branch_ID = p_branch_id)
+      AND (p_dept_id = 0 OR d.Dept_ID = p_dept_id)
+      AND (p_org_id = 0 OR o.Organization_ID = p_org_id)
+      AND (p_name = '' OR CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) LIKE CONCAT('%', p_name, '%'))
+      AND (p_nic = '' OR e.NIC = p_nic);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_employees_with_dependents`(
+    IN p_name VARCHAR(60),
+    IN p_nic VARCHAR(12),
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch employee and dependent details using the given parameters
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Employee_Name', CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name),
+            'NIC', e.NIC,
+            'Dependent_Name', di.Name,
+            'Dependent_Relationship', di.Relationship
+        )
+    ) INTO _data
+    FROM employee e
+    LEFT JOIN dependent_info di ON e.Employee_ID = di.Employee_ID
+    LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+    LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+    LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+    WHERE (p_branch_id = 0 OR b.Branch_ID = p_branch_id)
+      AND (p_dept_id = 0 OR d.Dept_ID = p_dept_id)
+      AND (p_org_id = 0 OR o.Organization_ID = p_org_id)
+      AND (p_name = '' OR CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) LIKE CONCAT('%', p_name, '%'))
+      AND (p_nic = '' OR e.NIC = p_nic);
+
+    -- Check if data is fetched and set success accordingly
+    SET success = (_data IS NOT NULL);
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END//
+
+DELIMITER ;
+DELIMITER //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_pending_leave_request_report`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    IN p_start_date DATE,
+    IN p_end_date DATE,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch and format the leave request report data using the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Full_Name', Full_Name,
+            'Employment_NIC', Employment_NIC,
+            'Title', Title,
+            'Pay_Grade_Level', Pay_Grade_Level,
+            'Start_Date', Start_Date,
+            'End_Date', End_Date,
+            'Reason', Reason,
+            'Supervisor_Full_Name', Supervisor_Full_Name,
+            'Supervisor_NIC', Supervisor_NIC,
+            'Supervisor_Title', Supervisor_Title
+        )
+    ) INTO _data
+    FROM leave_requests_view AS rlrv
+    WHERE rlrv.Request_Status = 'Pending' 
+	  AND(p_branch_id = 0 OR Branch_ID = p_branch_id) 
+      AND (p_dept_id = 0 OR Dept_ID = p_dept_id) 
+      AND (p_org_id = 0 OR organization_ID = p_org_id)
+      AND (Start_Date >= p_start_date AND End_Date <= p_end_date);
+
+    -- Check if data is fetched and set success accordingly
+    IF _data IS NOT NULL THEN
+        SET success = TRUE;
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_Pending_Leave_Requests_for_a_supervisor`(
+    IN p_user_id CHAR(36),
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+    DECLARE temp_employee_id CHAR(36);
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Step 1: Fetch the Employee_ID of the supervisor using the given User_ID
+    SELECT Employee_ID INTO temp_employee_id
+    FROM user
+    WHERE User_ID = p_user_id;
+
+    -- Step 2: Check for pending leave requests for the employees supervised by this supervisor
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Request_ID', lr.Request_ID,
+            'Name', concat(e.First_Name,e.Last_Name),
+            'NIC', e.NIC,
+            'Start_Date', lr.Start_Date,
+            'End_Date', lr.End_Date,
+            'Reason', lr.Reason
+        )
+    ) INTO _data
+    FROM employee e 
+    join user u on u.Employee_ID=e.Employee_ID
+    join leave_request lr on lr.User_ID=u.User_ID
+    
+    
+    WHERE lr.Status = 'Pending' AND u.User_ID IN (
+        SELECT u.User_ID
+        FROM employee_supervisor es
+        JOIN user u ON u.Employee_ID = es.Employee_ID
+        WHERE es.Supervisor_ID = temp_employee_id
+    );
+
+    -- Step 3: Check if data is fetched and set success accordingly
+    IF _data IS NOT NULL AND JSON_LENGTH(_data) > 0 THEN
+        SET success = TRUE;
+    END IF;
+
+    -- Step 4: If there are no pending requests, return a message
+    IF _data IS NULL OR JSON_LENGTH(_data) = 0 THEN
+        SET result = JSON_OBJECT('success', FALSE, 'message', 'There are no requests');
+        ROLLBACK;
+    ELSE
+        -- Commit the transaction
+        COMMIT;
+
+        -- Return the success status and data as JSON
+        SET result = JSON_OBJECT('success', success, 'data', _data);
+    END IF;
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_reject_leave_request_report`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    IN p_start_date DATE,
+    IN p_end_date DATE,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback in case of an error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'data', NULL);
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Fetch and format the leave request report data using the view
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'Full_Name', Full_Name,
+            'Employment_NIC', Employment_NIC,
+            'Title', Title,
+            'Pay_Grade_Level', Pay_Grade_Level,
+            'Start_Date', Start_Date,
+            'End_Date', End_Date,
+            'Reason', Reason,
+            'Supervisor_Full_Name', Supervisor_Full_Name,
+            'Supervisor_NIC', Supervisor_NIC,
+            'Supervisor_Title', Supervisor_Title
+        )
+    ) INTO _data
+    FROM leave_requests_view AS rlrv
+    WHERE rlrv.Request_Status = 'Reject'  -- Ensure we're checking for 'Reject'
+	  AND(p_branch_id = 0 OR Branch_ID = p_branch_id) 
+      AND (p_dept_id = 0 OR Dept_ID = p_dept_id) 
+      AND (p_org_id = 0 OR organization_ID = p_org_id)
+      AND (Start_Date >= p_start_date AND End_Date <= p_end_date);
+
+    -- Check if data is fetched and set success accordingly
+    IF _data IS NOT NULL THEN
+        SET success = TRUE;
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Return the success status and data as JSON
+    SET result = JSON_OBJECT('success', success, 'data', _data);
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `set_Pending_Leave_Requests_to_approve`(
+    IN p_req_id CHAR(36)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+    START TRANSACTION;
+    SET SQL_SAFE_UPDATES = 0;
+    UPDATE leave_request
+    SET Status = 'Approve'
+    WHERE Request_ID = p_req_id AND Status = 'Pending';
+    SET SQL_SAFE_UPDATES = 1;
+    COMMIT;
+END //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `set_Pending_Leave_Requests_to_reject`(
+    IN p_req_id CHAR(36)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+    START TRANSACTION;
+    SET SQL_SAFE_UPDATES = 0;
+    UPDATE leave_request
+    SET Status = 'Reject'
+    WHERE Request_ID = p_req_id AND Status = 'Pending';
+    SET SQL_SAFE_UPDATES = 1;
+    COMMIT;
+END //
+
+
+
+CREATE PROCEDURE `get_leave_report`(
+    IN p_dept_id INT,
+    IN p_branch_id INT,
+    IN p_org_id INT,
+    IN p_start_date DATE,
+    IN p_end_date DATE,
+    OUT result JSON
+)
+BEGIN
+    DECLARE _data JSON;
+    DECLARE success BOOLEAN DEFAULT FALSE;
+
+    -- Error handler
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback on error
+        ROLLBACK;
+        SET result = JSON_OBJECT('success', FALSE, 'message', 'Error occurred during report generation');
+    END;
+
+    -- Start transaction
+    START TRANSACTION;
+
+    -- Perform the main query and aggregate the leave data
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'NIC', emp_data.NIC,
+            'Full_Name', emp_data.Full_Name,
+            'Annual_Leave_Count', emp_data.Annual_Leave_Count,
+            'Casual_Leave_Count', emp_data.Casual_Leave_Count,
+            'No_Pay_Leave_Count', emp_data.No_Pay_Leave_Count,
+            'Maternity_Leave_Count', emp_data.Maternity_Leave_Count,
+            'Total_Leave_Count', emp_data.Total_Leave_Count
+        )
+    ) INTO _data
+    FROM (
+        SELECT 
+            e.NIC,
+            CONCAT(e.Initials, ' ', e.First_Name, ' ', e.Last_Name) AS Full_Name,
+            SUM(CASE 
+                WHEN l.Leave_Type = 'Annual' AND l.End_Date >= p_start_date AND l.Start_Date <= p_end_date
+                THEN DATEDIFF(LEAST(l.End_Date, p_end_date), GREATEST(l.Start_Date, p_start_date)) + 1 
+                ELSE 0 
+            END) AS Annual_Leave_Count,
+            SUM(CASE 
+                WHEN l.Leave_Type = 'Casual' AND l.End_Date >= p_start_date AND l.Start_Date <= p_end_date
+                THEN DATEDIFF(LEAST(l.End_Date, p_end_date), GREATEST(l.Start_Date, p_start_date)) + 1 
+                ELSE 0 
+            END) AS Casual_Leave_Count,
+            SUM(CASE 
+                WHEN l.Leave_Type = 'No-Pay' AND l.End_Date >= p_start_date AND l.Start_Date <= p_end_date
+                THEN DATEDIFF(LEAST(l.End_Date, p_end_date), GREATEST(l.Start_Date, p_start_date)) + 1 
+                ELSE 0 
+            END) AS No_Pay_Leave_Count,
+            SUM(CASE 
+                WHEN l.Leave_Type = 'Maternity' AND l.End_Date >= p_start_date AND l.Start_Date <= p_end_date
+                THEN DATEDIFF(LEAST(l.End_Date, p_end_date), GREATEST(l.Start_Date, p_start_date)) + 1 
+                ELSE 0 
+            END) AS Maternity_Leave_Count,
+            SUM(
+                CASE 
+                    WHEN l.End_Date >= p_start_date AND l.Start_Date <= p_end_date
+                    THEN DATEDIFF(LEAST(l.End_Date, p_end_date), GREATEST(l.Start_Date, p_start_date)) + 1 
+                    ELSE 0 
+                END
+            ) AS Total_Leave_Count
+        FROM employee e
+        JOIN user u ON e.Employee_ID = u.Employee_ID
+        LEFT JOIN leave_request l ON u.User_ID = l.User_ID
+        LEFT JOIN department d ON e.Dept_ID = d.Dept_ID
+        LEFT JOIN branch b ON d.Branch_ID = b.Branch_ID
+        LEFT JOIN organization o ON b.Organization_ID = o.Organization_ID
+        LEFT JOIN leave_data_balance lb ON e.Employee_ID = lb.Employee_ID
+        WHERE 
+            l.Status = 'Approve' AND
+            (p_branch_id = 0 OR b.Branch_ID = p_branch_id) AND
+            (p_dept_id = 0 OR d.Dept_ID = p_dept_id) AND
+            (p_org_id = 0 OR o.Organization_ID = p_org_id)
+        GROUP BY e.Employee_ID
+    ) AS emp_data;
+
+    -- Check if any data was fetched
+    IF _data IS NOT NULL AND JSON_LENGTH(_data) > 0 THEN
+        SET success = TRUE;
+        COMMIT;  -- Commit the transaction if successful
+        SET result = JSON_OBJECT('success', success, 'data', _data);
+    ELSE
+        -- No data found
+        ROLLBACK;  -- Rollback the transaction if no data
+        SET result = JSON_OBJECT('success', FALSE, 'message', 'No leave data found for the specified criteria');
+    END IF;
+
+END //
+
+DELIMITER ;
