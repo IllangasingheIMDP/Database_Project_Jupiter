@@ -19,7 +19,6 @@ import './GenRepHR.css';
 const GenRepHR = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  const [open, setOpen] = useState(false);
   const [validated, setValidated] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [titles, setTitles] = useState([]);
@@ -100,8 +99,20 @@ const GenRepHR = () => {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-
-    // Define columns for the table (with headers and keys to access in data)
+  
+    // Define the title using selected values
+    const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
+const title = titles.find(tit => tit.id === Number(selectedTitleID))?.name || "Title";
+const status = statuses.find(stat => stat.id === Number(selectedStatusID))?.name || "All";
+  
+    // Construct the heading text
+    const headingText = `${status} ${title}s of ${department} department`;
+  
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16); // Optional: Set font size for the heading
+    doc.text(headingText, 10, 10); // Position the heading on the PDF (x, y coordinates)
+  
+    // Define columns for the table
     const columns = [
       { header: 'Full Name', dataKey: 'Full_Name' },
       { header: 'NIC', dataKey: 'NIC' },
@@ -110,18 +121,18 @@ const GenRepHR = () => {
       { header: 'Status', dataKey: 'Status' },
       { header: 'Title', dataKey: 'Title' },
     ];
-
+  
     // Check if there is data to export
     if (fetchedData && fetchedData.length > 0) {
       // Use jspdf-autotable to generate the table
       doc.autoTable({
         head: [columns.map(col => col.header)], // Use headers from columns
         body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])), // Extract data based on keys
-        startY: 10, // Start position of the table
+        startY: 20, // Position the table after the heading
         theme: 'grid', // Optional: table theme
-        styles: { fontSize: 10 }, // Optional: font size and other styles
+        styles: { fontSize: 10 }, // Optional: font size for table content
       });
-
+  
       doc.save('Employee_Report.pdf'); // Save PDF with the specified file name
     } else {
       alert('No data available to export.');
