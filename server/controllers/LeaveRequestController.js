@@ -4,6 +4,8 @@ const LeaveRequestController={
     
     createNewLeaveRequest: async (req, res) => {
       try {
+        console.log("here  1");
+
         const Data = {
             User_ID: req.body.User_ID,
             Leave_Type: req.body.Leave_Type,
@@ -89,7 +91,7 @@ const LeaveRequestController={
 
       setRequestStatus: async (req, res) => {
         try {
-          const RequestID = req.body.Request_ID;
+          const RequestID = req.body.Req_ID;
           const Status = req.body.Status;
       
           if (!RequestID || !Status) {
@@ -98,6 +100,72 @@ const LeaveRequestController={
       
           const updatedStatus = await new Promise((resolve, reject) => {
             leaveRequestModel.editRequestStatus(RequestID, Status, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
+          });
+      
+          if (!updatedStatus) {
+            return res.status(404).send({ message: "Failed to update status", success: false });
+          } else {
+            return res.status(200).send({ success: true, data: updatedStatus });
+          }
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+        }
+      },
+
+
+
+      setRequestStatusApprove: async (req, res) => {
+        try {
+          
+          const RequestID = req.body.Req_ID;
+          console.log(req.body);
+  
+      
+          if (!RequestID) {
+            return res.status(400).send({ message: "Request ID is required", success: false });
+          }
+      
+          const updatedStatus = await new Promise((resolve, reject) => {
+            leaveRequestModel.ApproveRequestStatus(RequestID, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
+          });
+      
+          if (!updatedStatus) {
+            return res.status(404).send({ message: "Failed to update status", success: false });
+          } else {
+            return res.status(200).send({ success: true, data: updatedStatus });
+          }
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+        }
+      },
+
+
+
+      setRequestStatusReject: async (req, res) => {
+        try {
+          const RequestID = req.body.Req_ID;
+  
+      
+          if (!RequestID) {
+            return res.status(400).send({ message: "Request ID is required", success: false });
+          }
+      
+          const updatedStatus = await new Promise((resolve, reject) => {
+            leaveRequestModel.RejectRequestStatus(RequestID, (err, result) => {
               if (err) {
                 reject(err);
               } else {

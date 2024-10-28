@@ -1,0 +1,126 @@
+/* Ensure to reuse the styles from GenerateReport.css */
+
+#viewLoan {
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+    padding: 0.5rem;
+    background-color: #e8e9e9;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  #showloan {
+    margin-left: 1rem;
+  }
+  
+  #viewLoan select {
+    width: 15rem;
+    height: 2rem;
+    border-radius: 10px;
+  }
+  
+  #loan_detail {
+    display: none;
+  }
+  
+  #getCustomerLoan {
+    margin-left: 1rem;
+  }
+  
+  #loanDetailView {
+    margin-left: 8rem;
+    margin-right: 1rem;
+  }
+  
+  #loanIDEnter {
+    border: 1px solid white;
+    border-radius: 10px;
+    border: 1.5px solid gray;
+  }
+  
+  #typeSelect {
+    border: 1.5px solid gray;
+  }
+  
+  #approveBtn {
+    font-weight: 600;
+    float: right;
+    margin-right: 5rem;
+    margin-top: 2rem;
+  }
+  
+  #rejectBtn {
+    font-weight: 600;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    width: 5.5rem;
+  }
+  
+  #approveBtn:hover, #getCustomerLoan:hover, #showloan:hover, #rejectBtn:hover {
+    transform: scale(1.1, 1.1);
+    transition: transform 0.2s ease;
+  }
+  
+  #loanmsg {
+    border: none;
+    padding: 0.8rem 1.5rem;
+    background-color: rgb(144, 238, 144); /* Softer green */
+    width: 22rem;
+    font-weight: 600;
+    color: rgb(34, 34, 34); /* Darker text color for contrast */
+    border-radius: 8px;
+    margin-top: 2rem;
+    margin-left: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    transition: all 0.3s ease-in-out; /* Smooth hover transition */
+  }
+  
+  /* Additional styles for ApproveLeave */
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  
+  .h-64 {
+    height: 16rem;
+  }
+  
+  .bg-gray-100 {
+    background-color: #f7fafc;
+  }
+  
+  .bg-gray-200 {
+    background-color: #edf2f7;
+  }
+  
+  .bg-gray-300 {
+    background-color: #e2e8f0;
+  }
+  
+  .bg-white {
+    background-color: #ffffff;
+  }
+  
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  
+  .shadow-md {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .grid {
+    display: grid;
+  }
+  
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .gap-4 {
+    gap: 1rem;
+  }
+  

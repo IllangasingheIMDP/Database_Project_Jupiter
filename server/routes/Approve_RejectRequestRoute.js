@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware=require('../middleware/authMiddleware');
-const LeaveRequestControllerr=require('../controllers/LeaveRequestController');
+const LeaveRequestController=require('../controllers/LeaveRequestController');
 
 
-router.get('/manage_leaves', authMiddleware,LeaveRequestControllerr.getLeaveRequestbySupervisorId);
-router.post('/update_status', authMiddleware,LeaveRequestControllerr.setRequestStatus);
-
+router.get('/manage_leaves', authMiddleware(["HR Manager","Second Manager","Employee"]),LeaveRequestController.getLeaveRequestbySupervisorId);
+router.post('/update_status', authMiddleware(["HR Manager","Second Manager","Employee"]),LeaveRequestController.setRequestStatus);
+router.put('/approve', authMiddleware(["HR Manager","Second Manager","Employee"]),LeaveRequestController.setRequestStatusApprove);
+router.post('/reject', authMiddleware(["HR Manager","Second Manager","Employee"]),LeaveRequestController.setRequestStatusReject);
 
 
 module.exports = router;

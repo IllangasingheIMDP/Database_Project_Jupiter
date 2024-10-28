@@ -82,7 +82,7 @@ const LeaveRequestModel = {
   },
 
   findBySuperVisorUserID: (SupervisorUserID, callback) => {
-    const query = 'SELECT db_get_leave_requests_by_supervisor(?) AS result';
+    const query = 'SELECT db_get_Pending_Leave_Requests_for_a_supervisor(?) AS result';
     db.query(query, [SupervisorUserID], (err, result) => {
       if (err) {
         return callback(err);
@@ -104,6 +104,31 @@ const LeaveRequestModel = {
       callback(null, results[0].result);
     });
   },
+
+
+  ApproveRequestStatus: (Req_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_approve(?)';
+    
+    db.query(query, Req_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+
+  RejectRequestStatus: (Request_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_reject(?)';
+    
+    db.query(query, Request_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+
+
   
   /*
   //Create new Employee
