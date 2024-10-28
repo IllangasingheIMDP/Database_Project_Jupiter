@@ -6,7 +6,6 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Accordion from 'react-bootstrap/Accordion';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
@@ -20,6 +19,7 @@ import './GenRepHR.css';
 const GenRepHR = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+  const [open, setOpen] = useState(false);
   const [validated, setValidated] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [titles, setTitles] = useState([]);
@@ -101,7 +101,7 @@ const GenRepHR = () => {
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
 
-    // Define columns for the table (with  headers and keys to access in data)
+    // Define columns for the table (with headers and keys to access in data)
     const columns = [
       { header: 'Full Name', dataKey: 'Full_Name' },
       { header: 'NIC', dataKey: 'NIC' },
@@ -148,99 +148,98 @@ const GenRepHR = () => {
         >
 
             <Tab eventKey="employee" title="Employee details">
-            <Accordion>
-                <Accordion.Item eventKey="1">
-                  <Accordion.Header>Employee details by Department</Accordion.Header>
-                  <Accordion.Body>
-                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                      <Row className="mb-3">
-                        <Form.Group as={Col} md="4" controlId="depSelE2">
-                          <Form.Label>Department</Form.Label>
-                          <Form.Select
-                            value={selectedDepartmentID}
-                            onChange={(e) => setSelectedDepartmentID(e.target.value)}
-                            required
-                          >
-                            {departments.map((dept) => (
-                              <option key={dept.id} value={dept.id}>
-                                {dept.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="titSelE2">
-                          <Form.Label>Title</Form.Label>
-                          <Form.Select
-                            value={selectedTitleID}
-                            onChange={(e) => setSelectedTitleID(e.target.value)}
-                            required
-                          >
-                            {titles.map((tit) => (
-                              <option key={tit.id} value={tit.id}>
-                                {tit.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="statSelE2">
-                          <Form.Label>Status</Form.Label>
-                          <Form.Select
-                            value={selectedStatusID}
-                            onChange={(e) => setSelectedStatusID(e.target.value)}
-                            required
-                          >
-                            {statuses.map((stat) => (
-                              <option key={stat.id} value={stat.id}>
-                                {stat.name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </Form.Group>
-                      </Row>
-                      <div className="d-flex justify-content-center">
-                        <Button type="submit">Generate</Button>
-                      </div>
-                    </Form>
-                    <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Download request</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                      {fetchedData ? (
-                        fetchedData.map((employee, index) => (
-                          <Card key={index} className="mb-2">
-                            <Card.Body>
-                              <Card.Title>{employee.Full_Name}</Card.Title>
-                              <Card.Text>
-                                <strong>NIC:</strong> {employee.NIC} <br />
-                                <strong>Department:</strong> {employee.Dept_Name} <br />
-                                <strong>Branch:</strong> {employee.Branch_Name} <br />
-                                <strong>Status:</strong> {employee.Status} <br />
-                                <strong>Title:</strong> {employee.Title}
-                              </Card.Text>
-                            </Card.Body>
-                          </Card>
-                        ))
-                      ) : (
-                        <p>No data available.</p>
-                      )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShow(false)}>
-                          Dismiss
-                        </Button>
-                        <Button variant="primary" onClick={handleDownloadPDF}>
-                          Download as PDF
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </Accordion.Body>
-                </Accordion.Item>
-
-                
-              </Accordion>
-            </Tab>
-
+            <div className="employee-details-section bg-white p-3 rounded">
+              <h2 style={{ fontWeight: 'bold' }}>Employee Details by Department</h2>
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                <Row className="mb-3">
+                  <Col md="4">
+                    <Form.Group controlId="depSelE2">
+                      <Form.Label>Department</Form.Label>
+                      <Form.Select
+                        value={selectedDepartmentID}
+                        onChange={(e) => setSelectedDepartmentID(e.target.value)}
+                        required
+                      >
+                        {departments.map((dept) => (
+                          <option key={dept.id} value={dept.id}>
+                            {dept.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md="4">
+                    <Form.Group controlId="titSelE2">
+                      <Form.Label>Title</Form.Label>
+                      <Form.Select
+                        value={selectedTitleID}
+                        onChange={(e) => setSelectedTitleID(e.target.value)}
+                        required
+                      >
+                        {titles.map((tit) => (
+                          <option key={tit.id} value={tit.id}>
+                            {tit.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md="4">
+                    <Form.Group controlId="statSelE2">
+                      <Form.Label>Status</Form.Label>
+                      <Form.Select
+                        value={selectedStatusID}
+                        onChange={(e) => setSelectedStatusID(e.target.value)}
+                        required
+                      >
+                        {statuses.map((stat) => (
+                          <option key={stat.id} value={stat.id}>
+                            {stat.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <div className="d-flex justify-content-center">
+                  <Button type="submit">Generate</Button>
+                </div>
+              </Form>
+              <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Download request</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                {fetchedData ? (
+                  fetchedData.map((employee, index) => (
+                    <Card key={index} className="mb-2">
+                      <Card.Body>
+                        <Card.Title>{employee.Full_Name}</Card.Title>
+                        <Card.Text>
+                          <strong>NIC:</strong> {employee.NIC} <br />
+                          <strong>Department:</strong> {employee.Dept_Name} <br />
+                          <strong>Branch:</strong> {employee.Branch_Name} <br />
+                          <strong>Status:</strong> {employee.Status} <br />
+                          <strong>Title:</strong> {employee.Title}
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  ))
+                ) : (
+                  <p>No data available.</p>
+                )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={() => setShow(false)}>
+                    Dismiss
+                  </Button>
+                  <Button variant="primary" onClick={handleDownloadPDF}>
+                    Download as PDF
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            </div>
+          </Tab>
             
           </Tabs>
         </section>
