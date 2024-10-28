@@ -11,6 +11,7 @@ const generateReportController={
               }
           });
       });
+      
       if(!data.success){
           return res.status(400).send({data:data.data, success:data.success});
       }else{
