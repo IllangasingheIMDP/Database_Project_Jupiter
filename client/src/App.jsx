@@ -13,6 +13,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import LeaveRequest from './pages/LeaveRequest';
+import ApproveLeave from './pages/Approve_page';
 
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
     <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><GenRepHR /></ProtectedRoute>} />
     <Route path="/leaveRequest" element={<ProtectedRoute allowedRoles={['Employee','HR Manager']}><LeaveRequest></LeaveRequest></ProtectedRoute>} />
-
+    <Route path="/approve-reject-leaves" element={<ProtectedRoute allowedRoles={['Admin User',"HR Manager","Employee"]}><ApproveLeave></ApproveLeave></ProtectedRoute>} />
 
     
     <Route path="/customizeleaves" element={<ProtectedRoute allowedRoles={['Admin User']}><CustomizeLeaves></CustomizeLeaves></ProtectedRoute>} />

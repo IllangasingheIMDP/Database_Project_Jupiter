@@ -22,7 +22,7 @@ export const employeeMenu = [
     },
     {
       name: 'Approve / Reject Leave',
-      path: "#",
+      path: "/approve-reject-leaves",
       icon: 'fa-solid fa-clipboard-list'
     },
     
@@ -88,7 +88,7 @@ export const employeeMenu = [
     },
     {
       name: 'Approve/Reject Leave',
-      path: "#",
+      path: "/approve-reject-leaves",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
