@@ -10,7 +10,7 @@ const employeeTableRoute=require('./routes/employeeTableRoute');
 const adminRoute=require('./routes/adminRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
 const leaveRequestRoute = require('./routes/LeaveRequestRoute');
-
+const paygradeRoute=require('./routes/PayGradeRoute');
 
 
 
@@ -57,7 +57,7 @@ app.use('/leaveRequest',leaveRequestRoute);
 app.use('/approve-reject-leaves',approveRejectRequestRoute);
 
 app.use('/genarateReport', generateReportRoute);
-
+app.use('/paygrade',paygradeRoute);
 
 // Admin route
 app.use('/admin',adminRoute);

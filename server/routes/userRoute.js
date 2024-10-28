@@ -6,7 +6,7 @@ const notificationController=require('../controllers/notificationController');
 const profileController = require('../controllers/profileController');
 const supervisorController = require('../controllers/supervisorController');
 
-router.get('/profile', authMiddleware,profileController.getProfileInfo);
+router.get('/profile', authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]),profileController.getProfileInfo);
 
 // User routes
           // GET /users hello  hee- Get all users

@@ -230,7 +230,7 @@ const Layout = ({ children }) => {
             .map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <Link to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
+                <Link to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item  ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
                   <i className={`${menu.icon} mr-2`}></i>
                   {menu.name}
                 </div></Link>
