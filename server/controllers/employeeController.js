@@ -18,6 +18,23 @@ const employeeController={
       }
     },
 
+    get_employees:async (req,res)=>{
+      const data=await new Promise((resolve,reject)=>{
+          employeeModel.get_get_employees((err,result)=>{
+              if(err){
+                  reject(err);
+              }else{
+                  resolve(result);
+              }
+          });
+      });
+      if(!data.success){
+          return res.status(400).send({data:data.data, success:data.success});
+      }else{
+          return res.status(200).send({success:true, data:data.data});
+      }
+    },
+
     get_available_custom_fields:async (req,res)=>{
       const data=await new Promise((resolve,reject)=>{
           employeeModel.get_available_custom_fields((err,result)=>{
@@ -73,23 +90,6 @@ const employeeController={
         console.log(error);
         res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
       }
-    },
-
-    getAllEmployee:async (req,res)=>{
-        const employees=await new Promise((resolve,reject)=>{
-            employeeModel.findAll((err,result)=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
-            });
-        });
-        if(!employees){
-            return res.status(404).send({message:"Database Error on employees",success:false});
-        }else{
-            return res.status(200).send({success:true,data:employees});
-        }
     },
 
     getEmployeebyId: async (req, res) => {
@@ -230,7 +230,9 @@ const employeeController={
           paygrade: req.body.paygrade,
           employmentStat: req.body.employment_stat,
           PFNumber: req.body.pf_number,
-          supervisor: req.body.supervisor.split(" : ")[1],
+          supervisor: req.body.supervisor
+            ? req.body.supervisor.split(" : ")[1].slice(0, -2)
+            : "None",
           dependent_info: JSON.stringify(dependents),
           emergency_contacts_info: JSON.stringify(emergencyContacts),
           custom_fields: JSON.stringify(custom_fields),
@@ -238,6 +240,25 @@ const employeeController={
 
         // Save employee data
         employeeModel.createEmployee(employeeData, (err, result) => {
+          if (err) {
+            return res.status(500).send({ data: 'Internal Server Error :' , error: err });
+          }
+          res.status(200).send({ data: result.data, success: result.success });
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
+      }
+    },
+    
+    deleteEmployee: async (req, res) => {
+      try {
+        const employeeData = {
+          nic: req.params.nic,
+        };
+
+        // Save employee data
+        employeeModel.deleteEmployee(employeeData, (err, result) => {
           if (err) {
             return res.status(500).send({ data: 'Internal Server Error :' , error: err });
           }

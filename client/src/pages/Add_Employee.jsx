@@ -284,7 +284,7 @@ const handleSubmit = async (e) => {
           )}
 
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
-        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <h2 className="text-xl mb-4 text-white">Add Employee</h2>
           <form onSubmit={handleSubmit}>
             <table className="w-full mb-4 text-white">
@@ -300,6 +300,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={20}
                   /></td>
                 </tr>
                 <tr>
@@ -313,6 +314,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={20}
                   /></td>
                 </tr>
                 <tr>
@@ -326,6 +328,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={20}
                   /></td>
                 </tr>
                 <tr>
@@ -339,6 +342,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={20}
                   /></td>
                 </tr>
                 <tr>
@@ -402,6 +406,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={20}
                   /></td>
                 </tr>
                 <tr>
@@ -415,6 +420,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={50}
                   /></td>
                 </tr>
                 <tr>
@@ -428,6 +434,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={50}
                   /></td>
                 </tr>
                 <tr>
@@ -441,6 +448,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={255}
                   /></td>
                 </tr>
                 <tr>
@@ -530,6 +538,7 @@ const handleSubmit = async (e) => {
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                     required
+                    maxLength={50}
                   /></td>
                 </tr>
                 <tr>
@@ -565,6 +574,7 @@ const handleSubmit = async (e) => {
                     name="name"
                     value={dependent.name}
                     onChange={handleDependentChange}
+                    maxLength={20}
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
@@ -577,6 +587,7 @@ const handleSubmit = async (e) => {
                     name="relationship"
                     value={dependent.relationship}
                     onChange={handleDependentChange}
+                    maxLength={20}
                     className="border p-2 w-full"
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
@@ -640,6 +651,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.first_Name}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={20}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -652,6 +664,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.last_Name}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={20}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -664,6 +677,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.phone}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={20}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -676,6 +690,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.email}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={50}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -688,6 +703,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.address}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={255}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -700,6 +716,7 @@ const handleSubmit = async (e) => {
                     value={emergencyContact.relationship}
                     onChange={handleEmergencyContactChange}
                     className="border p-2 w-full"
+                    maxLength={20}
                     style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
                   /></td>
                 </tr>
@@ -790,6 +807,7 @@ const handleSubmit = async (e) => {
                                 name={field}
                                 value={custom_values[field] || ''}
                                 onChange={handleCustomChange}
+                                maxLength={50}
                                 style={{ width: '100%', backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", border: '2px solid white', borderRadius:"5px"}}
                               />
                             </td>

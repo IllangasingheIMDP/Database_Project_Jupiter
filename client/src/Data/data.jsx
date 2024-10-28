@@ -46,19 +46,29 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-      name: 'Edit Table Attributes ',
-      path: '/edit-table-data',
-      icon: 'fa-solid fa-user-doctor'
+      name: 'Manage Employees ',
+      path: '/manage-employees',
+      icon: 'fa-solid fa-user'
     },
     {
-      name: 'Add New Employee ',
-      path: '/add-new-employee',
+      name: 'Manage Users ',
+      path: '/manage-users',
       icon: 'fa-solid fa-user'
     },
     {
       name: 'Manage Custom Fields',
       path: '/manage-custom-field',
       icon: 'fa-solid fa-user'
+    },
+    {
+      name: 'Customize Leave Allowances',
+      path: '#',
+      icon: "fa-solid fa-house"
+    },
+    {
+      name: 'Edit Table Attributes ',
+      path: '/edit-table-data',
+      icon: 'fa-solid fa-user-doctor'
     },
   ];
 

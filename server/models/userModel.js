@@ -2,6 +2,16 @@ const db = require('../config/db');
 
 // User model
 const UserModel = {
+  getUsers: (callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_get_user_dropdown_options(), "$") AS result';
+    db.query(query, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
+    });
+  },
+
   // Find all users
   findAll: (callback) => {
     const query = 'SELECT * FROM user';
@@ -25,20 +35,65 @@ const UserModel = {
   },
 
   //Create new user
-  createNewUser: (userData, callback) => {
-    const query = 'INSERT INTO user (`User_ID`, `User_Name`, `Password`, `Employee_ID`, `Auth_Level`) VALUE (?,?,?,?,?)';
+  createNewUser: (Data, callback) => {
+    // First query to call the stored procedure
+    const callProcedure = `CALL add_user(?, ?, ?, ?, @result);`;
+    // Second query to retrieve the OUT parameter result
+    const getResult = `SELECT @result AS result;`;
+
     const queryParams = [
-      userData.userId,
-      userData.username,
-      userData.password,
-      userData.employeeId,
-      userData.authLevel
+      Data.employee_nic,
+      Data.username,
+      Data.password,
+      Data.authLevel,
     ];
-    db.query(query, queryParams, (err, result) => {
+
+    // Execute the stored procedure first
+    db.query(callProcedure, queryParams, (err) => {
       if (err) {
-        return callback(err);
+          return callback(err);
       }
-      callback(null, result);
+
+      // After the procedure, execute the SELECT query to get the result
+      db.query(getResult, (err, results) => {
+          if (err) {
+              return callback(err);
+          }
+
+          // The result will be available in the first row of results
+          const result = results[0].result;
+          callback(null, JSON.parse(result));
+      });
+    });
+  },
+
+  // Delete User
+  deleteUser: (employeeData, callback) => {
+    // First query to call the stored procedure
+    const callProcedure = `CALL delete_user(?, @result);`;
+    // Second query to retrieve the OUT parameter result
+    const getResult = `SELECT @result AS result;`;
+
+    const queryParams = [
+        employeeData.nic,
+    ];
+
+    // Execute the stored procedure first
+    db.query(callProcedure, queryParams, (err) => {
+        if (err) {
+            return callback(err);
+        }
+
+        // After the procedure, execute the SELECT query to get the result
+        db.query(getResult, (err, results) => {
+            if (err) {
+                return callback(err);
+            }
+
+            // The result will be available in the first row of results
+            const result = results[0].result;
+            callback(null, JSON.parse(result));
+        });
     });
   },
   updatePassword: (userData, callback) => {

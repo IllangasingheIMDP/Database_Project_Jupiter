@@ -29,6 +29,7 @@ const MaterialButton = ({ table, onClick, index, margin='10px', text_color='rgb(
   return (
     <button
       key={index}
+      type="button"
       className=""
       style={{
         maxWidth: '250px',
