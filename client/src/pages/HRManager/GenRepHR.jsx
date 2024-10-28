@@ -146,101 +146,187 @@ const GenRepHR = () => {
           className="mb-3"
           justify
         >
+             <Tab eventKey="organization" title="Organizational details">
+              <div className="organization-department-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Department Details</h2>
+              </div>
+              <div className="organization-branch-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Branch Details</h2>
+              </div>
+            </Tab>
 
             <Tab eventKey="employee" title="Employee details">
-            <div className="employee-details-section bg-white p-3 rounded">
-              <h2 style={{ fontWeight: 'bold' }}>Employee Details by Department</h2>
-              <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                <Row className="mb-3">
-                  <Col md="4">
-                    <Form.Group controlId="depSelE2">
-                      <Form.Label>Department</Form.Label>
-                      <Form.Select
-                        value={selectedDepartmentID}
-                        onChange={(e) => setSelectedDepartmentID(e.target.value)}
-                        required
-                      >
-                        {departments.map((dept) => (
-                          <option key={dept.id} value={dept.id}>
-                            {dept.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md="4">
-                    <Form.Group controlId="titSelE2">
-                      <Form.Label>Title</Form.Label>
-                      <Form.Select
-                        value={selectedTitleID}
-                        onChange={(e) => setSelectedTitleID(e.target.value)}
-                        required
-                      >
-                        {titles.map((tit) => (
-                          <option key={tit.id} value={tit.id}>
-                            {tit.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md="4">
-                    <Form.Group controlId="statSelE2">
-                      <Form.Label>Status</Form.Label>
-                      <Form.Select
-                        value={selectedStatusID}
-                        onChange={(e) => setSelectedStatusID(e.target.value)}
-                        required
-                      >
-                        {statuses.map((stat) => (
-                          <option key={stat.id} value={stat.id}>
-                            {stat.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="d-flex justify-content-center">
-                  <Button type="submit">Generate</Button>
-                </div>
-              </Form>
-              <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Download request</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                {fetchedData ? (
-                  fetchedData.map((employee, index) => (
-                    <Card key={index} className="mb-2">
-                      <Card.Body>
-                        <Card.Title>{employee.Full_Name}</Card.Title>
-                        <Card.Text>
-                          <strong>NIC:</strong> {employee.NIC} <br />
-                          <strong>Department:</strong> {employee.Dept_Name} <br />
-                          <strong>Branch:</strong> {employee.Branch_Name} <br />
-                          <strong>Status:</strong> {employee.Status} <br />
-                          <strong>Title:</strong> {employee.Title}
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  ))
-                ) : (
-                  <p>No data available.</p>
-                )}
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={() => setShow(false)}>
-                    Dismiss
-                  </Button>
-                  <Button variant="primary" onClick={handleDownloadPDF}>
-                    Download as PDF
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            </div>
-          </Tab>
+              <div className="employee-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Employee details of an Employee</h2>
+                  <Form>
+                    <FloatingLabel
+                      controlId="floatingInput"
+                      label="Enter NIC or Employee ID"
+                      className="mb-3"
+                    >
+                      <Form.Control type="email" placeholder="name@example.com" />
+                    </FloatingLabel>
+                    <div className="d-flex justify-content-center">
+                      <Button variant="primary" type="submit">Search</Button>
+                    </div>
+                  </Form>
+              </div>
+              <div className="employee-department-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Employee Details by Department</h2>
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                  <Row className="mb-3">
+                    <Col md="4">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Department</Form.Label>
+                        <Form.Select
+                          value={selectedDepartmentID}
+                          onChange={(e) => setSelectedDepartmentID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {departments.map((dept) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="titSelE2">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Select
+                          value={selectedTitleID}
+                          onChange={(e) => setSelectedTitleID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {titles.map((tit) => (
+                            <option key={tit.id} value={tit.id}>
+                              {tit.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="statSelE2">
+                        <Form.Label>Status</Form.Label>
+                        <Form.Select
+                          value={selectedStatusID}
+                          onChange={(e) => setSelectedStatusID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {statuses.map((stat) => (
+                            <option key={stat.id} value={stat.id}>
+                              {stat.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Download request</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                  {fetchedData ? (
+                    fetchedData.map((employee, index) => (
+                      <Card key={index} className="mb-2">
+                        <Card.Body>
+                          <Card.Title>{employee.Full_Name}</Card.Title>
+                          <Card.Text>
+                            <strong>NIC:</strong> {employee.NIC} <br />
+                            <strong>Department:</strong> {employee.Dept_Name} <br />
+                            <strong>Branch:</strong> {employee.Branch_Name} <br />
+                            <strong>Status:</strong> {employee.Status} <br />
+                            <strong>Title:</strong> {employee.Title}
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    ))
+                  ) : (
+                    <p>No data available.</p>
+                  )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>
+                      Dismiss
+                    </Button>
+                    <Button variant="primary" onClick={handleDownloadPDF}>
+                      Download as PDF
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
+              <div className="employee-branch-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Employee details by Branch</h2>
+              </div>
+              <div className="employee-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Employee details by Pay Grade</h2>
+              </div>
+              <div className="employee-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Dependent details of Employees</h2>
+              </div>
+              <div className="employee-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Emergency Contact details of Employees</h2>
+              </div>
+            </Tab>
             
+            <Tab eventKey="leave" title="Leave details">
+              <div className="personal-leave-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Leave details of an Employee</h2>
+                <Card border="danger">
+                  <Card.Header as="h5">No. of leaves remaining</Card.Header>
+                  <Card.Body>
+                    <Form>
+                      <FloatingLabel
+                        controlId="floatingInput"
+                        label="Enter NIC or Employee ID"
+                        className="mb-3"
+                      >
+                        <Form.Control type="email" placeholder="name@example.com" />
+                      </FloatingLabel>
+                      <div className="d-flex justify-content-center">
+                        <Button variant="primary" type="submit">Search</Button>
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </Card>
+                <div style={{ margin: "20px 0" }}>
+                  {/* This div adds space */}
+                </div>
+                <Card border="danger">
+                  <Card.Header as="h5" >Leave request details</Card.Header>
+                  <Card.Body>
+                    <Form>
+                      <FloatingLabel
+                        controlId="floatingInput"
+                        label="Enter NIC or Employee ID"
+                        className="mb-3"
+                      >
+                        <Form.Control type="email" placeholder="name@example.com" />
+                      </FloatingLabel>
+                      <div className="d-flex justify-content-center">
+                        <Button variant="primary" type="submit">Search</Button>
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </Card>
+              </div>
+              <div className="remaining-leave-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>No. of remaining leaves</h2>
+              </div>
+              <div className="leave-req-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Leave request details</h2>
+              </div>
+            </Tab>
           </Tabs>
         </section>
       </div>
