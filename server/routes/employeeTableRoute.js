@@ -20,15 +20,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });  // Define upload using multer
 
-router.get('/all',authMiddleware,employeeController.getAllEmployee);
 router.get('/',authMiddleware,employeeController.getEmployeebyId);
 router.delete('/',authMiddleware,employeeController.deletemployeebyId);
 router.put('/',authMiddleware,employeeController.updateEmployeeData);
 router.post('/',authMiddleware,employeeController.createNewEmployee);
 
 router.post('/add_employee',authMiddleware, upload.single('picture'), employeeController.createNewEmployee);
+router.post('/delete_employee/:nic',authMiddleware,employeeController.deleteEmployee);
 
 router.get('/get_dropdown_options',authMiddleware,employeeController.get_dropdown_options);
+router.get('/get_employees',authMiddleware,employeeController.get_employees);
 
 router.get('/get_available_custom_fields',authMiddleware,employeeController.get_available_custom_fields);
 router.post('/add_custom_field',authMiddleware, employeeController.createNewCustomField);

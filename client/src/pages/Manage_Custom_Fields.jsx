@@ -78,25 +78,27 @@ const Manage_Custom_Fields = () => {
   };
 
   const removeCustomField = async (NAME) => {
-    try {
-      const response = await axios.post('http://localhost:5555/employeeTable/delete_custom_field', { name: NAME }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+    if (window.confirm('Are you sure you want to delete this CustomField?')) {
+      try {
+        const response = await axios.post('http://localhost:5555/employeeTable/delete_custom_field', { name: NAME }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
 
-      if (response.data.success) {
-        fetchCustomFields(); // Refresh custom fields list
-      } else {
-        setAlertMessage('Error: Failed to remove custom field');
+        if (response.data.success) {
+          fetchCustomFields(); // Refresh custom fields list
+        } else {
+          setAlertMessage('Error: Failed to remove custom field');
+        }
+        setAlertMessage(response.data.data);
+      } catch (error) {
+        setAlertMessage(error.response.data.data);
+        setShowAlert(true);
+        console.error('Error removing custom field:', error);
+      } finally {
+        setShowAlert(true);
       }
-      setAlertMessage(response.data.data);
-    } catch (error) {
-      setAlertMessage(error.response.data.data);
-      setShowAlert(true);
-      console.error('Error removing custom field:', error);
-    } finally {
-      setShowAlert(true);
     }
   };
 
@@ -110,7 +112,7 @@ const Manage_Custom_Fields = () => {
           )}
           
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
-        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <h2 className="text-xl mb-4 text-white">Add Custom Field</h2>
           <form onSubmit={addCustomField}>
             <input
@@ -119,6 +121,7 @@ const Manage_Custom_Fields = () => {
               onChange={handleInputChange}
               className="border p-2 w-full mb-4"
               placeholder="Enter custom field name"
+              maxLength={20}
               style={{ backgroundColor: 'rgba(40, 40, 40, 0.8)', color: "white", borderColor:'white', borderRadius:"8px"}}
             />
             <MaterialButton

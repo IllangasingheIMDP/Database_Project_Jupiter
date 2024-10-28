@@ -122,7 +122,7 @@ const handleDeleteRow = async (row) => {
           )}
 
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
-      <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+      <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <h2 className="text-xl mb-4 text-white" style={{ textTransform: 'uppercase' }}>Editing Table: {tableName}</h2>
 
           {/* Wrapping table in a scrollable container */}
@@ -131,7 +131,7 @@ const handleDeleteRow = async (row) => {
               <thead>
                 <tr>
                   {tableData.length > 0 && Object.keys(tableData[0]).map((column) => (
-                    <th key={column} className="border border-gray-400 p-2 text-white">{column.toUpperCase()}</th>
+                    <th key={column} className="border border-gray-400 p-2 text-white">{column.toUpperCase().replace(/_/g, ' ')}</th>
                   ))}
                   <th className="border border-gray-400 p-2"></th>
                 </tr>
@@ -181,7 +181,7 @@ const handleDeleteRow = async (row) => {
               >
                 {Object.keys(editRow).map((column) => (
                   <div key={column} className="mb-2">
-                    <label className="text-white">{column.toUpperCase()}:</label>
+                    <label className="text-white">{column.toUpperCase().replace(/_/g, ' ')}:</label>
                     <input
                       type="text"
                       value={editRow[column]}

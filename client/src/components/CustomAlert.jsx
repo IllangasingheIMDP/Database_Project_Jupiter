@@ -31,7 +31,7 @@ const CustomAlert = ({ message, onClose }) => {
 
   return (
     <div className="custom-alert" style={alertStyle}>
-      {message }
+      {message + " "}
       <button className="custom-alert-close" onClick={onClose} style={alertStyle}>
         &times;
       </button>
