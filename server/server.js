@@ -10,6 +10,11 @@ const employeeTableRoute=require('./routes/employeeTableRoute');
 const adminRoute=require('./routes/adminRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
 const leaveRequestRoute = require('./routes/LeaveRequestRoute');
+
+
+
+
+const approveRejectRequestRoute = require('./routes/Approve_RejectRequestRoute');
 const generateReportRoute = require('./routes/generateReportRoute')
 
 
@@ -48,6 +53,9 @@ app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
 app.use('/dependant',dependantInfoRoute);
 app.use('/leaveRequest',leaveRequestRoute);
+
+app.use('/approve-reject-leaves',approveRejectRequestRoute);
+
 app.use('/genarateReport', generateReportRoute);
 
 

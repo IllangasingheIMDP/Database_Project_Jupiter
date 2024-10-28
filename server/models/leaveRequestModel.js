@@ -77,8 +77,31 @@ const LeaveRequestModel = {
       if (err) {
         return callback(err);
       }
-      const leaveRequest = result[0]?.result;
-      callback(null, leaveRequest);
+      callback(null, result);
+    });
+  },
+
+  findBySuperVisorUserID: (SupervisorUserID, callback) => {
+    const query = 'SELECT db_get_leave_requests_by_supervisor(?) AS result';
+    db.query(query, [SupervisorUserID], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, result);
+    });
+  },
+
+  editRequestStatus: (Request_ID, Status, callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_edit_request_status(?,?), "$") AS result';
+    const queryParams = [
+        Request_ID,
+        Status,
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].result);
     });
   },
   
