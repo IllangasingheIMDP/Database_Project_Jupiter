@@ -101,7 +101,7 @@ const GenRepHR = () => {
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
 
-    // Define columns for the table (with headers and keys to access in data)
+    // Define columns for the table (with  headers and keys to access in data)
     const columns = [
       { header: 'Full Name', dataKey: 'Full_Name' },
       { header: 'NIC', dataKey: 'NIC' },
