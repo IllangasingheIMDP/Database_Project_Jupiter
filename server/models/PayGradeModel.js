@@ -4,7 +4,7 @@ const db = require('../config/db');
 const PayGradeModel = {
   // Find all pay grade levels
   findAll: (callback) => {
-    const query = 'select * from pay_grade';
+    const query = 'SELECT db_getleave_data();';
     db.query(query, (err, results) => {
       if (err) {
         return callback(err);
@@ -53,6 +53,7 @@ const PayGradeModel = {
     });
   },
 
+
   
   // Delete paygrade
   deleteGrade: (PayGrade_ID, callback) => {
@@ -63,7 +64,17 @@ const PayGradeModel = {
       }
       callback(null, result);
     });
-  }
+  },
+  updatedata: (PayGrade_ID,PayGrade_Data, callback) => {
+    const query = 'select db_setleave_data(?, ?, ?, ?, ?)';
+    db.query(query, [PayGrade_ID,PayGrade_Data.Annual,PayGrade_Data.Casual,PayGrade_Data.Maternity,PayGrade_Data.No_Pay], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, result);
+    });
+  },
+  
 };
 
 module.exports = PayGradeModel;

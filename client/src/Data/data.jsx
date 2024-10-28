@@ -36,7 +36,7 @@ export const employeeMenu = [
       icon: "fa-solid fa-house"
     },
     {
-      name: 'Customize Leave Allowances',
+      name: 'Customize Leave Data',
       path: '/customizeleaves',
       icon: "fa-solid fa-house"
     },
@@ -60,11 +60,7 @@ export const employeeMenu = [
       path: '/manage-custom-field',
       icon: 'fa-solid fa-user'
     },
-    {
-      name: 'Customize Leave Allowances',
-      path: '#',
-      icon: "fa-solid fa-house"
-    },
+   
     {
       name: 'Edit Table Attributes ',
       path: '/edit-table-data',

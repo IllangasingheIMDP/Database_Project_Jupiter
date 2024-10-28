@@ -24,6 +24,7 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
           },
         }
       );
+      
       dispatch(hideLoading());
 
       if (res.data.success) {

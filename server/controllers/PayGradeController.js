@@ -1,7 +1,7 @@
 const PayGradeModel = require('../models/PayGradeModel');
 
 const PayGradeController={
-    getAllGrades:async (req,res)=>{
+    getAllDetails:async (req,res)=>{
         const grades=await new Promise((resolve,reject)=>{
             PayGradeModel.findAll((err,result)=>{
                 if(err){
@@ -11,10 +11,16 @@ const PayGradeController={
                 }
             });
         });
-        if(!grades){
+        const firstEntry = grades[0];
+      const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+      const resultData = firstEntry[resultKey];
+     
+        
+        if(!resultData.success){
             return res.status(404).send({message:"Database Error on pay grade levels",success:false});
         }else{
-            return res.status(200).send({success:true,data:grades});
+            console.log(resultData);
+            return res.status(200).send({success:true,data:resultData.data});
         }
     },
     getPayGradeById:async (req,res)=>{
@@ -82,7 +88,7 @@ const PayGradeController={
                     }
                 });
             });
-    
+            
             if (!grades) {
                 
                 return res.status(404).send({ message: "Pay Grade not found", success: false });
@@ -148,6 +154,41 @@ const PayGradeController={
           console.log(error);
           res.status(500).send({ message: `Error in signup CTRL ${error.message}` });
         }
-      }
+      },
+      updateLeaveData:async (req, res) => {
+        try {
+            
+            const { PayGradeId, PayGradeData } = req.body; // Paygrade data should be come from front end with column value pairs in json
+            console.log(PayGradeId,PayGradeData);
+           
+            const result=await new Promise((resolve,reject)=>{
+                PayGradeModel.updatedata(PayGradeId,PayGradeData,(err,result)=>{
+                    if(err){
+                        reject(err);
+                    }else{
+                        resolve(result);
+                    }
+                });
+            });
+            const firstEntry = result[0];
+            const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+            const resultData = firstEntry[resultKey];
+            
+            if (!resultData.success) {
+                
+                return res.status(404).send({ message: "Pay Grade not found", success: false });
+            }else{
+                return res.status(200).send({message:"Leave data updated succesfully",success:true})
+            }
+    
+            
+            
+    
+        } catch (err) {
+           
+            console.error(err);
+            return res.status(500).send({ message: "Server error", success: false, error: err.message });
+        }
+    }
 }
 module.exports = PayGradeController;
