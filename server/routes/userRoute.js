@@ -5,7 +5,7 @@ const userController =require('../controllers/userController')
 const notificationController=require('../controllers/notificationController');
 const profileController = require('../controllers/profileController');
 const supervisorController = require('../controllers/supervisorController');
-const userController = require('../controllers/userController');
+
 router.get('/profile', authMiddleware,profileController.getProfileInfo);
 
 // User routes
@@ -15,8 +15,8 @@ router.put('/notification',authMiddleware(['Admin User',"HR Manager","Second Man
 router.put('/password',authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]),userController.changePassword);
 router.get('/team',authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]),supervisorController.getTeamInfo);
 
-router.post('/add-user',authMiddleware,userController.createNewUser);
-router.post('/delete-user/:nic',authMiddleware,userController.deleteUser);
-router.get('/get-users',authMiddleware,userController.getUsers);
+router.post('/add-user',authMiddleware(['Admin User',"HR Manager","Second Manager"]),userController.createNewUser);
+router.post('/delete-user/:nic',authMiddleware(['Admin User',"HR Manager","Second Manager"]),userController.deleteUser);
+router.get('/get-users',authMiddleware(['Admin User',"HR Manager","Second Manager"]),userController.getUsers);
 
 module.exports = router;

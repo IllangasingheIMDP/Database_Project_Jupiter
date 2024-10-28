@@ -28,7 +28,7 @@ const upload = multer({ storage: storage });  // Define upload using multer
 
 
 
-router.get('/all',authMiddleware(['Admin User',"HR Manager","Second Manager"]),employeeController.getAllEmployee);
+
 router.get('/',authMiddleware(['Admin User',"HR Manager","Second Manager"]),employeeController.getEmployeebyId);
 router.delete('/',authMiddleware(['Admin User',"HR Manager"]),employeeController.deletemployeebyId);
 router.put('/',authMiddleware(['Admin User',"HR Manager"]),employeeController.updateEmployeeData);
