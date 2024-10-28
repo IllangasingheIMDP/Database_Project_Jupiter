@@ -9,6 +9,13 @@ const authRoute = require('./routes/authRoute');
 const employeeTableRoute=require('./routes/employeeTableRoute');
 const adminRoute=require('./routes/adminRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
+const leaveRequestRoute = require('./routes/LeaveRequestRoute');
+
+
+
+
+const approveRejectRequestRoute = require('./routes/Approve_RejectRequestRoute');
+const generateReportRoute = require('./routes/generateReportRoute')
 
 
 // dotenv  config
@@ -39,12 +46,17 @@ app.use((req, res, next) => {
 // Port
 const port = process.env.PORT;
 
-//Routes
+//Route s 
 // User routes
 app.use('/users', userRoutes);
 app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
 app.use('/dependant',dependantInfoRoute);
+app.use('/leaveRequest',leaveRequestRoute);
+
+app.use('/approve-reject-leaves',approveRejectRequestRoute);
+
+app.use('/genarateReport', generateReportRoute);
 
 
 // Admin route

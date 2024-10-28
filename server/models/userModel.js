@@ -96,6 +96,19 @@ const UserModel = {
         });
     });
   },
+  updatePassword: (userData, callback) => {
+    const query = 'select db_change_password(?,?)';
+    const queryParams = [
+      userData.userId,
+      userData.password
+    ];
+    db.query(query, queryParams, (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, result);
+    });
+  },
 
   // Update user
   // update: (id, userData, callback) => {

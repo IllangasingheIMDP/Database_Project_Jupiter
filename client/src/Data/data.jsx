@@ -6,27 +6,22 @@ export const employeeMenu = [
       icon: "fa-solid fa-house"
     },
     {
-      name: 'Profile',
-      path: "/home",
-      icon: 'fa-solid fa-clipboard-list'
-    },
-    {
       name: 'Edit Personal Info ',
       path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-      name: 'Request Leave ',
-      path: "#",
+      name: 'Profile',
+      path: "/home",
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-        name: 'Approve/Reject Leave',
-        path: "#",
-        icon: 'fa-solid fa-clipboard-list'
-      },
+      name: 'Request Leave ',
+      path: "/leaveRequest",
+      icon: 'fa-solid fa-user'
+    },
     {
-      name: 'Generate Reports ',
+      name: 'Approve / Reject Leave',
       path: "#",
       icon: 'fa-solid fa-clipboard-list'
     },
@@ -38,6 +33,11 @@ export const employeeMenu = [
     {
       name: 'Dashboard',
       path: '/dashboard',
+      icon: "fa-solid fa-house"
+    },
+    {
+      name: 'Customize Leave Allowances',
+      path: '/customizeleaves',
       icon: "fa-solid fa-house"
     },
     {
@@ -88,7 +88,7 @@ export const employeeMenu = [
     },
     {
         name: 'Edit Personal Info',
-        path: '#',
+        path: "#",
         icon: "fa-solid fa-house"
       },
     {
