@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 // Port
 const port = process.env.PORT;
 
-//Routes
+//Route s 
 // User routes
 app.use('/users', userRoutes);
 app.use('/',authRoute);
