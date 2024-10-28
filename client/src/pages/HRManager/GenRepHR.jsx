@@ -12,6 +12,8 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import './GenRepHR.css';
   
 
@@ -22,39 +24,46 @@ const GenRepHR = () => {
   const [departments, setDepartments] = useState([]);
   const [titles, setTitles] = useState([]);
   const [statuses, setStatuses] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedTitle, setSelectedTitle] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedDepartmentID, setSelectedDepartmentID] = useState('');
+  const [selectedTitleID, setSelectedTitleID] = useState('');
+  const [selectedStatusID, setSelectedStatusID] = useState('');
+  const [fetchedData, setFetchedData] = useState(null);
 
   const handleReportGeneration = async () => {
     try {
-      const response = await axios.post('http://localhost:5555/employeeTable/generate_report', {
-        department: selectedDepartment,
-        title: selectedTitle,
-        status: selectedStatus,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,  // Corrected the syntax here
+      const response = await axios.post(
+        'http://localhost:5555/genarateReport/get_employee_detail_by_department',  // Adjusted API endpoint
+        {
+          department: selectedDepartmentID || 0,  // Default to 0 if not selected
+          title: selectedTitleID || 0,
+          status: selectedStatusID || 0,
         },
-      });
-
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
       if (response.data.success) {
-        console.log('Report generated successfully:', response.data.data);
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShow(true);  // Show the modal on success
       } else {
-        setAlertMessage('Error: Failed to generate report');
+        setAlertMessage('Error: No matching data found');
         setShowAlert(true);
       }
     } catch (error) {
-      console.error('Error generating report:', error);
-      setAlertMessage('Error: Unable to generate report');
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
       setShowAlert(true);
     }
-  };
+  };  
 
   useEffect(() => {
     const fetchDropdownOptions = async () => {
       try {
-        const response = await axios.get('http://localhost:5555/employeeTable/get_dropdown_options', {
+        const response = await axios.get('http://localhost:5555/genarateReport/get_department_dropdown_options', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,  // Added Authorization header
           },
@@ -89,8 +98,35 @@ const GenRepHR = () => {
     setValidated(true);
   };
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+
+    // Define columns for the table (with headers and keys to access in data)
+    const columns = [
+      { header: 'Full Name', dataKey: 'Full_Name' },
+      { header: 'NIC', dataKey: 'NIC' },
+      { header: 'Department', dataKey: 'Dept_Name' },
+      { header: 'Branch', dataKey: 'Branch_Name' },
+      { header: 'Status', dataKey: 'Status' },
+      { header: 'Title', dataKey: 'Title' },
+    ];
+
+    // Check if there is data to export
+    if (fetchedData && fetchedData.length > 0) {
+      // Use jspdf-autotable to generate the table
+      doc.autoTable({
+        head: [columns.map(col => col.header)], // Use headers from columns
+        body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])), // Extract data based on keys
+        startY: 10, // Start position of the table
+        theme: 'grid', // Optional: table theme
+        styles: { fontSize: 10 }, // Optional: font size and other styles
+      });
+
+      doc.save('Employee_Report.pdf'); // Save PDF with the specified file name
+    } else {
+      alert('No data available to export.');
+    }
+  };
   
   return (
     <Layout>
@@ -110,93 +146,9 @@ const GenRepHR = () => {
           className="mb-3"
           justify
         >
-            <Tab eventKey="organization" title="Organizational details">
-            <Accordion>
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>Department Details</Accordion.Header>
-                <Accordion.Body>
-                  
-                </Accordion.Body>
-              </Accordion.Item>
-              <Accordion.Item eventKey="1">
-                <Accordion.Header>Branch Details</Accordion.Header>
-                <Accordion.Body>
-                  
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            </Tab>
 
             <Tab eventKey="employee" title="Employee details">
-              <Accordion>
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header>Employee details of an Employee</Accordion.Header>
-                  <Accordion.Body>
-                    <Form>
-                      <FloatingLabel
-                        controlId="floatingInput"
-                        label="Enter NIC or Employee ID"
-                        className="mb-3"
-                      >
-                        <Form.Control type="email" placeholder="name@example.com" />
-                      </FloatingLabel>
-                      <div className="d-flex justify-content-center">
-                        <Button variant="primary" type="submit">Search</Button>
-                      </div>
-                    </Form>
-    
-                    <Button variant="secondary" onClick={handleShow} >
-                      Download
-                    </Button>
-                    <Modal
-                      show={show}
-                      onHide={handleClose}
-                      backdrop="static"
-                      keyboard={false}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Download request</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        Check the requested data set.
-                        <Form>
-                          {['radio'].map((type) => (
-                            <div key={`inline-${type}`} className="mb-3">
-                              <Form.Check
-                                inline
-                                label=".pdf"
-                                name="group1"
-                                type={type}
-                                id={`inline-${type}-1`}
-                              />
-                              <Form.Check
-                                inline
-                                label=""
-                                name="group1"
-                                type={type}
-                                id={`inline-${type}-2`}
-                              />
-                              <Form.Check
-                                inline
-                                label=""
-                                name="group1"
-                                type={type}
-                                id={`inline-${type}-3`}
-                              />
-                            </div>
-                          ))}
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                          Dismiss
-                        </Button>
-                        <Button variant="primary">Download</Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </Accordion.Body>
-                </Accordion.Item>
-
+            <Accordion>
                 <Accordion.Item eventKey="1">
                   <Accordion.Header>Employee details by Department</Accordion.Header>
                   <Accordion.Body>
@@ -205,14 +157,13 @@ const GenRepHR = () => {
                         <Form.Group as={Col} md="4" controlId="depSelE2">
                           <Form.Label>Department</Form.Label>
                           <Form.Select
-                            value={selectedDepartment}
-                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            value={selectedDepartmentID}
+                            onChange={(e) => setSelectedDepartmentID(e.target.value)}
                             required
                           >
-                            <option value="">All</option>
-                            {departments.map((dept, index) => (
-                              <option key={index} value={dept}>
-                                {dept}
+                            {departments.map((dept) => (
+                              <option key={dept.id} value={dept.id}>
+                                {dept.name}
                               </option>
                             ))}
                           </Form.Select>
@@ -220,14 +171,13 @@ const GenRepHR = () => {
                         <Form.Group as={Col} md="4" controlId="titSelE2">
                           <Form.Label>Title</Form.Label>
                           <Form.Select
-                            value={selectedTitle}
-                            onChange={(e) => setSelectedTitle(e.target.value)}
+                            value={selectedTitleID}
+                            onChange={(e) => setSelectedTitleID(e.target.value)}
                             required
                           >
-                            <option value="">All</option>
-                            {titles.map((tit, index) => (
-                              <option key={index} value={tit}>
-                                {tit}
+                            {titles.map((tit) => (
+                              <option key={tit.id} value={tit.id}>
+                                {tit.name}
                               </option>
                             ))}
                           </Form.Select>
@@ -235,14 +185,13 @@ const GenRepHR = () => {
                         <Form.Group as={Col} md="4" controlId="statSelE2">
                           <Form.Label>Status</Form.Label>
                           <Form.Select
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            value={selectedStatusID}
+                            onChange={(e) => setSelectedStatusID(e.target.value)}
                             required
                           >
-                            <option value="">All</option>
-                            {statuses.map((stat, index) => (
-                              <option key={index} value={stat}>
-                                {stat}
+                            {statuses.map((stat) => (
+                              <option key={stat.id} value={stat.id}>
+                                {stat.name}
                               </option>
                             ))}
                           </Form.Select>
@@ -252,94 +201,47 @@ const GenRepHR = () => {
                         <Button type="submit">Generate</Button>
                       </div>
                     </Form>
+                    <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Download request</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                      {fetchedData ? (
+                        fetchedData.map((employee, index) => (
+                          <Card key={index} className="mb-2">
+                            <Card.Body>
+                              <Card.Title>{employee.Full_Name}</Card.Title>
+                              <Card.Text>
+                                <strong>NIC:</strong> {employee.NIC} <br />
+                                <strong>Department:</strong> {employee.Dept_Name} <br />
+                                <strong>Branch:</strong> {employee.Branch_Name} <br />
+                                <strong>Status:</strong> {employee.Status} <br />
+                                <strong>Title:</strong> {employee.Title}
+                              </Card.Text>
+                            </Card.Body>
+                          </Card>
+                        ))
+                      ) : (
+                        <p>No data available.</p>
+                      )}
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShow(false)}>
+                          Dismiss
+                        </Button>
+                        <Button variant="primary" onClick={handleDownloadPDF}>
+                          Download as PDF
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
                   </Accordion.Body>
                 </Accordion.Item>
 
-                <Accordion.Item eventKey="2">
-                  <Accordion.Header>Employee details by Branch</Accordion.Header>
-                  <Accordion.Body>
-                    
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="3">
-                  <Accordion.Header>Employee details by Pay Grade</Accordion.Header>
-                  <Accordion.Body>
-                    
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="4">
-                  <Accordion.Header>Dependent details of Employees</Accordion.Header>
-                  <Accordion.Body>
-                    
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="5">
-                <Accordion.Header>Emergency Contact details of Employees</Accordion.Header>
-                <Accordion.Body>
-                  
-                </Accordion.Body>
-              </Accordion.Item>
+                
               </Accordion>
             </Tab>
 
-            <Tab eventKey="leave" title="Leave details">
-            <Accordion>
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>Leave details of an Employee</Accordion.Header>
-                <Accordion.Body>
-                  <Card border="danger">
-                    <Card.Header as="h5">No. of leaves remaining</Card.Header>
-                    <Card.Body>
-                      <Form>
-                        <FloatingLabel
-                          controlId="floatingInput"
-                          label="Enter NIC or Employee ID"
-                          className="mb-3"
-                        >
-                          <Form.Control type="email" placeholder="name@example.com" />
-                        </FloatingLabel>
-                        <div className="d-flex justify-content-center">
-                          <Button variant="primary" type="submit">Search</Button>
-                        </div>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                  <div style={{ margin: "20px 0" }}>
-                    {/* This div adds space */}
-                  </div>
-                  <Card border="danger">
-                    <Card.Header as="h5" >Leave request details</Card.Header>
-                    <Card.Body>
-                      <Form>
-                        <FloatingLabel
-                          controlId="floatingInput"
-                          label="Enter NIC or Employee ID"
-                          className="mb-3"
-                        >
-                          <Form.Control type="email" placeholder="name@example.com" />
-                        </FloatingLabel>
-                        <div className="d-flex justify-content-center">
-                          <Button variant="primary" type="submit">Search</Button>
-                        </div>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                </Accordion.Body>
-              </Accordion.Item>
-              <Accordion.Item eventKey="1">
-                <Accordion.Header>No. of remaining leaves</Accordion.Header>
-                <Accordion.Body>
-                  
-                </Accordion.Body>
-              </Accordion.Item>
-              <Accordion.Item eventKey="2">
-                <Accordion.Header>Leave request details</Accordion.Header>
-                <Accordion.Body>
-                  
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            </Tab>
+            
           </Tabs>
         </section>
       </div>

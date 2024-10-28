@@ -10,6 +10,7 @@ const employeeTableRoute=require('./routes/employeeTableRoute');
 const adminRoute=require('./routes/adminRoute');
 const dependantInfoRoute = require('./routes/dependantInfoRoute');
 const leaveRequestRoute = require('./routes/LeaveRequestRoute');
+const generateReportRoute = require('./routes/generateReportRoute')
 
 
 // dotenv  config
@@ -47,6 +48,7 @@ app.use('/',authRoute);
 app.use('/employeeTable',employeeTableRoute);
 app.use('/dependant',dependantInfoRoute);
 app.use('/leaveRequest',leaveRequestRoute);
+app.use('/genarateReport', generateReportRoute);
 
 
 // Admin route
