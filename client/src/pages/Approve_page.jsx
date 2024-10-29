@@ -16,7 +16,7 @@ const ApproveLeave = () => {
   const [selectedSearchType, setSelectedSearchType] = useState('nic'); 
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [email,setEmail]=useState('');
   // Fetch leave requests
   const fetchLeaveRequests = async () => {
     setLoading(true);
@@ -50,6 +50,24 @@ const ApproveLeave = () => {
     searchEmployees(request.NIC); // Automatically call the search function with the NIC
   };
 
+  const sendMail = async (Req_ID,Approved) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&status=${Approved}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (response.data.success) {
+        setAlertMessage("Email sent successfully");
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching leave requests', error);
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
   const handleApprove = async (Req_ID) => {
     try {
       const response = await api.put(
@@ -59,7 +77,9 @@ const ApproveLeave = () => {
       );
       if (response.data.success) {
         setAlertMessage("Leave approved successfully");
+        
         setShowAlert(true);
+        sendMail(Req_ID,1);
         fetchLeaveRequests(); // Refresh leave requests
       }
     } catch (error) {
@@ -78,7 +98,9 @@ const ApproveLeave = () => {
       );
       if (response.data.success) {
         setAlertMessage("Leave rejected successfully");
+       
         setShowAlert(true);
+        sendMail(Req_ID,2);
         fetchLeaveRequests();
       }
     } catch (error) {

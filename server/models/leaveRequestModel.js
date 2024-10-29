@@ -141,7 +141,30 @@ const LeaveRequestModel = {
       callback(null, results[0].result);
     });
   },
-
+  getAppRejMail:(Req_Id, callback) => {
+    const query = 'SELECT db_getMail_apprej(?)';
+    const queryParams = [
+      Req_Id
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+  getSupervisorMail:(Req_Id, callback) => {
+    const query = 'SELECT db_getMail_supervisor(?)';
+    const queryParams = [
+      Req_Id
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
 
 
 

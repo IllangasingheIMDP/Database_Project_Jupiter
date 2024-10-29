@@ -22,7 +22,23 @@ const LeaveRequest = () => {
   const [fetchAlertMessage, setFetchAlertMessage] = useState('');
   const [showFetchAlert, setShowFetchAlert] = useState(false);
   const [loading, setLoading] = useState(false); // Loading state for fetch requests
+  const sendMail = async (Req_ID,text) => {
+    setLoading(true);
+    try {
+      const response = await api.post(`/leaveRequest/supervisorMail?Req_ID=${Req_ID}`,{text:text}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (response.data.success) {
+        setAlertMessage("Email sent successfully");
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching leave requests', error);
+    } finally {
+      setLoading(false);
+    }
 
+  }
   // Handle form submission for leave request
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +69,10 @@ const LeaveRequest = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
+        sendMail(response.data.data,`You have new leave request by user ${user.User_Name}\nLeave type:${Leave_Type}\n
+          Start_Date: ${Start_Date}\n
+          End Date: ${End_Date}\n
+          Reason: ${Reason}\n`)
         setAlertMessage('Leave request submitted successfully');
         setLeaveType('');
         setStartDate('');

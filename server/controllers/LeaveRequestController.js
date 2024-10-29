@@ -1,10 +1,37 @@
 const leaveRequestModel = require('../models/leaveRequestModel');
-
+const nodemailer = require('nodemailer');
 const LeaveRequestController={
-    
+  sendEmailAppRej: async function (to, subject, approved) {
+    const text = approved==1 ? "Your leave request is approved" : "Your leave request is rejected";
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+      auth: {
+        user: 'dasuncompetition@gmail.com', // Your email
+        pass: 'obup ldyu zkwz ixpm', // Your email password or app password
+      },
+    });
+
+    const mailOptions = {
+      from: 'dasuncompetition@gmail.com',
+      to,
+      subject,
+      text,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      return true; // Email sent successfully
+    } catch (error) {
+      console.error("Error sending email:", error);
+      return false; // Email not sent
+    }
+  },
     createNewLeaveRequest: async (req, res) => {
       try {
-        console.log("here  1");
+        
 
         const Data = {
             User_ID: req.body.User_ID,
@@ -20,6 +47,7 @@ const LeaveRequestController={
           if (err) {
             return res.status(500).send({ data: 'Internal Server Error :' , error: err });
           }
+         
           res.status(200).send({ data: result.data, success: result.success });
         });
       } catch (error) {
@@ -28,7 +56,60 @@ const LeaveRequestController={
       }
     },
 
-
+    sendEmailSupervisor: async function (to, subject, text) {
+     
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+        auth: {
+          user: 'dasuncompetition@gmail.com', // Your email
+          pass: 'obup ldyu zkwz ixpm', // Your email password or app password
+        },
+      });
+  
+      const mailOptions = {
+        from: 'dasuncompetition@gmail.com',
+        to,
+        subject,
+        text,
+      };
+  
+      try {
+        await transporter.sendMail(mailOptions);
+        return true; // Email sent successfully
+      } catch (error) {
+        console.error("Error sending email:", error);
+        return false; // Email not sent
+      }
+    },
+      createNewLeaveRequest: async (req, res) => {
+        try {
+          console.log("here  1");
+  
+          const Data = {
+              User_ID: req.body.User_ID,
+              Leave_Type: req.body.Leave_Type,
+              Start_Date: req.body.Start_Date,
+              End_Date: req.body.End_Date,
+              Reason: req.body.Reason,
+              Status: req.body.Status,
+          };
+      
+          // Save data
+          leaveRequestModel.createNewLeaveRequest(Data, (err, result) => {
+            if (err) {
+              return res.status(500).send({ data: 'Internal Server Error :' , error: err });
+            }
+            res.status(200).send({ data: result.data, success: result.success });
+          });
+        } catch (error) {
+          console.log(error);
+          res.status(500).send({ data: `Internal Server Error : ${error.message}`, success: false});
+        }
+      },
+  
 
     getLeaveRequestbyId: async (req, res) => {
         try {
@@ -219,6 +300,92 @@ const LeaveRequestController={
         }
     },
     
+    getAppRejMail: async (req, res) => {
+      try {
+          const Req_ID = req.query.Req_ID; // Get NIC from query params
+          const Approved = req.query.Approved;
+          
+          // Check if either NIC or Name is provided
+          if (!Req_ID) {
+              return res.status(400).send({ message: "Request ID is required", success: false });
+          }
+  
+          // Call the leaveRequestModel.getallleaves function with the correct parameters
+          const result = await new Promise((resolve, reject) => {
+              leaveRequestModel.getAppRejMail(Req_ID, (err, result) => {
+                  if (err) {
+                      reject(err);
+                  } else {
+                      resolve(result);
+                  }
+              });
+          });
+         
+           const firstEntry = result[0];
+            const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+            const resultData = firstEntry[resultKey];
+            const email=resultData.data.Email;
+           
+          // Check if leave_request data is found
+          if (!resultData.success) {
+              return res.status(404).send({ message: "You have no leave requests email yet", success: false });
+          } else {
+           
+            const emailSent = await LeaveRequestController.sendEmailAppRej(email, "Leave Request Status", Approved); // Use the controller reference
+            if (!emailSent) {
+             return res.status(500).send({ message: "Email could not be sent", success: false });
+           }
+              return res.status(200).send({ success: true });
+          }
+      } catch (error) {
+          console.log(error);
+          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+      }
+  },
+  sendSupervisorMail: async (req, res) => {
+    try {
+        const Req_ID = req.query.Req_ID; // Get NIC from query params
+        const text=req.body.text;
+
+        
+        // Check if either NIC or Name is provided
+        if (!Req_ID || !text) {
+            return res.status(400).send({ message: "Request ID and text is required", success: false });
+        }
+
+        // Call the leaveRequestModel.getallleaves function with the correct parameters
+        const result = await new Promise((resolve, reject) => {
+            leaveRequestModel.getSupervisorMail(Req_ID, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+       
+         const firstEntry = result[0];
+          const resultKey = Object.keys(firstEntry)[0]; // Get the dynamic key
+          const resultData = firstEntry[resultKey];
+          const email=resultData.data.Email;
+         
+        // Check if leave_request data is found
+        if (!resultData.success) {
+            return res.status(404).send({ message: "You have no leave requests email yet", success: false });
+        } else {
+         
+          const emailSent = await LeaveRequestController.sendEmailSupervisor(email, "New Leave Request", text); // Use the controller reference
+          if (!emailSent) {
+           return res.status(500).send({ message: "Email could not be sent", success: false });
+         }
+            return res.status(200).send({ success: true });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ message: "Server error", success: false, error: error.message });
+    }
+},
+  
 
 
 
