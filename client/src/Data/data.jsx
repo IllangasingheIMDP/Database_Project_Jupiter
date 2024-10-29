@@ -6,11 +6,6 @@ export const employeeMenu = [
       icon: "fa-solid fa-house"
     },
     {
-      name: 'Edit Personal Info ',
-      path: "#",
-      icon: 'fa-solid fa-clipboard-list'
-    },
-    {
       name: 'Profile',
       path: "/home",
       icon: 'fa-solid fa-clipboard-list'
@@ -83,13 +78,13 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-        name: 'Edit Personal Info',
-        path: "#",
-        icon: "fa-solid fa-house"
-      },
+      name: 'Manage Employees ',
+      path: '/manage-employees',
+      icon: 'fa-solid fa-user'
+    },
     {
-      name: 'Add New Employee ',
-      path: '/add-new-employee',
+      name: 'Manage Users ',
+      path: '/manage-users',
       icon: 'fa-solid fa-user'
     },
     {
