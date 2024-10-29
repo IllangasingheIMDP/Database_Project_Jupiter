@@ -81,15 +81,7 @@ const LeaveRequestModel = {
     });
   },
 
-  findBySuperVisorUserID: (SupervisorUserID, callback) => {
-    const query = 'SELECT db_get_Pending_Leave_Requests_for_a_supervisor(?) AS result';
-    db.query(query, [SupervisorUserID], (err, result) => {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, result);
-    });
-  },
+  
 
   editRequestStatus: (Request_ID, Status, callback) => {
     const query = 'SELECT JSON_EXTRACT(db_edit_request_status(?,?), "$") AS result';
@@ -121,6 +113,9 @@ const LeaveRequestModel = {
     });
   },
 
+
+
+  
 
 
 
