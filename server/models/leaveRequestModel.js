@@ -106,27 +106,22 @@ const LeaveRequestModel = {
   },
 
 
-  ApproveRequestStatus: (Req_ID, callback) => {
-    const query = 'CALL set_Pending_Leave_Requests_to_approve(?)';
-    
-    db.query(query, Req_ID, (err, results) => {
+
+  getallleaves: (NIC, Name, callback) => {
+    const query = 'SELECT JSON_EXTRACT(db_get_employee_leave_details(?,?), "$") AS result';
+    const queryParams = [
+        NIC,
+        Name,
+    ];
+    db.query(query, queryParams, (err, results) => {
       if (err) {
         return callback(err);
       }
-      callback(null, results);
+      callback(null, results[0].result);
     });
   },
 
-  RejectRequestStatus: (Request_ID, callback) => {
-    const query = 'CALL set_Pending_Leave_Requests_to_reject(?)';
-    
-    db.query(query, Request_ID, (err, results) => {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, results);
-    });
-  },
+
 
 
   
