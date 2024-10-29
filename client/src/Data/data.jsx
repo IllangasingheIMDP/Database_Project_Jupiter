@@ -78,6 +78,7 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
+
       name: 'Manage Employees ',
       path: '/manage-employees',
       icon: 'fa-solid fa-user'

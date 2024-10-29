@@ -1,6 +1,7 @@
 // src/routes/ProtectedRoute.js
 
 import React, { useEffect } from "react";
+import Spinner from "./spinner";
 import { Navigate,useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from 'react-redux';
@@ -57,7 +58,9 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
 
   // Handle token case where user is not set yet
   if (localStorage.getItem("token")) {
-    return <div>Loading...</div>; // Optional: Show a loading spinner while fetching user
+    console.log(localStorage.getItem("token"));
+    return  <Spinner/>
+  ; // Optional: Show a loading spinner while fetching user
   } else {
     return <Navigate to="/login" />;
   }
