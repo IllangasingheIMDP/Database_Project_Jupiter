@@ -81,7 +81,15 @@ const LeaveRequestModel = {
     });
   },
 
-  
+  findBySuperVisorUserID: (SupervisorUserID, callback) => {
+    const query = 'SELECT db_get_Pending_Leave_Requests_for_a_supervisor(?) AS result';
+    db.query(query, [SupervisorUserID], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, result);
+    });
+  },
 
   editRequestStatus: (Request_ID, Status, callback) => {
     const query = 'SELECT JSON_EXTRACT(db_edit_request_status(?,?), "$") AS result';
@@ -98,6 +106,27 @@ const LeaveRequestModel = {
   },
 
 
+  ApproveRequestStatus: (Req_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_approve(?)';
+    
+    db.query(query, Req_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+
+  RejectRequestStatus: (Request_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_reject(?)';
+    
+    db.query(query, Request_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
 
   getallleaves: (NIC, Name, callback) => {
     const query = 'SELECT JSON_EXTRACT(db_get_employee_leave_details(?,?), "$") AS result';
@@ -113,9 +142,6 @@ const LeaveRequestModel = {
     });
   },
 
-
-
-  
 
 
 
