@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
+import api from '../axios';
 
 const ADD_Employee = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -59,7 +60,7 @@ const ADD_Employee = () => {
 
   const detdropdonwdata = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/employeeTable/get_dropdown_options', {
+      const res = await api.get('/employeeTable/get_dropdown_options', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -130,7 +131,7 @@ const ADD_Employee = () => {
   const fetchCustomAttributes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5555/employeeTable/get_available_custom_fields', {
+      const response = await api.get('/employeeTable/get_available_custom_fields', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -228,7 +229,7 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const response = await axios.post('http://localhost:5555/employeeTable/add_employee', formData, {
+    const response = await api.post('/employeeTable/add_employee', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${localStorage.getItem('token')}`,

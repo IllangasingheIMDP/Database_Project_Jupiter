@@ -14,6 +14,7 @@ import Row from 'react-bootstrap/Row';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import './GenRepHR.css';
+import api from '../../axios';
   
 
 const GenRepHR = () => {
@@ -30,8 +31,8 @@ const GenRepHR = () => {
 
   const handleReportGeneration = async () => {
     try {
-      const response = await axios.post(
-        'http://localhost:5555/genarateReport/get_employee_detail_by_department',  // Adjusted API endpoint
+      const response = await api.post(
+        '/genarateReport/get_employee_detail_by_department',  // Adjusted API endpoint
         {
           department: selectedDepartmentID || 0,  // Default to 0 if not selected
           title: selectedTitleID || 0,
@@ -62,7 +63,7 @@ const GenRepHR = () => {
   useEffect(() => {
     const fetchDropdownOptions = async () => {
       try {
-        const response = await axios.get('http://localhost:5555/genarateReport/get_department_dropdown_options', {
+        const response = await api.get('/genarateReport/get_department_dropdown_options', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,  // Added Authorization header
           },

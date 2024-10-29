@@ -6,6 +6,7 @@ import Layout from '../../components/Layout';
 import { useNavigate } from 'react-router-dom';
 import MaterialButton from '../../components/MaterialButton';
 import CustomAlert from '../../components/CustomAlert';
+import api from '../../axios';
 
 const Edit_Table_Attributes = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -17,7 +18,7 @@ const Edit_Table_Attributes = () => {
   // Function to fetch table names
   const fetchTableNames = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/admin/getTables', {
+      const res = await api.get('/admin/getTables', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 

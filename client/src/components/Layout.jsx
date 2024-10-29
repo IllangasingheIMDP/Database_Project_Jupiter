@@ -11,6 +11,7 @@ import CustomAlert from './CustomAlert';
 import Button from 'react-bootstrap/Button';
 import notificationIcon from '../../public/notification.png'
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
+import api from '../axios';
 // Import your GIF and profile picture here
 
 
@@ -38,8 +39,8 @@ const Layout = ({ children }) => {
       try {
         
         dispatch(showLoading());
-        const res = await axios.put(
-          `http://localhost:5555/users/notification`,{
+        const res = await api.put(
+          `/users/notification`,{
             userId:user.User_ID,
             datetime:datetime
           },
@@ -97,8 +98,8 @@ const Layout = ({ children }) => {
     const getTeam=async()=>{
       try {
         dispatch(showLoading());
-        const res = await axios.get(
-          `http://localhost:5555/users/team?employeeId=${user.Employee_ID}`,
+        const res = await api.get(
+          `/users/team?employeeId=${user.Employee_ID}`,
           
           {
             headers: {
@@ -140,8 +141,8 @@ const Layout = ({ children }) => {
     const getNotifications=async()=>{
       try {
         dispatch(showLoading());
-        const res = await axios.get(
-          `http://localhost:5555/users/notification?userId=${user.User_ID}`,
+        const res = await api.get(
+          `/users/notification?userId=${user.User_ID}`,
           
           {
             headers: {

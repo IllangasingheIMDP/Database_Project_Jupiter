@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'; // To get the current user's data
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton'; 
+import api from '../axios';
 
 const LeaveRequest = () => {
   const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -48,7 +49,7 @@ const LeaveRequest = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5555/leaveRequest/leave-requests', leaveRequestData, {
+      const response = await api.post('/leaveRequest/leave-requests', leaveRequestData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
@@ -72,7 +73,7 @@ const LeaveRequest = () => {
   const fetchLeaveRequests = async () => {
     setLoading(true); // Show loading spinner or feedback
     try {
-      const response = await axios.get(`http://localhost:5555/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
+      const response = await api.get(`/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 

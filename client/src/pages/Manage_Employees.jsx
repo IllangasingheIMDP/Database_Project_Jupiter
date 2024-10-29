@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
+import api from '../axios';
 
 const Manage_Employees = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -15,7 +16,7 @@ const Manage_Employees = () => {
   // Function to fetch dropdown data including employee list
   const detdropdonwdata = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/employeeTable/get_employees', {
+      const res = await api.get('/employeeTable/get_employees', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -47,8 +48,8 @@ const Manage_Employees = () => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
         // Send the delete request with token in headers
-        const res = await axios.post(
-          `http://localhost:5555/employeeTable/delete_employee/${selectedEmployee}`,
+        const res = await api.post(
+          `/employeeTable/delete_employee/${selectedEmployee}`,
           {}, // Empty body for POST request
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

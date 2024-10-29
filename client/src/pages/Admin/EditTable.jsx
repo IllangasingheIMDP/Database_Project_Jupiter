@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import Layout from '../../components/Layout';
 import CustomAlert from '../../components/CustomAlert';
 import MaterialButton from '../../components/MaterialButton';
+import api from '../../axios';
 
 const EditTable = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -15,8 +16,8 @@ const EditTable = () => {
 
   const fetchTableData = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:5555/admin/getTableData/${tableName}`,
+      const response = await api.get(
+        `/admin/getTableData/${tableName}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Adding Authorization header
         }
@@ -57,8 +58,8 @@ const EditTable = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:5555/admin/updateTableData/${tableName}`, 
+      const response = await api.put(
+        `/admin/updateTableData/${tableName}`, 
         editRow, 
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Adding Authorization header
@@ -85,8 +86,8 @@ const EditTable = () => {
 const handleDeleteRow = async (row) => {
   if (window.confirm('Are you sure you want to delete this row?')) {
     try {
-      const response = await axios.post(
-        `http://localhost:5555/admin/deleteTableData/${tableName}`, // Assuming you handle the deletion in your server logic
+      const response = await api.post(
+        `/admin/deleteTableData/${tableName}`, // Assuming you handle the deletion in your server logic
         row, // Sending the entire row data as JSON
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Adding Authorization header

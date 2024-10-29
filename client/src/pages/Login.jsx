@@ -6,7 +6,8 @@ import backgroundImage from '../../public/background.png'
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '../redux/features/alertSlice';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
+import api from '../axios'; 
 import './Login.css'
 const LoginForm = () => {
 
@@ -24,7 +25,7 @@ const LoginForm = () => {
     try {
       dispatch(showLoading());
       
-      const res = await axios.post('http://localhost:5555/login', {
+      const res = await api.post('/login', {
         username,
         password
     });
