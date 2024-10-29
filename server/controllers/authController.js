@@ -6,7 +6,7 @@ const authController = {
     // Get all users
     login: async (req, res) => {
       try {
-        const user = await new Promise((resolve, reject) => {
+        const resultData = await new Promise((resolve, reject) => {
           UserModel.findByUserName(req.body.username, (err, result) => {
             if (err) {
               reject(err);
@@ -14,8 +14,12 @@ const authController = {
               resolve(result);
             }
           });
-        })
-        if (!user) {
+        });
+    
+        const firstKey = Object.keys(resultData)[0];
+        const user = resultData[firstKey].data;
+
+        if (!resultData[firstKey].success) {
           return res
             .status(404)
             .send({ message: "User not found", success: false });
@@ -40,7 +44,7 @@ const authController = {
     
     authenticate:async (req,res)=>{
       try {
-        const user = await new Promise((resolve, reject) => {
+        const resultData = await new Promise((resolve, reject) => {
           UserModel.findByUserName(req.user.username, (err, result) => {
             if (err) {
               reject(err);
@@ -49,9 +53,11 @@ const authController = {
             }
           });
         });
-        user.Password = undefined;
+        const firstKey = Object.keys(resultData)[0];
+        const user = resultData[firstKey].data;
+        user.password=undefined;
         
-        if (!user) {
+        if (!resultData[firstKey].success) {
           return res
             .status(404)
             .send({ message: "User not found", success: false });
