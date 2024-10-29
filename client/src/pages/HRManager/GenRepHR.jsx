@@ -102,8 +102,8 @@ const GenRepHR = () => {
   
     // Define the title using selected values
     const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
-const title = titles.find(tit => tit.id === Number(selectedTitleID))?.name || "Title";
-const status = statuses.find(stat => stat.id === Number(selectedStatusID))?.name || "All";
+    const title = titles.find(tit => tit.id === Number(selectedTitleID))?.name || "Title";
+    const status = statuses.find(stat => stat.id === Number(selectedStatusID))?.name || "All";
   
     // Construct the heading text
     const headingText = `${status} ${title}s of ${department} department`;
@@ -132,8 +132,11 @@ const status = statuses.find(stat => stat.id === Number(selectedStatusID))?.name
         theme: 'grid', // Optional: table theme
         styles: { fontSize: 10 }, // Optional: font size for table content
       });
-  
-      doc.save('Employee_Report.pdf'); // Save PDF with the specified file name
+      
+      const now = new Date();
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+      const fileName = `${status} ${title}s of ${department} department on ${formattedDate}.pdf`;
+      doc.save(fileName); // Save PDF with the specified file name
     } else {
       alert('No data available to export.');
     }
