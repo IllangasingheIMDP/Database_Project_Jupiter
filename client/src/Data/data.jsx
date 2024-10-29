@@ -83,7 +83,7 @@ export const employeeMenu = [
       icon: 'fa-solid fa-user'
     },
     {
-      name: 'Approve/Reject Leave',
+      name: 'Approve / Reject Leave',
       path: "/approve-reject-leaves",
       icon: 'fa-solid fa-clipboard-list'
     },

@@ -58,7 +58,7 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
 
   // Handle token case where user is not set yet
   if (localStorage.getItem("token")) {
-    console.log(localStorage.getItem("token"));
+    
     return  <Spinner/>
   ; // Optional: Show a loading spinner while fetching user
   } else {

@@ -98,6 +98,7 @@ const Layout = ({ children }) => {
     const getTeam=async()=>{
       try {
         dispatch(showLoading());
+        
         const res = await api.get(
           `/users/team?employeeId=${user.Employee_ID}`,
           
@@ -107,10 +108,12 @@ const Layout = ({ children }) => {
             },
           }
         );
+        
         dispatch(hideLoading());
         
         if(res.data.success){
           setHasTeam(true);
+          
         }else{
           setHasTeam(false);
         }
@@ -227,7 +230,7 @@ const Layout = ({ children }) => {
         <div className="w-1/5 bg-yellow-700 text-white min-h-screen">
           
           <div className="p-4 text-xl">
-            {SidebarMenu.filter(menu => !(menu.name === 'Approve/Reject Leave' && !hasTeam))
+            {SidebarMenu.filter(menu => !(menu.name === 'Approve / Reject Leave' && !hasTeam))
             .map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (

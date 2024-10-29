@@ -26,22 +26,24 @@ const Spinner = () => {
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="loader"></div>
       <p className="mt-4 text-lg">{countdown} Redirecting to Login ....</p>
-      <style jsx>{`
-        .loader {
-          border: 8px solid rgba(0, 0, 0, 0.1);
-          border-left-color: #3498db;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          animation: spin 1s ease infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
+      <style>
+        {`
+          .loader {
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s ease infinite;
           }
-        }
-      `}</style>
+
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
