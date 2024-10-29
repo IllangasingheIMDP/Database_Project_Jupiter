@@ -78,8 +78,14 @@ export const employeeMenu = [
       icon: 'fa-solid fa-clipboard-list'
     },
     {
-      name: 'Add New Employee ',
-      path: '/add-new-employee',
+
+      name: 'Manage Employees ',
+      path: '/manage-employees',
+      icon: 'fa-solid fa-user'
+    },
+    {
+      name: 'Manage Users ',
+      path: '/manage-users',
       icon: 'fa-solid fa-user'
     },
     {
