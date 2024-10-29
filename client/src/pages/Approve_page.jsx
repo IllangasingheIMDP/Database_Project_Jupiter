@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import './Approve_leave.css';
 import { useSelector } from 'react-redux';
+import { FaChevronRight } from 'react-icons/fa';
 
 const ApproveLeave = () => {
   const { user } = useSelector((state) => state.user);
@@ -10,10 +11,12 @@ const ApproveLeave = () => {
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [selectedSearchType, setSelectedSearchType] = useState('nic'); 
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Fetch leave requests
   const fetchLeaveRequests = async () => {
     setLoading(true);
     try {
@@ -39,12 +42,18 @@ const ApproveLeave = () => {
     setExpandedCardIndex(expandedCardIndex === index ? null : index);
   };
 
+  // Function to search for a specific employee automatically
+  const searchEmployeeByRequest = (request) => {
+    setSearchTerm(request.NIC); // Set search term to the NIC of the request
+    setSelectedSearchType('nic'); // Ensure NIC search type is selected
+    searchEmployees(request.NIC); // Automatically call the search function with the NIC
+  };
+
   const handleApprove = async (Req_ID) => {
-    console.log('Approving leave request:', Req_ID);
     try {
       const response = await axios.put(
         `http://localhost:5555/approve-reject-leaves/approve?Req_ID`, 
-        {"Req_ID" : Req_ID},
+        { "Req_ID": Req_ID },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       if (response.data.success) {
@@ -78,14 +87,35 @@ const ApproveLeave = () => {
     }
   };
 
+  // Update searchEmployees to take NIC as parameter
+  const searchEmployees = async (nic) => {
+    try {
+      const params = {
+        NIC: selectedSearchType === 'nic' ? nic : null,
+        Name: selectedSearchType === 'name' ? searchTerm : null,
+      };
+
+      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/getallleaves`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        params,
+      });
+
+      if (response.data.success) {
+        setEmployeeDetails(response.data.data);
+      } else {
+        setEmployeeDetails(null);
+        setAlertMessage(response.data.data);
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error("Error searching employees:", error);
+      setAlertMessage("Error: Unable to fetch employee details.");
+      setShowAlert(true);
+    }
+  };
+
   const handleSearch = () => {
-    setEmployeeDetails({
-      name: 'John Doe',
-      nic: '123456789V',
-      annualLeave: 10,
-      casualLeave: 5,
-      totalLeaveBalance: 15,
-    });
+    searchEmployees(searchTerm); // Ensure that the search is executed with the current term
   };
 
   return (
@@ -113,20 +143,23 @@ const ApproveLeave = () => {
                             boxShadow: expandedCardIndex === index ? '0 4px 20px rgba(0, 0, 0, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
                           }}
                         >
-                          <div className="flex items-center">
-                            <img src="https://th.bing.com/th/id/R.f6f9bb7836e7652e98cb811351f10102?rik=SNsIkH%2brdq%2bCNA&pid=ImgRaw&r=0" alt="Employee" className="w-12 h-12 rounded-full mr-4" />
-                            <div>
-                              <p className="font-semibold text-white"><strong>Name:</strong> {request.Name}</p>
-                              
-                              <p className="text-gray-400"><strong>NIC:</strong> {request.NIC}</p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <img src="https://th.bing.com/th/id/R.f6f9bb7836e7652e98cb811351f10102?rik=SNsIkH%2brdq%2bCNA&pid=ImgRaw&r=0" alt="Employee" className="w-12 h-12 rounded-full mr-4" />
+                              <div>
+                                <p className="font-semibold text-white"><strong>Name:</strong> {request.Name}</p>
+                                <p className="text-gray-400"><strong>NIC:</strong> {request.NIC}</p>
+                              </div>
                             </div>
+                            <button onClick={() => searchEmployeeByRequest(request)} className="text-white hover:text-blue-500 transition duration-300">
+                              <FaChevronRight />
+                            </button>
                           </div>
                           {expandedCardIndex === index && (
                             <div className="mt-4">
                               <p className="text-gray-300"><strong>Start Date:</strong> {request.Start_Date}</p>
                               <p className="text-gray-300"><strong>End Date:</strong> {request.End_Date}</p>
                               <p className="text-gray-300"><strong>Reason:</strong> {request.Reason}</p>
-                              
                               <div className="flex mt-4">
                                 <button onClick={() => handleApprove(request.Req_ID)} className="bg-green-500 text-white p-2 rounded mr-2 hover:bg-green-600 transition duration-300">Approve</button>
                                 <button onClick={() => handleReject(request.Req_ID)} className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-300">Reject</button>
@@ -143,28 +176,72 @@ const ApproveLeave = () => {
               </div>
             </div>
             <div className="col-6 col-md-4">
-              <div className="mb-4 p-4 bg-green-800 rounded shadow-md">
-                <label htmlFor="search" className="block mb-2 text-white">Search Employee by Name or NIC:</label>
-                <div className="flex">
-                  <input
-                    type="text"
-                    id="search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border p-2 flex-grow mr-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
-                    placeholder="Enter employee name or NIC"
-                  />
-                  <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-300">
-                    Search
-                  </button>
+              <div className="mb-4 p-4 bg-gray-400 rounded shadow-md">
+                <label className="block mb-2 text-white">Search by:</label>
+                <div className="flex mb-4">
+                  <label className="mr-4">
+                    <input
+                      type="radio"
+                      value="nic"
+                      checked={selectedSearchType === 'nic'}
+                      onChange={() => setSelectedSearchType('nic')}
+                      className="mr-1"
+                    />
+                    NIC
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="name"
+                      checked={selectedSearchType === 'name'}
+                      onChange={() => setSelectedSearchType('name')}
+                      className="mr-1"
+                    />
+                    Name
+                  </label>
                 </div>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border p-2 mb-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
+                  placeholder={`Enter ${selectedSearchType === 'nic' ? 'NIC' : 'Name'}`}
+                />
+                <button onClick={handleSearch} className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition duration-300">Search</button>
+
                 {employeeDetails && (
-                  <div className="mt-4 p-4 bg-gray-900 rounded shadow-md">
-                    <p className="text-gray-200"><strong>Name:</strong> {employeeDetails.name}</p>
-                    <p className="text-gray-200"><strong>NIC:</strong> {employeeDetails.nic}</p>
-                    <p className="text-gray-200"><strong>Remaining Annual Leave:</strong> {employeeDetails.annualLeave}</p>
-                    <p className="text-gray-200"><strong>Remaining Casual Leave:</strong> {employeeDetails.casualLeave}</p>
-                    <p className="text-gray-200"><strong>Total Leave Balance:</strong> {employeeDetails.totalLeaveBalance}</p>
+                  <div className="mt-4 bg-gray-900 p-4 rounded">
+                    <h4 className="text-xl text-white">Employee Details</h4>
+                    <p className="text-gray-200"><strong>Profile Picture:</strong> <img src={employeeDetails.data.Profile_Pic} alt="Profile" className="w-12 h-12 rounded-full" /></p>
+                    <p className="text-gray-200"><strong>Full Name:</strong> {employeeDetails.data.Full_Name}</p>
+                    <p className="text-gray-200"><strong>NIC:</strong> {employeeDetails.data.NIC}</p>
+                    <p className="text-gray-200"><strong>Remaining Total Leaves:</strong> {employeeDetails.data.Total_Leave_Count}</p>
+                    <p className="text-gray-200"><strong>Remaining Annual Leaves:</strong> {employeeDetails.data.Remaining_Annual}</p>
+                    <p className="text-gray-200"><strong>Remaining Casual Leaves:</strong> {employeeDetails.data.Remaining_Casual}</p>
+                    <p className="text-gray-200"><strong>Remaining Maternity Leaves:</strong> {employeeDetails.data.Remaining_Maternity}</p>
+                    <p className="text-gray-200"><strong>Remaining No-Pay Leaves:</strong> {employeeDetails.data.Remaining_No_Pay}</p>
+
+                    <h5 className="text-lg text-white">Leave Requests:</h5>
+                    <ul className="list-disc pl-5 text-gray-300">
+                      {Array.isArray(employeeDetails.leave_requests_of_user) && employeeDetails.leave_requests_of_user.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-4">
+                          {employeeDetails.leave_requests_of_user.map((leave, index) => (
+                            <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
+                              <p className="font-semibold text-white"><strong>Reason:</strong> {leave.Reason}</p>
+                              <p className="text-gray-300"><strong>From:</strong> {leave.Start_Date}</p>
+                              <p className="text-gray-300"><strong>To:</strong> {leave.End_Date}</p>
+                              <p className={`text-gray-300 ${leave.Status === 'Approve' ? 'text-green-400' : leave.Status === 'Reject' ? 'text-red-400' : 'text-yellow-400'}`}>
+                                <strong>Status:</strong> {leave.Status}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+                          <p className="text-gray-400">No leave requests found.</p>
+                        </div>
+                      )}
+                    </ul>
                   </div>
                 )}
               </div>
