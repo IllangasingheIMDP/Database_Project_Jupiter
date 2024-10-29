@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import CustomAlert from '../components/CustomAlert';
 import Modal from 'react-bootstrap/Modal'
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
+import api from '../axios';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 const Home = () => {
   const user = useSelector((state) => state.user.user);
@@ -36,8 +37,8 @@ const Home = () => {
         // Only fetch data if Employee_ID is available
         try {
           dispatch(showLoading());
-          const res = await axios.get(
-            `http://localhost:5555/users/profile?employeeId=${user.Employee_ID}`,
+          const res = await api.get(
+            `/users/profile?employeeId=${user.Employee_ID}`,
             
             {
               headers: {
@@ -136,8 +137,8 @@ const handlepwdchange=async(event)=>{
   }else{
     try {
       dispatch(showLoading());
-      const res = await axios.put(
-        `http://localhost:5555/users/password`,
+      const res = await api.put(
+        `/users/password`,
         {
           userData:{
             userId:user.User_ID,

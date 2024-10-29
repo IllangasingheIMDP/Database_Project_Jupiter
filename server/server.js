@@ -31,7 +31,7 @@ app.use(cors());
 app.use(express.json());
 // Connect to MySQL database
 
-
+/*
 db.connect((err) => {
   if (err) {
     console.error('Error connecting to MySQL:', err);
@@ -39,6 +39,7 @@ db.connect((err) => {
   }
   console.log('Connected to MySQL database.');
 });
+*/
 
 
 

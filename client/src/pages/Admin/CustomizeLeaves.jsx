@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import CustomAlert from '../../components/CustomAlert';
+import api from '../../axios';
 
 const CustomizeLeaves = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -12,7 +13,7 @@ const CustomizeLeaves = () => {
   useEffect(() => {
     const fetchLeaveData = async () => {
       try {
-        const res = await axios.get('http://localhost:5555/paygrade', {
+        const res = await api.get('/paygrade', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
 
@@ -39,8 +40,8 @@ const CustomizeLeaves = () => {
     const selectedData = payGradeData.find((pg) => pg.PayGrade_ID === selectedPayGrade);
     console.log(selectedData);
     try {
-      const res = await axios.put(
-        'http://localhost:5555/paygrade',
+      const res = await api.put(
+        '/paygrade',
         { PayGradeId: selectedPayGrade, PayGradeData: selectedData },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
+import api from '../axios';
 
 const Manage_Custom_Fields = () => {
   const [customField, setCustomField] = useState('');
@@ -16,7 +17,7 @@ const Manage_Custom_Fields = () => {
   const fetchCustomFields = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5555/employeeTable/get_available_custom_fields', {
+      const response = await api.get('/employeeTable/get_available_custom_fields', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
   
@@ -55,7 +56,7 @@ const Manage_Custom_Fields = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5555/employeeTable/add_custom_field', { name: customField }, {
+      const response = await api.post('/employeeTable/add_custom_field', { name: customField }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -80,7 +81,7 @@ const Manage_Custom_Fields = () => {
   const removeCustomField = async (NAME) => {
     if (window.confirm('Are you sure you want to delete this CustomField?')) {
       try {
-        const response = await axios.post('http://localhost:5555/employeeTable/delete_custom_field', { name: NAME }, {
+        const response = await api.post('/employeeTable/delete_custom_field', { name: NAME }, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

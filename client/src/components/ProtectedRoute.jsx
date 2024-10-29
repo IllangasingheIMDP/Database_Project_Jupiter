@@ -6,6 +6,7 @@ import axios from "axios";
 import { useSelector, useDispatch } from 'react-redux';
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
 import { setUser } from "../redux/features/userSlice";
+import api from "../axios";
 
 export default function ProtectedRoute({ children,allowedRoles  }) {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ export default function ProtectedRoute({ children,allowedRoles  }) {
   const getUser = async () => {
     try {
       dispatch(showLoading());
-      const res = await axios.post('http://localhost:5555/getUserData',
+      const res = await api.post('/getUserData',
         { token: localStorage.getItem('token') },
         {
           headers: {

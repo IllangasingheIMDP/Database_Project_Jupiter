@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import './Approve_leave.css';
 import { useSelector } from 'react-redux';
 import { FaChevronRight } from 'react-icons/fa';
+import api from '../axios';
 
 const ApproveLeave = () => {
   const { user } = useSelector((state) => state.user);
@@ -20,7 +21,7 @@ const ApproveLeave = () => {
   const fetchLeaveRequests = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
+      const response = await api.get(`/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
@@ -51,8 +52,8 @@ const ApproveLeave = () => {
 
   const handleApprove = async (Req_ID) => {
     try {
-      const response = await axios.put(
-        `http://localhost:5555/approve-reject-leaves/approve?Req_ID`, 
+      const response = await api.put(
+        `/approve-reject-leaves/approve?Req_ID`, 
         { "Req_ID": Req_ID },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -70,8 +71,8 @@ const ApproveLeave = () => {
 
   const handleReject = async (Req_ID) => {
     try {
-      const response = await axios.post(
-        `http://localhost:5555/approve-reject-leaves/reject`,
+      const response = await api.post(
+        `/approve-reject-leaves/reject`,
         { Req_ID },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -95,7 +96,7 @@ const ApproveLeave = () => {
         Name: selectedSearchType === 'name' ? searchTerm : null,
       };
 
-      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/getallleaves`, {
+      const response = await api.get(`/approve-reject-leaves/getallleaves`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         params,
       });
