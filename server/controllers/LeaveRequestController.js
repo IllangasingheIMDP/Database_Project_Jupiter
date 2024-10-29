@@ -121,69 +121,42 @@ const LeaveRequestController={
 
 
 
-      setRequestStatusApprove: async (req, res) => {
+    
+
+
+      getallemployeeleaves: async (req, res) => {
         try {
-          
-          const RequestID = req.body.Req_ID;
-          console.log(req.body);
-  
-      
-          if (!RequestID) {
-            return res.status(400).send({ message: "Request ID is required", success: false });
-          }
-      
-          const updatedStatus = await new Promise((resolve, reject) => {
-            leaveRequestModel.ApproveRequestStatus(RequestID, (err, result) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(result);
-              }
+            const NIC = req.query.NIC; // Get NIC from query params
+            const Name = req.query.Name;
+            
+            // Check if either NIC or Name is provided
+            if (!NIC && !Name) {
+                return res.status(400).send({ message: "NIC or Name is required", success: false });
+            }
+    
+            // Call the leaveRequestModel.getallleaves function with the correct parameters
+            const leave_request = await new Promise((resolve, reject) => {
+                leaveRequestModel.getallleaves(NIC, Name, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
             });
-          });
-      
-          if (!updatedStatus) {
-            return res.status(404).send({ message: "Failed to update status", success: false });
-          } else {
-            return res.status(200).send({ success: true, data: updatedStatus });
-          }
+    
+            // Check if leave_request data is found
+            if (!leave_request) {
+                return res.status(404).send({ message: "You have no leave requests yet", success: false });
+            } else {
+                return res.status(200).send({ success: true, data: leave_request });
+            }
         } catch (error) {
-          console.log(error);
-          return res.status(500).send({ message: "Server error", success: false, error: error.message });
+            console.log(error);
+            return res.status(500).send({ message: "Server error", success: false, error: error.message });
         }
-      },
-
-
-
-      setRequestStatusReject: async (req, res) => {
-        try {
-          const RequestID = req.body.Req_ID;
-  
-      
-          if (!RequestID) {
-            return res.status(400).send({ message: "Request ID is required", success: false });
-          }
-      
-          const updatedStatus = await new Promise((resolve, reject) => {
-            leaveRequestModel.RejectRequestStatus(RequestID, (err, result) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(result);
-              }
-            });
-          });
-      
-          if (!updatedStatus) {
-            return res.status(404).send({ message: "Failed to update status", success: false });
-          } else {
-            return res.status(200).send({ success: true, data: updatedStatus });
-          }
-        } catch (error) {
-          console.log(error);
-          return res.status(500).send({ message: "Server error", success: false, error: error.message });
-        }
-      },
+    },
+    
 
 
 
