@@ -1602,10 +1602,7 @@ const GenRepHR = () => {
                           Download as PDF
                       </Button>
                   </Modal.Footer>
-              </Modal>
-              </div>
-              <div className="employee-details-section bg-white p-3 rounded">
-                <h2 style={{ fontWeight: 'bold' }}>Emergency Contact details of Employees</h2>
+                </Modal>
               </div>
             </Tab>
             
