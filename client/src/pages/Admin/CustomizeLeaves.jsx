@@ -3,7 +3,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import CustomAlert from '../../components/CustomAlert';
 import api from '../../axios';
-
+import MaterialButton from '../../components/MaterialButton';
 const CustomizeLeaves = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -70,14 +70,16 @@ const CustomizeLeaves = () => {
         <section className="bg-gray-950 px-4 py-5 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg" style={{ overflowY: 'auto' }}>
           <h2 className="text-5xl font-bold text-center mb-6 text-white">Customize Leave Allowances</h2>
 
-          <div className="flex w-full h-20 flex-row justify-start space-x-2 mb-4">
+          <div className="flex w-full  h-14 flex-row justify-start space-x-2 mb-4">
             {payGradeData.map((pg, index) => (
 
               <button
+              
 
                 key={pg.PayGrade_ID}
                 onClick={() => handlePayGradeSelect(pg.PayGrade_ID)}
-                className={`py-2 px-4 w-1/4 text-lg font-bold rounded-lg ${selectedPayGrade === pg.PayGrade_ID ? 'bg-blue-900 text-white hover:bg-blue-700' : 'bg-teal-500 text-gray-100 hover:bg-teal-700'}`}
+                className={`py-2 px-4 w-1/4 overflow-hidden text-lg border-2 scale-95 hover:scale-100 font-bold rounded-lg ${selectedPayGrade === pg.PayGrade_ID ? 'bg-teal-600 text-white hover:bg-teal-900' : ' text-gray-100 hover:bg-teal-900'}`}
+                
               >
                 Pay Grade {pg.PayGrade_ID}
               </button>
@@ -173,12 +175,14 @@ const CustomizeLeaves = () => {
           </div>
 
           <div className="flex justify-end mt-6">
-            <button
+            <MaterialButton
+              table="Save Changes"
+              index="1"
               onClick={handleSubmit}
-              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg"
+              
             >
-              Save Changes
-            </button>
+              
+            </MaterialButton>
           </div>
         </section>
       </div>
