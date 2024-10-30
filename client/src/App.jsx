@@ -45,8 +45,8 @@ function App() {
     <Route path="/edit-table-data" element={<ProtectedRoute allowedRoles={['Admin User']}><EditTableAttributes /></ProtectedRoute>} />
     <Route path="/edit-table-data/:tableName" element={<ProtectedRoute allowedRoles={['Admin User']}><TableDetails /></ProtectedRoute>} />
     <Route path="/hrmanager-genReport" element={<ProtectedRoute allowedRoles={['HR Manager']}><GenRepHR /></ProtectedRoute>} />
-    <Route path="/leaveRequest" element={<ProtectedRoute allowedRoles={['Employee','HR Manager']}><LeaveRequest></LeaveRequest></ProtectedRoute>} />
-    <Route path="/approve-reject-leaves" element={<ProtectedRoute allowedRoles={['Admin User',"HR Manager","Employee"]}><ApproveLeave></ApproveLeave></ProtectedRoute>} />
+    <Route path="/leaveRequest" element={<ProtectedRoute allowedRoles={['Employee','HR Manager','Second Manager']}><LeaveRequest></LeaveRequest></ProtectedRoute>} />
+    <Route path="/approve-reject-leaves" element={<ProtectedRoute allowedRoles={['Admin User',"HR Manager","Employee",'Second Manager']}><ApproveLeave></ApproveLeave></ProtectedRoute>} />
     <Route path="/unauthorized" element={<ProtectedRoute allowedRoles={['Admin User',"HR Manager","Employee",'Second Manager']}><Unauthorized/></ProtectedRoute>} />
 
     
