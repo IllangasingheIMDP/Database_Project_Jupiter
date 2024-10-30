@@ -21,6 +21,7 @@ const GenRepHR = () => {
   const navigate = useNavigate();
   const [showEBD, setShowEBD] = useState(false);
   const [showEBB, setShowEBB] = useState(false);
+  const [showEBP, setShowEBP] = useState(false);
   const [showLB, setShowLB] = useState(false);
   const [showLR, setShowLR] = useState(false);
   const [showCF, setShowCF] = useState(false);
@@ -247,6 +248,90 @@ const GenRepHR = () => {
   };
 
   // Handle the form submission
+  const handleEBP = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleEBPGen();
+    }
+    setValidated(true);
+  };
+
+  const handleEBPGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_employee_detail_by_pay_grade',  // Adjusted API endpoint
+        {
+          department: selectedDepartmentID || 0,  // Default to 0 if not selected
+          branch: selectedBranchID || 0,
+          pay_grade: selectedPayGradeID || 0,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowEBP(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  };  
+
+  const handleDownloadEBP = () => {
+    const doc = new jsPDF();
+
+    // Define the title using selected values
+    const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All Departments";
+    const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All Branches";
+    const payGrade = payGrades.find(pg => pg.id === Number(selectedPayGradeID))?.name || "All";
+    const headingText = `Employees in Pay Grade: ${payGrade}, ${department}, ${branch}`;
+
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16);
+    doc.text(headingText, 10, 10);
+
+    // Define columns for the table
+    const columns = [
+        { header: 'Full Name', dataKey: 'Full_Name' },
+        { header: 'NIC', dataKey: 'NIC' },
+        { header: 'Department', dataKey: 'Dept_Name' },
+        { header: 'Branch', dataKey: 'Branch_Name' },
+        { header: 'Pay Grade', dataKey: 'Pay_Grade' }
+    ];
+
+    // Check if there is data to export
+    if (fetchedData && fetchedData.length > 0) {
+        doc.autoTable({
+            head: [columns.map(col => col.header)], // Use headers from columns
+            body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])), // Extract data based on keys
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 10 }
+        });
+
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        const fileName = `Pay Grade Report ${department} ${branch} ${formattedDate}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert('No data available to export.');
+    }
+  };
+
+  // Handle the form submission
   const handleLB = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -398,7 +483,7 @@ const GenRepHR = () => {
     // Define the title using selected values
     const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
     const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All";
-    const formattedDateRange = `${startDate} to ${endDate}`;
+    const formattedDateRange = `${selectedFromDateDate} to ${selectedToDate}`;
     const headingText = `Approved Leave Requests for ${department} Department, ${branch} Branch (${formattedDateRange})`;
 
     // Add the heading to the PDF at the top
@@ -753,6 +838,96 @@ const GenRepHR = () => {
               </div>
               <div className="employee-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee details by Pay Grade</h2>
+                <Form noValidate validated={validated} onSubmit={handleEBP}>
+                  <Row className="mb-3">
+                    <Col md="4">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Department</Form.Label>
+                        <Form.Select
+                          value={selectedDepartmentID}
+                          onChange={(e) => setSelectedDepartmentID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {departments.map((dept) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="titSelE2">
+                        <Form.Label>Branch</Form.Label>
+                        <Form.Select
+                          value={selectedBranchID}
+                          onChange={(e) => setSelectedBranchID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {branches.map((bran) => (
+                            <option key={bran.id} value={bran.id}>
+                              {bran.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="statSelE2">
+                        <Form.Label>Pay Grade</Form.Label>
+                        <Form.Select
+                          value={selectedPayGradeID}
+                          onChange={(e) => setSelectedPayGradeID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {payGrades.map((pay) => (
+                            <option key={pay.id} value={pay.id}>
+                              {pay.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={showEBP} onHide={() => setShowEBP(false)} backdrop="static" keyboard={false}>
+                  <Modal.Header closeButton>
+                      <Modal.Title>Download Pay Grade Report</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                      {fetchedData && fetchedData.length > 0 ? (
+                          fetchedData.map((employee, index) => (
+                              <Card key={index} className="mb-2">
+                                  <Card.Body>
+                                      <Card.Title>{employee.Full_Name}</Card.Title>
+                                      <Card.Text>
+                                          <strong>NIC:</strong> {employee.NIC} <br />
+                                          <strong>Department:</strong> {employee.Dept_Name} <br />
+                                          <strong>Branch:</strong> {employee.Branch_Name} <br />
+                                          <strong>Pay Grade:</strong> {employee.Pay_Grade}
+                                      </Card.Text>
+                                  </Card.Body>
+                              </Card>
+                          ))
+                      ) : (
+                          <p>No data available.</p>
+                      )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                      <Button variant="secondary" onClick={() => setShowEBP(false)}>
+                          Dismiss
+                      </Button>
+                      <Button variant="primary" onClick={handleDownloadEBP}>
+                          Download as PDF
+                      </Button>
+                  </Modal.Footer>
+              </Modal>
               </div>
               <div className="employee-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Dependent details of Employees</h2>
