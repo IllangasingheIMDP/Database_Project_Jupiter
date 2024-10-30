@@ -54,6 +54,48 @@ const GenerateReportModel = {
       });
     });
   },
+  get_annual_leave_balance: (departmentID, branchID, callback) => {
+    const callQuery = `CALL get_annual_leave_balance_report(?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+  
+    db.query(callQuery, [departmentID, branchID], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+  
+        callback(null, result);
+      });
+    });
+  },
+  get_leave_request_details: (departmentID, branchID, fromDate, toDate, callback) => {
+    const callQuery = `CALL get_annual_leave_balance_report(?, ?, ?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+  
+    db.query(callQuery, [departmentID, branchID, fromDate, toDate], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+  
+        callback(null, result);
+      });
+    });
+  },
 }
 
 module.exports = GenerateReportModel;
