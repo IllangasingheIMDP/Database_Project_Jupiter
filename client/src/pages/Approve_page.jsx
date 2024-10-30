@@ -185,11 +185,7 @@ const ApproveLeave = () => {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                            <img
-                  src={request.Profile_Pic ? request.Profile_Pic : 'fav.png'}
-                  alt="Employee"
-                  className="w-12 h-12 rounded-full mr-4"
-                />
+                            
                               <div>
                                 <p className="font-semibold text-white"><strong>Name:</strong> {request.Name}</p>
                                 <p className="text-gray-400"><strong>NIC:</strong> {request.NIC}</p>
@@ -256,7 +252,7 @@ const ApproveLeave = () => {
                 {employeeDetails && (
                   <div className="mt-4 bg-gray-900 p-4 rounded">
                     <h4 className="text-xl text-white">Employee Details</h4>
-                    <p className="text-gray-200"><strong>Profile Picture:</strong> <img src={employeeDetails.data.Profile_Pic} alt="Profile" className="w-12 h-12 rounded-full" /></p>
+                    <p className="text-gray-200"><strong>Profile Picture:</strong> <img src={employeeDetails.data.Profile_Pic} alt="Profile" className="w-100 h-100" /></p>
                     <p className="text-gray-200"><strong>Full Name:</strong> {employeeDetails.data.Full_Name}</p>
                     <p className="text-gray-200"><strong>NIC:</strong> {employeeDetails.data.NIC}</p>
                     <p className="text-gray-200"><strong>Remaining Total Leaves:</strong> {employeeDetails.data.Total_Leave_Count}</p>
