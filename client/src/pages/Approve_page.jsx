@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import './Approve_leave.css';
+import CustomAlert from '../components/CustomAlert';
 import { useSelector } from 'react-redux';
 import { FaChevronRight } from 'react-icons/fa';
 import api from '../axios';
@@ -17,6 +18,8 @@ const ApproveLeave = () => {
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email,setEmail]=useState('');
+  const [fetchAlertMessage, setFetchAlertMessage] = useState('');
+  const [showFetchAlert, setShowFetchAlert] = useState(false);
   // Fetch leave requests
   const fetchLeaveRequests = async () => {
     setLoading(true);
@@ -143,11 +146,25 @@ const ApproveLeave = () => {
 
   return (
     <Layout>
+    {showAlert && (
+        <CustomAlert 
+          message={alertMessage} 
+          onClose={() => setShowAlert(false)} // Close alert when dismissed
+        />
+      )}
+      
+      {/* Separate alert for fetching requests */}
+      {showFetchAlert && (
+        <CustomAlert 
+          message={fetchAlertMessage} 
+          onClose={() => setShowFetchAlert(false)} // Close alert for fetching leave requests
+        />
+      )}
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <h2 className="text-2xl font-bold mb-4 text-white">Leave Approve/Reject Page</h2>
           
-          {showAlert && <p className="text-red-500 mb-4">{alertMessage}</p>}
+         
 
           <div className="row g-0 text-center">
             <div className="col-sm-6 col-md-8">
