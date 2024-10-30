@@ -217,7 +217,7 @@ const handleClose = () => {setShowTeamModal(false)
         <div className='flex flex-row justify-between h-full'>
           {/* Left side: Profile */}
           <div className='w-1/4'>
-            <div className="mb-4 rounded-lg items-center flex justify-start flex-col  bg-opacity-100 bg-yellow-100 h-fit">
+            <div className="mb-4 rounded-lg items-center flex justify-start flex-col  bg-opacity-10 bg-yellow-100 h-fit">
               <div className="text-center items-center flex flex-col">
               
                 {
@@ -226,33 +226,33 @@ const handleClose = () => {setShowTeamModal(false)
                   alt="avatar"
                     className="rounded-circle px-2 w-fit h-52 mt-3"
    />
-                   <p className="text-muted mb-1 font-bold pt-2">{user.Auth_Level}</p>
-                   <p className="text-muted mb-4">{userData.Initials+" "+userData.Last_Name}</p></> :<p className="text-muted mb-1 text-3xl h-32 items-center flex justify-center font-bold pt-2">{user.Auth_Level}</p>
+                   <p className="text-white mb-1 font-bold pt-2">{user.Auth_Level}</p>
+                   <p className="text-white mb-4">{userData.Initials+" "+userData.Last_Name}</p></> :<p className="text-muted mb-1 text-3xl h-32 items-center flex justify-center font-bold pt-2">{user.Auth_Level}</p>
                 }
               </div>
             </div>
             {
-              user?.Auth_Level!=='Admin User' ? <div className='rounded-lg bg-yellow-100 h-64 flex flex-col justify-start items-center '>
+              user?.Auth_Level!=='Admin User' ? <div className='rounded-lg  h-64 flex flex-col justify-start items-center '>
             
-              <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 bg-yellow-200 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
+              <Button variant="outline-success" onClick={handleTeam}   className='w-11/12 mt-2 border-2 bg-white text-green-500 bg-opacity-10 hover:text-green-500  hover:bg-green-700 hover:bg-opacity-65 hover:scale-105 transform transition duration-200 flex flex-row justify-center items-center h-16 rounded-lg'>
               
-               <div className='w-3/4 text-2xl'>Team View</div> 
+               <div className='w-3/4 text-2xl font-bold'>Team View</div> 
                 <div className='w-fit h-1/2 ml-2 right-3'>
                 <img src={popupIcon} className='h-full ' alt="" />
               </div>
                 </Button>{' '}
                 
-                <Button variant="outline-success" onClick={handleDependant} className='w-11/12 mt-3 bg-yellow-200 hover:bg-green-700 flex flex-row justify-center items-center h-16 rounded-lg'>
+                <Button variant="outline-info" onClick={handleDependant} className='w-11/12 mt-2 border-2 bg-white bg-opacity-10 hover:text-blue-400  hover:bg-green-700 hover:bg-opacity-65 hover:scale-105 transform transition duration-200 flex flex-row justify-center items-center h-16 rounded-lg'>
               
-               <div className='w-3/4 text-2xl'>Dependants</div> 
+               <div className='w-3/4 text-2xl font-bold'>Dependants</div> 
                 <div className='w-fit h-1/2 ml-2 mr-0'>
                 <img src={popupIcon} className='h-full ' alt="" />
               </div>
                 </Button>{' '}
   
-                <Button variant="outline-success" onClick={handleEmergency} className='w-11/12 mt-3 bg-yellow-200 hover:bg-green-700  flex flex-row justify-center items-center h-20 rounded-lg'>
+                <Button variant="outline-danger" onClick={handleEmergency} className='w-11/12 text-red-500 mt-2 border-2 bg-white bg-opacity-10 hover:text-red-500  hover:bg-red-700 hover:bg-opacity-65 hover:scale-105 transform transition duration-200 flex flex-row justify-center items-center h-16 rounded-lg'>
               
-              <div className='w-3/4 text-2xl'>Emergency Contacts</div> 
+              <div className='w-3/4 text-2xl font-bold'>Emergency Contacts</div> 
                <div className='w-fit h-1/2 ml-2 mr-0'>
                <img src={popupIcon} className='h-full ' alt="" />
              </div>
@@ -266,14 +266,14 @@ const handleClose = () => {setShowTeamModal(false)
           {/* Right side: Full Name List */}
           <div className='w-8/12 flex flex-col justify-start h-full'>
 
-          <div className='flex flex-col py-1 w-full h-1/4 rounded-lg px-1 justify-start bg-yellow-600 '>
+          <div className='flex flex-col py-1 w-full h-1/4 bg-white bg-opacity-50 rounded-lg px-1 justify-start'>
                       
-                      <div className='bg-yellow-100 h-1/2 flex flex-row py-4 px-2 w-full items-start hover:bg-yellow-200'>
+                      <div className='rounded-lg h-1/2 flex flex-row py-4 px-2 w-full  items-start hover:text-gray-300 hover:bg-blue-950 hover:bg-opacity-50'>
                         <div className='text-start pl-10 text-1xl w-2/5'>User ID</div> {/* Replace underscores with spaces */}
-                        <div className="text-gray-500 font-bold w-3/5 text-start px-8">{user.User_ID}</div>
+                        <div className="font-bold w-3/5 text-start px-8">{user.User_ID}</div>
                       </div>
                    
-                     <div className='w-full h-1/2 flex justify-center items-center bg-yellow-100'>
+                     <div className='w-full h-1/2 flex justify-center items-center'>
                      <Button variant="outline-danger" onClick={handlepwdView} className='w-1/2 hover:bg-red-700  flex flex-row justify-center items-center h-3/4 rounded-lg'>
               
               <div className='w-3/4 text-2xl'>Change Password</div> 
@@ -289,7 +289,7 @@ const handleClose = () => {setShowTeamModal(false)
           
                    
 
-            <div className="rounded-lg px-1 w-full py-0 mt-3 overflow-y-auto flex justify-start flex-col max-h-3/4  bg-yellow-600" style={{
+            <div className="rounded-lg px-1 w-full py-1 mt-3 overflow-y-auto flex justify-start flex-col max-h-3/4  bg-white bg-opacity-50" style={{
     scrollbarWidth: 'none', // Firefox
     msOverflowStyle: 'none', // Internet Explorer and Edge
   }}>
@@ -297,11 +297,11 @@ const handleClose = () => {setShowTeamModal(false)
              
               {!userData ? <div>No Data Available</div> :
                   Object.entries(userData).map(([key, value]) => (
-                    <div key={key} className='flex flex-col w-full bg-yellow-100 hover:bg-yellow-200'>
+                    <div key={key} className='flex flex-col w-full rounded-lg hover:text-gray-300 hover:bg-blue-950 hover:bg-opacity-50'>
                       
                       <div className='flex flex-row py-4 px-2 w-full items-start'>
                         <div className=' text-start pl-10 text-1xl w-2/5'>{key.replace(/_/g, ' ')}</div> {/* Replace underscores with spaces */}
-                        <div className="text-gray-500 text-1xl font-bold w-3/5 text-start px-8">{value}</div>
+                        <div className="text-1xl font-bold w-3/5 text-start px-8">{value}</div>
                       </div>
                       <hr />
                     </div>
