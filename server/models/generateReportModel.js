@@ -34,7 +34,7 @@ const GenerateReportModel = {
     });
   },
   get_employee_detail_by_branch: (branchID, statusID, titleID, callback) => {
-    const callQuery = `CALL get_employee_detail_by_department(?, ?, ?, @result);`;
+    const callQuery = `CALL get_employee_detail_by_branch(?, ?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;
   
     db.query(callQuery, [branchID, statusID, titleID], (err) => {
@@ -76,10 +76,31 @@ const GenerateReportModel = {
     });
   },
   get_leave_request_details: (departmentID, branchID, fromDate, toDate, callback) => {
-    const callQuery = `CALL get_annual_leave_balance_report(?, ?, ?, ?, @result);`;
+    const callQuery = `CALL get_approve_leave_request_report(?, ?, ?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;
   
     db.query(callQuery, [departmentID, branchID, fromDate, toDate], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+  
+        callback(null, result);
+      });
+    });
+  },
+  get_custom_field: (customFieldID, departmentID, branchID, callback) => {
+    const callQuery = `CALL db_get_customfield_data(?, ?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+  
+    db.query(callQuery, [customFieldID, departmentID, branchID], (err) => {
       if (err) {
         return callback(err);
       }
