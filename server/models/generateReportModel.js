@@ -76,9 +76,9 @@ const GenerateReportModel = {
     });
   },
   get_leave_request_details: (departmentID, branchID, fromDate, toDate, callback) => {
-    const callQuery = `CALL get_annual_leave_balance_report(?, ?, ?, ?, @result);`;
+    const callQuery = `CALL get_approve_leave_request_report(?, ?, ?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;
-  
+    
     db.query(callQuery, [departmentID, branchID, fromDate, toDate], (err) => {
       if (err) {
         return callback(err);
@@ -91,7 +91,7 @@ const GenerateReportModel = {
   
         // Parse the JSON response from the stored procedure
         const result = JSON.parse(results[0].result);
-  
+        console.log(result);
         callback(null, result);
       });
     });
