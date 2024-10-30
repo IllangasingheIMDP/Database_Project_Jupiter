@@ -9,13 +9,13 @@ const LeaveRequestController={
   port: 465,
   secure: true,
       auth: {
-        user: 'dasuncompetition@gmail.com', // Your email
-        pass: 'obup ldyu zkwz ixpm', // Your email password or app password
+        user: 'jupiter.apparels.company@gmail.com', // Your email
+        pass: 'gutt deax lmpt hgum', // Your email password or app password
       },
     });
 
     const mailOptions = {
-      from: 'dasuncompetition@gmail.com',
+      from: 'jupiter.apparels.company@gmail.com',
       to,
       subject,
       text,
@@ -64,13 +64,13 @@ const LeaveRequestController={
     port: 465,
     secure: true,
         auth: {
-          user: 'dasuncompetition@gmail.com', // Your email
-          pass: 'obup ldyu zkwz ixpm', // Your email password or app password
+          user: 'jupiter.apparels.company@gmail.com', // Your email
+          pass: 'gutt deax lmpt hgum', // Your email password or app password
         },
       });
   
       const mailOptions = {
-        from: 'dasuncompetition@gmail.com',
+        from: 'jupiter.apparels.company@gmail.com',
         to,
         subject,
         text,
