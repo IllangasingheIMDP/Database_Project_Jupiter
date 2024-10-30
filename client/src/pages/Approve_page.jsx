@@ -145,7 +145,11 @@ const ApproveLeave = () => {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <img  src={picData ? `${request.pic}` : 'fav.png'}alt="Employee" className="w-12 h-12 rounded-full mr-4" />
+                            <img
+                  src={request.Profile_Pic ? request.Profile_Pic : 'fav.png'}
+                  alt="Employee"
+                  className="w-12 h-12 rounded-full mr-4"
+                />
                               <div>
                                 <p className="font-semibold text-white"><strong>Name:</strong> {request.Name}</p>
                                 <p className="text-gray-400"><strong>NIC:</strong> {request.NIC}</p>

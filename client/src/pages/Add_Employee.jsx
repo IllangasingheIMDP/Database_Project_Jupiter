@@ -6,6 +6,8 @@ import MaterialButton from '../components/MaterialButton';
 import { useSelector } from 'react-redux'; // To get the current user's data
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from 'G:/project/hmrs/database/Database_Project_Jupiter/client/config/firebase.config.js'; // Adjust the path as needed
+import api from '../axios';
+
 
 const ADD_Employee = () => {
   //const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -67,7 +69,7 @@ const ADD_Employee = () => {
 
   const detdropdonwdata = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/employeeTable/get_dropdown_options', {
+      const res = await api.get('/employeeTable/get_dropdown_options', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -138,7 +140,7 @@ const ADD_Employee = () => {
   const fetchCustomAttributes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5555/employeeTable/get_available_custom_fields', {
+      const response = await api.get('/employeeTable/get_available_custom_fields', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -308,7 +310,8 @@ const handleSubmit = async (e) => {
   formattedData.custom_values = JSON.stringify(employeeData.custom_values);
 
   try {
-    const response = await axios.post(
+
+    const response = await api.post(
       'http://localhost:5555/employeeTable/add_employee',
       formattedData, // Send as JSON object
       {
