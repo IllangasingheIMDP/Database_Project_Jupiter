@@ -5,7 +5,8 @@ const generateReportController = require('../controllers/generateReportControlle
 const path = require('path');
 
 
-router.get('/get_department_dropdown_options',authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]),generateReportController.get_department_dropdown_options);
+router.get('/get_dropdown_options',authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]),generateReportController.get_dropdown_options);
 router.post('/get_employee_detail_by_department', authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]), generateReportController.get_employee_detail_by_department);
+router.post('/get_employee_detail_by_branch', authMiddleware(['Admin User',"HR Manager","Second Manager","Employee"]), generateReportController.get_employee_detail_by_branch);
 
 module.exports = router;
