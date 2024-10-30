@@ -3,14 +3,23 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
-import api from '../axios';
+import { useSelector } from 'react-redux'; // To get the current user's data
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { storage } from 'G:/project/hmrs/database/Database_Project_Jupiter/client/config/firebase.config.js'; // Adjust the path as needed
+import api from '../axios'; 
+
 
 const ADD_Employee = () => {
+  //const { user } = useSelector((state) => sta te.user); // Get current user from Redux store
+
+  const { currentuser } = useSelector((state) => state.user); // Get current user from Redux store
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [customAttributes, setCustomAttributes] = useState([]);
   const [custom_values, setCustomValues] = useState({});
   const [loading, setLoading] = useState(false);
+  const [downloadUrl,setDownloadUrl]=useState('');
+  //const storage = getStorage();
 
   const [employeeData, setEmployeeData] = useState({
     NIC: '',
@@ -32,7 +41,7 @@ const ADD_Employee = () => {
     supervisor: '',
     dependents: [],
     emergency_contacts: [],
-    picture: null,
+    picture: '',
     custom_values: custom_values
   });
 
@@ -205,30 +214,103 @@ const ADD_Employee = () => {
   };
 
 // Function to handle file input change
-const handleFileChange = (e) => {
+const handleFileChangee = (e) => {
     const file = e.target.files[0];
     if (file) {
         setEmployeeData({ ...employeeData, picture: file }); // Store the file in state
     }
 };
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+      //setEmployeeData({ ...employeeData, picture: file }); // Store the file in state
+      uploadFile(file); // Call upload function with the file
+  }
+};
+
+const uploadFile = async (file) => {
+  console.log('Uploading image...');
+
+  try {
+      // Create a storage reference
+      const storageRef = ref(storage, `userProfileImages/${Date.now()}.jpg`); // Use the storage instance directly
+
+      // Upload the file to Firebase Storage
+      await uploadBytes(storageRef, file); // Directly upload the file
+
+      console.log('Uploaded a blob or file!');
+      // Get the download URL of the uploaded image
+      const url = await getDownloadURL(storageRef);
+      setDownloadUrl(url)
+      setEmployeeData({ ...employeeData, picture: url });
+      console.log('File available at:', url);
+
+
+
+      // Update the Firestore document for the current user
+      
+      console.log('Profile photo updated successfully!');
+  } catch (error) {
+      console.error('Error uploading profile image:', error);
+  }
+};
+
+const handleFileChanges = (event) => {
+  //console.log(currentuser.User_ID)
+  const file = event.target.files[0];
+  console.log('Selected file:', file); // Debugging output
+  if (file) {
+      uploadFile(file, currentuser); // Pass currentuser to uploadFile
+  } else {
+      console.error('No file selected');
+  }
+};
+
+const uploadFilee = async (file, currentuser) => {
+  console.log("current user console",currentuser.User_ID)
+  console.log('Uploading image...');
+  
+  console.log("fddfgzsd",state.user);
+
+
+  try {
+      if (!currentuser) {
+          console.error('Current user is not defined or does not have User_ID');
+          return; // Exit early
+      }
+
+      const storageRef = ref(storage, `userProfileImages/${Date.now()}.jpg`);
+
+      await uploadBytes(storageRef, file);
+      console.log('Uploaded a blob or file!');
+
+      const downloadUrl = await getDownloadURL(storageRef);
+      console.log('File available at:', downloadUrl);
+
+      const userDocRef = doc(firestoreDB, 'users', currentuser.User_ID);
+      await setDoc(userDocRef, { profilePhoto: downloadUrl }, { merge: true });
+
+      console.log('Profile photo updated successfully!');
+  } catch (error) {
+      console.error('Error uploading profile image:', error);
+  }
+};
+
 
 // Handle form submit with file and data
 const handleSubmit = async (e) => {
   e.preventDefault();
-  const formData = new FormData();
 
-  // Append all employee data fields
-  for (const key in employeeData) {
-    if (key === 'dependents' || key === 'emergency_contacts') {
-      formData.append(key, JSON.stringify(employeeData[key])); // Serialize arrays as JSON
-    } else if (key === 'custom_values') {
-      formData.append(key, JSON.stringify(employeeData.custom_values)); // Serialize custom attributes
-    } else {
-      formData.append(key, employeeData[key]);
-    }
-  }
+  // Prepare employee data
+  const formattedData = { ...employeeData };
+  
+  // Serialize complex objects as JSON strings
+  formattedData.dependents = JSON.stringify(employeeData.dependents);
+  formattedData.emergency_contacts = JSON.stringify(employeeData.emergency_contacts);
+  formattedData.custom_values = JSON.stringify(employeeData.custom_values);
 
   try {
+
     const response = await api.post('/employeeTable/add_employee', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -236,9 +318,11 @@ const handleSubmit = async (e) => {
       },
     });
 
+
     if (response.data.success) {
-      detdropdonwdata();
-      // Reset form after submission
+      detdropdonwdata(); // Refresh dropdown data
+
+      // Reset the form after submission
       setEmployeeData({
         NIC: '',
         initials: '',
@@ -259,20 +343,24 @@ const handleSubmit = async (e) => {
         supervisor: '',
         dependents: [],
         emergency_contacts: [],
-        picture: null,
+        picture: '',
         custom_values: {},
       });
-      setCustomValues({});  // Clear custom values
+
+      setCustomValues({}); // Clear custom values
     }
+
+    // Show success alert
     setAlertMessage(response.data.data);
     setShowAlert(true);
 
-    
   } catch (error) {
-    setAlertMessage(error.response.data.data);
+    // Handle error and show alert
+    setAlertMessage(error.response?.data?.data || 'Error occurred while adding employee');
     setShowAlert(true);
     console.error('Error adding employee:', error);
   }
+
 };
 
   return (

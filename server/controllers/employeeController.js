@@ -199,11 +199,6 @@ const employeeController={
 
     createNewEmployee: async (req, res) => {
       try {
-        // Process uploaded image
-        let picturePath = null;
-        if (req.file) {
-          picturePath = req.file.filename; // Save the filename (unique 36-character name)
-        }
     
         // Parse dependents and emergency contacts if they are sent as JSON strings
         const dependents = req.body.dependents ? JSON.parse(req.body.dependents) : [];
@@ -224,7 +219,7 @@ const employeeController={
           emailWork: req.body.email_work,
           emailPrivate: req.body.email_private,
           address: req.body.address,
-          picturePath: picturePath,
+          picturePath:  req.body.picture,
           dept: req.body.department,
           title: req.body.title,
           paygrade: req.body.paygrade,
@@ -237,6 +232,7 @@ const employeeController={
           emergency_contacts_info: JSON.stringify(emergencyContacts),
           custom_fields: JSON.stringify(custom_fields),
         };
+        console.log(req.body.picture);
 
         // Save employee data
         employeeModel.createEmployee(employeeData, (err, result) => {
