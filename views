@@ -1,0 +1,76 @@
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `leave_requests_view` AS
+    SELECT 
+        CONCAT(`e`.`Initials`,
+                ' ',
+                `e`.`First_Name`,
+                ' ',
+                `e`.`Last_Name`) AS `Full_Name`,
+        `e`.`NIC` AS `Employment_NIC`,
+        `u`.`User_ID` AS `User_ID`,
+        `jt`.`Title` AS `Title`,
+        `pg`.`Pay_Grade_Level` AS `Pay_Grade_Level`,
+        `lr`.`Start_Date` AS `Start_Date`,
+        `lr`.`End_Date` AS `End_Date`,
+        `lr`.`Reason` AS `Reason`,
+        `lr`.`Status` AS `Request_Status`,
+        CONCAT(`s`.`Initials`,
+                ' ',
+                `s`.`First_Name`,
+                ' ',
+                `s`.`Last_Name`) AS `Supervisor_Full_Name`,
+        `s`.`NIC` AS `Supervisor_NIC`,
+        `jts`.`Title` AS `Supervisor_Title`,
+        `b`.`Branch_ID` AS `Branch_ID`,
+        `d`.`Dept_ID` AS `Dept_ID`,
+        `o`.`Organization_ID` AS `Organization_ID`
+    FROM
+        ((((((((((`employee` `e`
+        LEFT JOIN `employee_supervisor` `es` ON ((`es`.`Employee_ID` = `e`.`Employee_ID`)))
+        LEFT JOIN `employee` `s` ON ((`s`.`Employee_ID` = `es`.`Supervisor_ID`)))
+        LEFT JOIN `job_title` `jts` ON ((`s`.`Title_ID` = `jts`.`Title_ID`)))
+        LEFT JOIN `user` `u` ON ((`u`.`Employee_ID` = `e`.`Employee_ID`)))
+        LEFT JOIN `department` `d` ON ((`e`.`Dept_ID` = `d`.`Dept_ID`)))
+        LEFT JOIN `branch` `b` ON ((`d`.`Branch_ID` = `b`.`Branch_ID`)))
+        LEFT JOIN `organization` `o` ON ((`b`.`Organization_ID` = `o`.`Organization_ID`)))
+        LEFT JOIN `leave_request` `lr` ON ((`u`.`User_ID` = `lr`.`User_ID`)))
+        LEFT JOIN `pay_grade` `pg` ON ((`e`.`PayGrade_ID` = `pg`.`PayGrade_ID`)))
+        LEFT JOIN `job_title` `jt` ON ((`e`.`Title_ID` = `jt`.`Title_ID`)))
+
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `employee_details_view` AS
+    SELECT 
+        CONCAT(`e`.`Initials`,
+                ' ',
+                `e`.`First_Name`,
+                ' ',
+                `e`.`Last_Name`) AS `Full_Name`,
+        `e`.`NIC` AS `NIC`,
+        `ep`.`Path` AS `Photo_Path`,
+        `d`.`Dept_Name` AS `Dept_Name`,
+        `b`.`Branch_Name` AS `Branch_Name`,
+        `es`.`Employment_Stat_Type` AS `Status`,
+        `jt`.`Title` AS `Title`,
+        `pg`.`Pay_Grade_Level` AS `Pay_Grade_Level`,
+        `b`.`Branch_ID` AS `Branch_ID`,
+        `d`.`Dept_ID` AS `Dept_ID`,
+        `e`.`Title_ID` AS `Title_id`,
+        `e`.`Employment_Stat_ID` AS `Employment_Stat_ID`,
+        `e`.`PayGrade_ID` AS `PayGrade_ID`,
+        `o`.`Organization_ID` AS `Organization_ID`
+    FROM
+        (((((((`employee` `e`
+        JOIN `employee_pic` `ep` ON ((`e`.`Pic_ID` = `ep`.`Pic_ID`)))
+        JOIN `department` `d` ON ((`e`.`Dept_ID` = `d`.`Dept_ID`)))
+        JOIN `branch` `b` ON ((`d`.`Branch_ID` = `b`.`Branch_ID`)))
+        JOIN `organization` `o` ON ((`b`.`Organization_ID` = `o`.`Organization_ID`)))
+        JOIN `employment_status` `es` ON ((`e`.`Employment_Stat_ID` = `es`.`Employment_Stat_ID`)))
+        JOIN `job_title` `jt` ON ((`e`.`Title_ID` = `jt`.`Title_ID`)))
+        JOIN `pay_grade` `pg` ON ((`pg`.`PayGrade_ID` = `e`.`PayGrade_ID`)))
