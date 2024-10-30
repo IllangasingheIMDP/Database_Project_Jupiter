@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'; // To get the current user's data
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton'; 
+import api from '../axios';
 
 const LeaveRequest = () => {
   const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -21,7 +22,23 @@ const LeaveRequest = () => {
   const [fetchAlertMessage, setFetchAlertMessage] = useState('');
   const [showFetchAlert, setShowFetchAlert] = useState(false);
   const [loading, setLoading] = useState(false); // Loading state for fetch requests
+  const sendMail = async (Req_ID,text) => {
+    setLoading(true);
+    try {
+      const response = await api.post(`/leaveRequest/supervisorMail?Req_ID=${Req_ID}`,{text:text}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (response.data.success) {
+        setAlertMessage("Email sent successfully");
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching leave requests', error);
+    } finally {
+      setLoading(false);
+    }
 
+  }
   // Handle form submission for leave request
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,10 +65,14 @@ const LeaveRequest = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5555/leaveRequest/leave-requests', leaveRequestData, {
+      const response = await api.post('/leaveRequest/leave-requests', leaveRequestData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
+        sendMail(response.data.data,`You have new leave request by user ${user.User_Name}\nLeave type:${Leave_Type}\n
+          Start_Date: ${Start_Date}\n
+          End Date: ${End_Date}\n
+          Reason: ${Reason}\n`)
         setAlertMessage('Leave request submitted successfully');
         setLeaveType('');
         setStartDate('');
@@ -72,7 +93,7 @@ const LeaveRequest = () => {
   const fetchLeaveRequests = async () => {
     setLoading(true); // Show loading spinner or feedback
     try {
-      const response = await axios.get(`http://localhost:5555/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
+      const response = await api.get(`/leaveRequest/getLeave-requests?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -124,7 +145,7 @@ const LeaveRequest = () => {
       
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', }}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-        <h1 className="text-2xl font-bold mb-4 text-white">Submit Leave Request</h1>
+        <h1 className="text-5xl text-center font-bold mb-4 text-white">Request Leaves</h1>
 
           
           <form onSubmit={handleSubmit}>

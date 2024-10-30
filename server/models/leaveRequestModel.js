@@ -106,6 +106,27 @@ const LeaveRequestModel = {
   },
 
 
+  ApproveRequestStatus: (Req_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_approve(?)';
+    
+    db.query(query, Req_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+
+  RejectRequestStatus: (Request_ID, callback) => {
+    const query = 'CALL set_Pending_Leave_Requests_to_reject(?)';
+    
+    db.query(query, Request_ID, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
 
   getallleaves: (NIC, Name, callback) => {
     const query = 'SELECT JSON_EXTRACT(db_get_employee_leave_details(?,?), "$") AS result';
@@ -120,7 +141,30 @@ const LeaveRequestModel = {
       callback(null, results[0].result);
     });
   },
-
+  getAppRejMail:(Req_Id, callback) => {
+    const query = 'SELECT db_getMail_apprej(?)';
+    const queryParams = [
+      Req_Id
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
+  getSupervisorMail:(Req_Id, callback) => {
+    const query = 'SELECT db_getMail_supervisor(?)';
+    const queryParams = [
+      Req_Id
+    ];
+    db.query(query, queryParams, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results);
+    });
+  },
 
 
 

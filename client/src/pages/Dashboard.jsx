@@ -8,16 +8,20 @@ const Dashboard = () => {
     
   return (
     <Layout children={
-        <>
-  <div className="relative h-full w-full rounded-lg shadow-2xl shadow-black">
-    <img src="/dashboard.jpg" className="h-full w-full rounded-lg" alt="Dashboard" />
-    <div className="w-fit h-fit absolute top-72 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-950 px-2.5 py-4 backdrop-blur-md bg-opacity-30">
+      
+  <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <section className='flex min-w-full flex-col justify-center items-center min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+    <div className="min-w-full  bg-yellow-950 px-2.5 py-4 backdrop-blur-md bg-opacity-30">
       <div className='typewriter  text-6xl font-bold'>Welcome to Jupiter Apparels</div>
     </div>
-  </div>
 
-  {/* Inline CSS for Typewriter Effect */}
-  <style>
+
+    </section>
+   
+    
+
+
+    <style>
     {`
       .typewriter {
       background: rgb(244,28,28);
@@ -48,7 +52,13 @@ const Dashboard = () => {
       }
     `}
   </style>
-</>
+  
+    </div>
+  
+
+
+  
+
 
       
         

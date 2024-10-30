@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
+import api from '../axios';
 
 const Manage_Custom_Fields = () => {
   const [customField, setCustomField] = useState('');
@@ -16,7 +17,7 @@ const Manage_Custom_Fields = () => {
   const fetchCustomFields = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5555/employeeTable/get_available_custom_fields', {
+      const response = await api.get('/employeeTable/get_available_custom_fields', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
   
@@ -55,7 +56,7 @@ const Manage_Custom_Fields = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5555/employeeTable/add_custom_field', { name: customField }, {
+      const response = await api.post('/employeeTable/add_custom_field', { name: customField }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -80,7 +81,7 @@ const Manage_Custom_Fields = () => {
   const removeCustomField = async (NAME) => {
     if (window.confirm('Are you sure you want to delete this CustomField?')) {
       try {
-        const response = await axios.post('http://localhost:5555/employeeTable/delete_custom_field', { name: NAME }, {
+        const response = await api.post('/employeeTable/delete_custom_field', { name: NAME }, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -113,7 +114,7 @@ const Manage_Custom_Fields = () => {
           
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4 text-white">Add Custom Field</h2>
+          <h2 className="text-5xl text-center font-bold mb-4 text-white">Add Custom Field</h2>
           <form onSubmit={addCustomField}>
             <input
               type="text"

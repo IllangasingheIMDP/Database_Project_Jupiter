@@ -6,11 +6,11 @@ import MaterialButton from '../components/MaterialButton';
 import { useSelector } from 'react-redux'; // To get the current user's data
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from 'G:/project/hmrs/database/Database_Project_Jupiter/client/config/firebase.config.js'; // Adjust the path as needed
-import api from '../axios';
+import api from '../axios'; 
 
 
 const ADD_Employee = () => {
-  //const { user } = useSelector((state) => state.user); // Get current user from Redux store
+  //const { user } = useSelector((state) => sta te.user); // Get current user from Redux store
 
   const { currentuser } = useSelector((state) => state.user); // Get current user from Redux store
   const [alertMessage, setAlertMessage] = useState('');
@@ -311,16 +311,13 @@ const handleSubmit = async (e) => {
 
   try {
 
-    const response = await api.post(
-      'http://localhost:5555/employeeTable/add_employee',
-      formattedData, // Send as JSON object
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      }
-    );
+    const response = await api.post('/employeeTable/add_employee', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
 
     if (response.data.success) {
       detdropdonwdata(); // Refresh dropdown data

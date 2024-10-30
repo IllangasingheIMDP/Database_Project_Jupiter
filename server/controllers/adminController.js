@@ -81,6 +81,28 @@ const adminController={
 
         res.status(500).send({ data: `Internal Server Error : ${error.sqlMessage}`, success: false});
       }
+    },
+
+    // ADD a specific table row
+    add_table_row: async (req, res) => {
+      try {
+          const { tableName } = req.params;
+        const Data = {
+          tableName: tableName,
+          json: JSON.stringify(req.body)
+
+        };
+
+        adminModel.add_table_row(Data, (err, result) => {
+          if (err) {
+            return res.status(500).send({ success: false, data: `Internal Server Error: ${err.sqlMessage}` });
+          }
+          res.status(200).send({ data: result.data, success: result.success });
+        });
+      } catch (error) {
+
+        res.status(500).send({ data: `Internal Server Error : ${error.sqlMessage}`, success: false});
+      }
     }
 }
 module.exports = adminController;

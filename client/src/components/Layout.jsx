@@ -11,6 +11,7 @@ import CustomAlert from './CustomAlert';
 import Button from 'react-bootstrap/Button';
 import notificationIcon from '../../public/notification.png'
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
+import api from '../axios';
 // Import your GIF and profile picture here
 
 
@@ -38,8 +39,8 @@ const Layout = ({ children }) => {
       try {
         
         dispatch(showLoading());
-        const res = await axios.put(
-          `http://localhost:5555/users/notification`,{
+        const res = await api.put(
+          `/users/notification`,{
             userId:user.User_ID,
             datetime:datetime
           },
@@ -97,8 +98,9 @@ const Layout = ({ children }) => {
     const getTeam=async()=>{
       try {
         dispatch(showLoading());
-        const res = await axios.get(
-          `http://localhost:5555/users/team?employeeId=${user.Employee_ID}`,
+        
+        const res = await api.get(
+          `/users/team?employeeId=${user.Employee_ID}`,
           
           {
             headers: {
@@ -106,10 +108,12 @@ const Layout = ({ children }) => {
             },
           }
         );
+        
         dispatch(hideLoading());
         
         if(res.data.success){
           setHasTeam(true);
+          
         }else{
           setHasTeam(false);
         }
@@ -140,8 +144,8 @@ const Layout = ({ children }) => {
     const getNotifications=async()=>{
       try {
         dispatch(showLoading());
-        const res = await axios.get(
-          `http://localhost:5555/users/notification?userId=${user.User_ID}`,
+        const res = await api.get(
+          `/users/notification?userId=${user.User_ID}`,
           
           {
             headers: {
@@ -226,24 +230,24 @@ const Layout = ({ children }) => {
         <div className="w-1/5 bg-yellow-700 text-white min-h-screen">
           
           <div className="p-4 text-xl">
-            {SidebarMenu.filter(menu => !(menu.name === 'Approve/Reject Leave' && !hasTeam))
+            {SidebarMenu.filter(menu => !(menu.name === 'Approve / Reject Leave' && !hasTeam))
             .map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <Link to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item  ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-2 shadow-2xl cursor-pointer rounded-md my-2 hover:bg-yellow-800`}>
+                <Link className='w-full overflow-hidden' to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item  ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-3 shadow-2xl overflow-hidden cursor-pointer rounded-md my-3 ${!isActive &&  `hover:bg-yellow-800`}`}>
                   <i className={`${menu.icon} mr-2`}></i>
                   {menu.name}
                 </div></Link>
               );
             })}
-            <div className="menu-item  p-2 rounded-md my-2 bg-yellow-100 text-black cursor-pointer hover:bg-yellow-200" onClick={handleLogout}>
+            <div className="menu-item  p-3 rounded-md my-3 bg-yellow-100 text-black cursor-pointer hover:bg-yellow-200" onClick={handleLogout}>
               <i className="fa-solid fa-right-from-bracket mr-2"></i>
               <span >Logout</span>
             </div>
           </div>
         </div>
 
-        {/* Main content area */}
+        {/* Main content area */} 
         <div className="w-4/5">
           <div className="bg-red-200 p-4 shadow-md flex justify-between items-center h-[calc(10vh)] ">
             <div className="flex items-center space-x-4 w-3/5">

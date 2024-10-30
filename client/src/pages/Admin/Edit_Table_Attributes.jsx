@@ -6,6 +6,7 @@ import Layout from '../../components/Layout';
 import { useNavigate } from 'react-router-dom';
 import MaterialButton from '../../components/MaterialButton';
 import CustomAlert from '../../components/CustomAlert';
+import api from '../../axios';
 
 const Edit_Table_Attributes = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -17,7 +18,7 @@ const Edit_Table_Attributes = () => {
   // Function to fetch table names
   const fetchTableNames = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/admin/getTables', {
+      const res = await api.get('/admin/getTables', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -54,7 +55,7 @@ const Edit_Table_Attributes = () => {
 
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center',}}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4 text-white">Edit Tables</h2>
+          <h2 className="text-5xl font-bold text-center mb-4 text-white">Edit Tables</h2>
           <h3 className="text-m mb-4 text-white">Please select a table to edit</h3>
           
           <div>

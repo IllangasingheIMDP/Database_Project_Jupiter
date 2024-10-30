@@ -72,6 +72,30 @@ const AdminModel = {
       });
     });
   },
+  // ADD table row
+  add_table_row: (Data, callback) => {
+    const query = 'CALL db_add_row_to_table(?, ?, @result)';
+    const queryParams = [
+        Data.tableName,
+        Data.json,
+    ];
+
+    // First, call the stored procedure
+    db.query(query, queryParams, (err) => {
+      if (err) {
+        return callback(err);
+      }
+
+      // Now, retrieve the result from the OUT parameter
+      const resultQuery = 'SELECT @result AS result';
+      db.query(resultQuery, (err, result) => {
+        if (err) {
+          return callback(err);
+        }
+        callback(null, JSON.parse(result[0].result));
+      });
+    });
+  },
   
 };
 

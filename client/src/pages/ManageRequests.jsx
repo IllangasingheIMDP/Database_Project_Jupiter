@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux'; // To get the current user's data
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
+import api from '../axios';
 
 const ManageEmployeeRequests = () => {
   const { user } = useSelector((state) => state.user); // Get current user from Redux store
@@ -19,7 +20,7 @@ const ManageEmployeeRequests = () => {
   const fetchEmployeeLeaveRequests = async () => {
     setLoading(true); // Show loading spinner or feedback
     try {
-      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
+      const response = await api.get(`/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -48,7 +49,7 @@ const ManageEmployeeRequests = () => {
   // Function to handle status change
   const handleStatusChange = async (request, newStatus) => {
     try {
-      const response = await axios.put(`http://localhost:5555/approve-reject-leaves/update_status`, {
+      const response = await api.put(`/approve-reject-leaves/update_status`, {
         Request_ID: request.Request_ID, // Assuming each request has a unique ID
         New_Status: newStatus,
       }, {

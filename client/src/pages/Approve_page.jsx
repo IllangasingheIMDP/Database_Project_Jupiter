@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import './Approve_leave.css';
+import CustomAlert from '../components/CustomAlert';
 import { useSelector } from 'react-redux';
 import { FaChevronRight } from 'react-icons/fa';
+import api from '../axios';
 
 const ApproveLeave = () => {
   const { user } = useSelector((state) => state.user);
@@ -15,12 +17,14 @@ const ApproveLeave = () => {
   const [selectedSearchType, setSelectedSearchType] = useState('nic'); 
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [email,setEmail]=useState('');
+  const [fetchAlertMessage, setFetchAlertMessage] = useState('');
+  const [showFetchAlert, setShowFetchAlert] = useState(false);
   // Fetch leave requests
   const fetchLeaveRequests = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
+      const response = await api.get(`/approve-reject-leaves/manage_leaves?User_ID=${user.User_ID}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
@@ -49,16 +53,36 @@ const ApproveLeave = () => {
     searchEmployees(request.NIC); // Automatically call the search function with the NIC
   };
 
+  const sendMail = async (Req_ID,Approved) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&status=${Approved}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (response.data.success) {
+        setAlertMessage("Email sent successfully");
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching leave requests', error);
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
   const handleApprove = async (Req_ID) => {
     try {
-      const response = await axios.put(
-        `http://localhost:5555/approve-reject-leaves/approve?Req_ID`, 
+      const response = await api.put(
+        `/approve-reject-leaves/approve?Req_ID`, 
         { "Req_ID": Req_ID },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       if (response.data.success) {
         setAlertMessage("Leave approved successfully");
+        
         setShowAlert(true);
+        sendMail(Req_ID,1);
         fetchLeaveRequests(); // Refresh leave requests
       }
     } catch (error) {
@@ -70,14 +94,16 @@ const ApproveLeave = () => {
 
   const handleReject = async (Req_ID) => {
     try {
-      const response = await axios.post(
-        `http://localhost:5555/approve-reject-leaves/reject`,
+      const response = await api.post(
+        `/approve-reject-leaves/reject`,
         { Req_ID },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       if (response.data.success) {
         setAlertMessage("Leave rejected successfully");
+       
         setShowAlert(true);
+        sendMail(Req_ID,2);
         fetchLeaveRequests();
       }
     } catch (error) {
@@ -95,7 +121,7 @@ const ApproveLeave = () => {
         Name: selectedSearchType === 'name' ? searchTerm : null,
       };
 
-      const response = await axios.get(`http://localhost:5555/approve-reject-leaves/getallleaves`, {
+      const response = await api.get(`/approve-reject-leaves/getallleaves`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         params,
       });
@@ -120,11 +146,25 @@ const ApproveLeave = () => {
 
   return (
     <Layout>
+    {showAlert && (
+        <CustomAlert 
+          message={alertMessage} 
+          onClose={() => setShowAlert(false)} // Close alert when dismissed
+        />
+      )}
+      
+      {/* Separate alert for fetching requests */}
+      {showFetchAlert && (
+        <CustomAlert 
+          message={fetchAlertMessage} 
+          onClose={() => setShowFetchAlert(false)} // Close alert for fetching leave requests
+        />
+      )}
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-2xl font-bold mb-4 text-white">Leave Approve/Reject Page</h2>
+          <h2 className="text-5xl text-center mb-5 font-bold text-white">Approve / Reject leave requests</h2>
           
-          {showAlert && <p className="text-red-500 mb-4">{alertMessage}</p>}
+         
 
           <div className="row g-0 text-center">
             <div className="col-sm-6 col-md-8">

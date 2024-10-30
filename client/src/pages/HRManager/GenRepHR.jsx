@@ -14,24 +14,72 @@ import Row from 'react-bootstrap/Row';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import './GenRepHR.css';
+import api from '../../axios';
   
 
 const GenRepHR = () => {
   const navigate = useNavigate();
-  const [show, setShow] = useState(false);
+  const [showEBD, setShowEBD] = useState(false);
+  const [showEBB, setShowEBB] = useState(false);
+  const [showLB, setShowLB] = useState(false);
+  const [showLR, setShowLR] = useState(false);
   const [validated, setValidated] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [titles, setTitles] = useState([]);
   const [statuses, setStatuses] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [payGrades, setPayGrades] = useState([]);
   const [selectedDepartmentID, setSelectedDepartmentID] = useState('');
   const [selectedTitleID, setSelectedTitleID] = useState('');
   const [selectedStatusID, setSelectedStatusID] = useState('');
+  const [selectedBranchID, setSelectedBranchID] = useState('');
+  const [selectedPayGradeID, setSelectedPayGradeID] = useState('');
   const [fetchedData, setFetchedData] = useState(null);
 
-  const handleReportGeneration = async () => {
+  useEffect(() => {
+    const fetchDropdownOptions = async () => {
+      try {
+        const response = await api.get('/genarateReport/get_dropdown_options', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,  // Added Authorization header
+          },
+        });
+      
+        console.log(response.data);  // Check the structure of the fetched data
+        if (response.data.success) {
+          setDepartments(response.data.data.departments || []);
+          setTitles(response.data.data.titles || []);
+          setStatuses(response.data.data.employment_statuses || []);
+          setBranches(response.data.data.branches || []);
+          setPayGrades(response.data.data.pay_grades || []);  // Update here to match the returned key
+        } else {
+          console.error('Failed to fetch dropdown options');
+        }
+      } catch (error) {
+        console.error('Error fetching dropdown options:', error);
+      }
+      
+    };
+    
+    fetchDropdownOptions();
+  }, []);
+
+  // Handle the form submission
+  const handleEBD = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleEBDGen();
+    }
+    setValidated(true);
+  };
+
+  const handleEBDGen = async () => {
     try {
-      const response = await axios.post(
-        'http://localhost:5555/genarateReport/get_employee_detail_by_department',  // Adjusted API endpoint
+      const response = await api.post(
+        '/genarateReport/get_employee_detail_by_department',  // Adjusted API endpoint
         {
           department: selectedDepartmentID || 0,  // Default to 0 if not selected
           title: selectedTitleID || 0,
@@ -47,7 +95,7 @@ const GenRepHR = () => {
       if (response.data.success) {
         console.log('Employee data fetched successfully:', response.data.data);
         setFetchedData(response.data.data);  // Store data to display in the modal
-        setShow(true);  // Show the modal on success
+        setShowEBD(true);  // Show the modal on success
       } else {
         setAlertMessage('Error: No matching data found');
         setShowAlert(true);
@@ -59,45 +107,7 @@ const GenRepHR = () => {
     }
   };  
 
-  useEffect(() => {
-    const fetchDropdownOptions = async () => {
-      try {
-        const response = await axios.get('http://localhost:5555/genarateReport/get_department_dropdown_options', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,  // Added Authorization header
-          },
-        });
-      
-        console.log(response.data);  // Check the structure of the fetched data
-        if (response.data.success) {
-          setDepartments(response.data.data.departments || []);
-          setTitles(response.data.data.titles || []);
-          setStatuses(response.data.data.employment_statuses || []);  // Update here to match the returned key
-        } else {
-          console.error('Failed to fetch dropdown options');
-        }
-      } catch (error) {
-        console.error('Error fetching dropdown options:', error);
-      }
-      
-    };
-    
-    fetchDropdownOptions();
-  }, []);
-
-  // Handle the form submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      await handleReportGeneration();
-    }
-    setValidated(true);
-  };
-
-  const handleDownloadPDF = () => {
+  const handleDownloadEBD = () => {
     const doc = new jsPDF();
   
     // Define the title using selected values
@@ -136,6 +146,94 @@ const GenRepHR = () => {
       const now = new Date();
       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
       const fileName = `${status} ${title}s of ${department} department on ${formattedDate}.pdf`;
+      doc.save(fileName); // Save PDF with the specified file name
+    } else {
+      alert('No data available to export.');
+    }
+  };
+
+  // Handle the form submission
+  const handleEBB = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleEBBGen();
+    }
+    setValidated(true);
+  };
+
+  const handleEBBGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_employee_detail_by_branch',  // Adjusted API endpoint
+        {
+          branch: selectedBranchID || 0,  // Default to 0 if not selected
+          title: selectedTitleID || 0,
+          status: selectedStatusID || 0,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowEBB(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  }; 
+
+  const handleDownloadEBB = () => {
+    const doc = new jsPDF();
+  
+    // Define the title using selected values
+    const branch = branches.find(dept => dept.id === Number(selectedBranchID))?.name || "All Branches";
+    const title = titles.find(tit => tit.id === Number(selectedTitleID))?.name || "Title";
+    const status = statuses.find(stat => stat.id === Number(selectedStatusID))?.name || "All";
+  
+    // Construct the heading text
+    const headingText = `${status} ${title}s of ${branch}`;
+  
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16); // Optional: Set font size for the heading
+    doc.text(headingText, 10, 10); // Position the heading on the PDF (x, y coordinates)
+  
+    // Define columns for the table
+    const columns = [
+      { header: 'Full Name', dataKey: 'Full_Name' },
+      { header: 'NIC', dataKey: 'NIC' },
+      { header: 'Department', dataKey: 'Dept_Name' },
+      { header: 'Branch', dataKey: 'Branch_Name' },
+      { header: 'Status', dataKey: 'Status' },
+      { header: 'Title', dataKey: 'Title' },
+    ];
+  
+    // Check if there is data to export
+    if (fetchedData && fetchedData.length > 0) {
+      // Use jspdf-autotable to generate the table
+      doc.autoTable({
+        head: [columns.map(col => col.header)], // Use headers from columns
+        body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])), // Extract data based on keys
+        startY: 20, // Position the table after the heading
+        theme: 'grid', // Optional: table theme
+        styles: { fontSize: 10 }, // Optional: font size for table content
+      });
+      
+      const now = new Date();
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+      const fileName = `${status} ${title}s of ${branch} on ${formattedDate}.pdf`;
       doc.save(fileName); // Save PDF with the specified file name
     } else {
       alert('No data available to export.');
@@ -187,7 +285,7 @@ const GenRepHR = () => {
               </div>
               <div className="employee-department-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee Details by Department</h2>
-                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                <Form noValidate validated={validated} onSubmit={handleEBD}>
                   <Row className="mb-3">
                     <Col md="4">
                       <Form.Group controlId="depSelE2">
@@ -245,7 +343,7 @@ const GenRepHR = () => {
                     <Button type="submit">Generate</Button>
                   </div>
                 </Form>
-                <Modal show={show} onHide={() => setShow(false)} backdrop="static" keyboard={false}>
+                <Modal show={showEBD} onHide={() => setShowEBD(false)} backdrop="static" keyboard={false}>
                   <Modal.Header closeButton>
                     <Modal.Title>Download request</Modal.Title>
                   </Modal.Header>
@@ -270,10 +368,10 @@ const GenRepHR = () => {
                   )}
                   </Modal.Body>
                   <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>
+                    <Button variant="secondary" onClick={() => setShowEBD(false)}>
                       Dismiss
                     </Button>
-                    <Button variant="primary" onClick={handleDownloadPDF}>
+                    <Button variant="primary" onClick={handleDownloadEBD}>
                       Download as PDF
                     </Button>
                   </Modal.Footer>
@@ -281,6 +379,97 @@ const GenRepHR = () => {
               </div>
               <div className="employee-branch-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee details by Branch</h2>
+                <Form noValidate validated={validated} onSubmit={handleEBB}>
+                  <Row className="mb-3">
+                    <Col md="4">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Branch</Form.Label>
+                        <Form.Select
+                          value={selectedBranchID}
+                          onChange={(e) => setSelectedBranchID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {branches.map((bran) => (
+                            <option key={bran.id} value={bran.id}>
+                              {bran.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="titSelE2">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Select
+                          value={selectedTitleID}
+                          onChange={(e) => setSelectedTitleID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {titles.map((tit) => (
+                            <option key={tit.id} value={tit.id}>
+                              {tit.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="4">
+                      <Form.Group controlId="statSelE2">
+                        <Form.Label>Status</Form.Label>
+                        <Form.Select
+                          value={selectedStatusID}
+                          onChange={(e) => setSelectedStatusID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {statuses.map((stat) => (
+                            <option key={stat.id} value={stat.id}>
+                              {stat.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={showEBB} onHide={() => setShowEBB(false)} backdrop="static" keyboard={false}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Download request</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                  {fetchedData ? (
+                    fetchedData.map((employee, index) => (
+                      <Card key={index} className="mb-2">
+                        <Card.Body>
+                          <Card.Title>{employee.Full_Name}</Card.Title>
+                          <Card.Text>
+                            <strong>NIC:</strong> {employee.NIC} <br />
+                            <strong>Department:</strong> {employee.Dept_Name} <br />
+                            <strong>Branch:</strong> {employee.Branch_Name} <br />
+                            <strong>Status:</strong> {employee.Status} <br />
+                            <strong>Title:</strong> {employee.Title}
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    ))
+                  ) : (
+                    <p>No data available.</p>
+                  )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowEBB(false)}>
+                      Dismiss
+                    </Button>
+                    <Button variant="primary" onClick={handleDownloadEBB}>
+                      Download as PDF
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
               <div className="employee-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee details by Pay Grade</h2>

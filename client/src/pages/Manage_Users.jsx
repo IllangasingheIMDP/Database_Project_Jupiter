@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
+import api from '../axios';
 
 const Manage_Users = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -18,7 +19,7 @@ const Manage_Users = () => {
 
   const fetchUserData = async () => {
     try {
-      const res = await axios.get('http://localhost:5555/users/get-users', {
+      const res = await api.get('/users/get-users', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (res.data.success) {
@@ -36,7 +37,7 @@ const Manage_Users = () => {
   const fetchDropdownData = async () => {
     try {
       const [empRes] = await Promise.all([
-        axios.get('http://localhost:5555/users/get-users', {
+        api.get('/users/get-users', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }),
       ]);
@@ -64,8 +65,8 @@ const Manage_Users = () => {
   
       try {
         // Send the delete request with token in headers
-        const res = await axios.post(
-          `http://localhost:5555/users/delete-user/${selectedUser}`,
+        const res = await api.post(
+          `/users/delete-user/${selectedUser}`,
           {}, // Empty body for POST request
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -106,8 +107,8 @@ const Manage_Users = () => {
       return;
     }
     try {
-      const res = await axios.post(
-        'http://localhost:5555/users/add-user',
+      const res = await api.post(
+        '/users/add-user',
         { username, authLevel, employee },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -143,7 +144,7 @@ const Manage_Users = () => {
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'
            style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <section className='bg-gray-950 px-5 py-5 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg'>
-          <h2 className="text-xl mb-4 text-white">Manage users</h2>
+          <h2 className="text-5xl mb-4 font-bold text-center text-white">Manage users</h2>
 
           <div className="mb-4">
             <MaterialButton
