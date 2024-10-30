@@ -180,6 +180,48 @@ const GenerateReportModel = {
       });
     });
   },
+  get_pending_leave_request_details: (departmentID, branchID, fromDate, toDate, callback) => {
+    const callQuery = `CALL get_pending_leave_request_report(?, ?, ?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+    
+    db.query(callQuery, [departmentID, branchID, fromDate, toDate], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+        console.log(result);
+        callback(null, result);
+      });
+    });
+  },
+  get_rejected_leave_request_details: (departmentID, branchID, fromDate, toDate, callback) => {
+    const callQuery = `CALL get_reject_leave_request_report(?, ?, ?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+    
+    db.query(callQuery, [departmentID, branchID, fromDate, toDate], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+        console.log(result);
+        callback(null, result);
+      });
+    });
+  },
   get_custom_field: (customFieldID, departmentID, branchID, callback) => {
     const callQuery = `CALL db_get_customfield_data(?, ?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;

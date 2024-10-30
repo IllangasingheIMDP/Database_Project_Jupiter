@@ -203,6 +203,54 @@ const generateReportController={
       return res.status(500).json({ success: false, message: "Error fetching employee details." });
     }
   },
+  get_pending_leave_request_details: async (req, res) => {
+    const { department, branch, fromDate, toDate } = req.body;  
+    // Extract parameters from the request body
+    try {
+      const data = await new Promise((resolve, reject) => {
+        generateReportModel.get_pending_leave_request_details(department, branch, fromDate, toDate, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+
+      if (!data.success) {
+        return res.status(400).json({ success: false, message: "No relevant data found." });
+      } else {
+        return res.status(200).json({ success: true, data: data.data });
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      return res.status(500).json({ success: false, message: "Error fetching employee details." });
+    }
+  },
+  get_rejected_leave_request_details: async (req, res) => {
+    const { department, branch, fromDate, toDate } = req.body;  
+    // Extract parameters from the request body
+    try {
+      const data = await new Promise((resolve, reject) => {
+        generateReportModel.get_rejected_leave_request_details(department, branch, fromDate, toDate, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+
+      if (!data.success) {
+        return res.status(400).json({ success: false, message: "No relevant data found." });
+      } else {
+        return res.status(200).json({ success: true, data: data.data });
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      return res.status(500).json({ success: false, message: "Error fetching employee details." });
+    }
+  },
   get_custom_field: async (req, res) => {
     const { custom_field, department, branch} = req.body;  // Extract parameters from the request body
     try {

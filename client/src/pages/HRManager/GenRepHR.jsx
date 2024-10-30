@@ -29,6 +29,8 @@ const GenRepHR = () => {
   const [showEBT, setShowEBT] = useState(false);
   const [showLB, setShowLB] = useState(false);
   const [showLR, setShowLR] = useState(false);
+  const [showLPR, setShowLPR] = useState(false);
+  const [showLRR, setShowLRR] = useState(false);
   const [showCF, setShowCF] = useState(false);
   const [validated, setValidated] = useState(false);
   const [organizations, setOrganizations] = useState([]);
@@ -648,64 +650,67 @@ const GenRepHR = () => {
     }
   }; 
 
-  const handleDownloadLB = () => {
-      const doc = new jsPDF('landscape');
-
-      // Define the title using selected values
-      const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All Branches";
-      const department = departments.find(dep => dep.id === Number(selectedDepartmentID))?.name || "All Departments";
-
-      // Construct the heading text
-      const headingText = `Annual Leave Balance Report for ${department}, ${branch}`;
+  const handleDownloadLB = async () => {
+    // Fetch data from the API
+    const fetchedData = await fetchLeaveBalanceData(selectedDepartmentID, selectedBranchID, selectedOrgID);
     
-      // Add the heading to the PDF at the top
-      doc.setFontSize(16);
-      doc.text(headingText, 10, 10);
+    if (!fetchedData || fetchedData.length === 0) {
+        alert('No data available to export.');
+        return;
+    }
 
-      // Define columns for the table with additional leave details
-      const columns = [
-          { header: 'Full Name', dataKey: 'Full_Name' },
-          { header: 'Status', dataKey: 'Employment_Status' },
-          { header: 'Pay Grade', dataKey: 'Pay_Grade_Level' },
-          
-          { header: 'Annual Balance', dataKey: 'Annual_Leave_Balance' },
-          { header: 'Annual Entitlement', dataKey: 'Annual_Leave_Entitlement' },
-          { header: 'Annual Remaining', dataKey: 'Annual_Leave_Remaining' },
-          
-          { header: 'Casual Balance', dataKey: 'Casual_Leave_Balance' },
-          { header: 'Casual Entitlement', dataKey: 'Casual_Leave_Entitlement' },
-          { header: 'Casual Remaining', dataKey: 'Casual_Leave_Remaining' },
-          
-          { header: 'Maternity Balance', dataKey: 'Maternity_Leave_Balance' },
-          { header: 'Maternity Entitlement', dataKey: 'Maternity_Leave_Entitlement' },
-          { header: 'Maternity Remaining', dataKey: 'Maternity_Leave_Remaining' },
-          
-          { header: 'No Pay Balance', dataKey: 'No_Pay_Leave_Balance' },
-          { header: 'No Pay Entitlement', dataKey: 'No_Pay_Leave_Entitlement' },
-          { header: 'No Pay Remaining', dataKey: 'No_Pay_Leave_Remaining' },
-          
-          { header: 'Total Balance', dataKey: 'Total_Leave_Balance' },
-          { header: 'Total Entitlement', dataKey: 'Total_Leave_Entitlement' },
-          { header: 'Total Remaining', dataKey: 'Total_Leave_Remaining' },
-      ];
+    const doc = new jsPDF('landscape');
 
-      // Check if there is data to export
-      if (fetchedData && fetchedData.length > 0) {
-          doc.autoTable({
-              head: [columns.map(col => col.header)],
-              body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
-              startY: 20,
-              theme: 'grid',
-              styles: { fontSize: 8 },
-          });
+    // Define the title using selected values
+    const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All Branches";
+    const department = departments.find(dep => dep.id === Number(selectedDepartmentID))?.name || "All Departments";
+    const headingText = `Annual Leave Balance Report for ${department}, ${branch}`;
 
-          const now = new Date();
-          const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-          const fileName = `Leave Balance Report - ${department}, ${branch} on ${formattedDate}.pdf`;
-          doc.save(fileName);
-      } else {
-          alert('No data available to export.');
-      }
+    // Add heading to the PDF
+    doc.setFontSize(16);
+    doc.text(headingText, 10, 10);
+
+    // Define columns for the table
+    const columns = [
+        { header: 'Full Name', dataKey: 'Full_Name' },
+        { header: 'Status', dataKey: 'Employment_Status' },
+        { header: 'Pay Grade', dataKey: 'Pay_Grade_Level' },
+        
+        { header: 'Annual Balance', dataKey: 'Annual_Leave_Balance' },
+        { header: 'Annual Entitlement', dataKey: 'Annual_Leave_Entitlement' },
+        { header: 'Annual Taken', dataKey: 'Annual_Leave_Taken' },
+        
+        { header: 'Casual Balance', dataKey: 'Casual_Leave_Balance' },
+        { header: 'Casual Entitlement', dataKey: 'Casual_Leave_Entitlement' },
+        { header: 'Casual Taken', dataKey: 'Casual_Leave_Taken' },
+        
+        { header: 'Maternity Balance', dataKey: 'Maternity_Leave_Balance' },
+        { header: 'Maternity Entitlement', dataKey: 'Maternity_Leave_Entitlement' },
+        { header: 'Maternity Taken', dataKey: 'Maternity_Leave_Taken' },
+        
+        { header: 'No Pay Balance', dataKey: 'No_Pay_Leave_Balance' },
+        { header: 'No Pay Entitlement', dataKey: 'No_Pay_Leave_Entitlement' },
+        { header: 'No Pay Taken', dataKey: 'No_Pay_Leave_Taken' },
+        
+        { header: 'Total Balance', dataKey: 'Total_Leave_Balance' },
+        { header: 'Total Entitlement', dataKey: 'Total_Leave_Entitlement' },
+        { header: 'Total Taken', dataKey: 'Total_Leave_Taken' },
+    ];
+
+    // Generate table in PDF
+    doc.autoTable({
+        head: [columns.map(col => col.header)],
+        body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
+        startY: 20,
+        theme: 'grid',
+        styles: { fontSize: 8 },
+    });
+
+    // Save PDF
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    const fileName = `Leave Balance Report - ${department}, ${branch} on ${formattedDate}.pdf`;
+    doc.save(fileName);
   };
 
   // Handle the form submission
@@ -790,6 +795,182 @@ const GenRepHR = () => {
         const now = new Date();
         const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
         const fileName = `Approved_Leave_Requests_${department}_${branch}_${formattedDate}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert('No data available to export.');
+    }
+  };
+
+  // Handle the form submission
+  const handleLPR = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleLPRGen();
+    }
+    setValidated(true);
+  };
+
+  const handleLPRGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_pending_leave_request_details',  // Adjusted API endpoint
+        {
+          department: selectedDepartmentID || 0,  // Default to 0 if not selected
+          branch: selectedBranchID || 0,
+          fromDate: selectedFromDate || '2024-01-01',  // Default to a date if not selected
+          toDate: selectedToDate || '2024-12-31',  // Default to a date if not selected
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowLPR(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  };  
+
+  const handleDownloadLPR = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+
+    // Define the title using selected values
+    const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
+    const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All";
+    const headingText = `Pending Leave Requests for ${department} Department, ${branch} Branch`;
+
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16);
+    doc.text(headingText, 10, 10);
+
+    // Define columns for the table based on the procedure's output
+    const columns = [
+        { header: 'Full Name', dataKey: 'Full_Name' },
+        { header: 'NIC', dataKey: 'Employment_NIC' },
+        { header: 'Title', dataKey: 'Title' },
+        { header: 'Pay Grade', dataKey: 'Pay_Grade_Level' },
+        { header: 'Leave Start Date', dataKey: 'Start_Date' },
+        { header: 'Leave End Date', dataKey: 'End_Date' },
+        { header: 'Reason', dataKey: 'Reason' },
+        { header: 'Supervisor Name', dataKey: 'Supervisor_Full_Name' },
+        { header: 'Supervisor NIC', dataKey: 'Supervisor_NIC' },
+        { header: 'Supervisor Title', dataKey: 'Supervisor_Title' }
+    ];
+
+    if (fetchedData && fetchedData.length > 0) {
+        doc.autoTable({
+            head: [columns.map(col => col.header)],
+            body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 10 }
+        });
+
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        const fileName = `Pending_Leave_Requests_${department}_${branch}_${formattedDate}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert('No data available to export.');
+    }
+  };
+
+  // Handle the form submission
+  const handleLRR = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleLRRGen();
+    }
+    setValidated(true);
+  };
+
+  const handleLRRGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_rejected_leave_request_details',  // Adjusted API endpoint
+        {
+          department: selectedDepartmentID || 0,  // Default to 0 if not selected
+          branch: selectedBranchID || 0,
+          fromDate: selectedFromDate || '2024-01-01',  // Default to a date if not selected
+          toDate: selectedToDate || '2024-12-31',  // Default to a date if not selected
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowLRR(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  };  
+
+  const handleDownloadLRR = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+
+    // Define the title using selected values
+    const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
+    const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All";
+    const headingText = `Rejected Leave Requests for ${department} Department, ${branch} Branch`;
+
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16);
+    doc.text(headingText, 10, 10);
+
+    // Define columns for the table based on the procedure's output
+    const columns = [
+        { header: 'Full Name', dataKey: 'Full_Name' },
+        { header: 'NIC', dataKey: 'Employment_NIC' },
+        { header: 'Title', dataKey: 'Title' },
+        { header: 'Pay Grade', dataKey: 'Pay_Grade_Level' },
+        { header: 'Leave Start Date', dataKey: 'Start_Date' },
+        { header: 'Leave End Date', dataKey: 'End_Date' },
+        { header: 'Reason', dataKey: 'Reason' },
+        { header: 'Supervisor Name', dataKey: 'Supervisor_Full_Name' },
+        { header: 'Supervisor NIC', dataKey: 'Supervisor_NIC' },
+        { header: 'Supervisor Title', dataKey: 'Supervisor_Title' }
+    ];
+
+    if (fetchedData && fetchedData.length > 0) {
+        doc.autoTable({
+            head: [columns.map(col => col.header)],
+            body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 10 }
+        });
+
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        const fileName = `Rejected_Leave_Requests_${department}_${branch}_${formattedDate}.pdf`;
         doc.save(fileName);
     } else {
         alert('No data available to export.');
@@ -1489,13 +1670,13 @@ const GenRepHR = () => {
                                       <Card.Text>
                                           <strong>Status:</strong> {employee.Employment_Status} <br />
                                           <strong>Pay Grade:</strong> {employee.Pay_Grade_Level} <br />
-
-                                          <strong>Annual Leave:</strong> {employee.Annual_Leave_Balance} / {employee.Annual_Leave_Entitlement} (Remaining: {employee.Annual_Leave_Remaining}) <br />
-                                          <strong>Casual Leave:</strong> {employee.Casual_Leave_Balance} / {employee.Casual_Leave_Entitlement} (Remaining: {employee.Casual_Leave_Remaining}) <br />
-                                          <strong>Maternity Leave:</strong> {employee.Maternity_Leave_Balance} / {employee.Maternity_Leave_Entitlement} (Remaining: {employee.Maternity_Leave_Remaining}) <br />
-                                          <strong>No Pay Leave:</strong> {employee.No_Pay_Leave_Balance} / {employee.No_Pay_Leave_Entitlement} (Remaining: {employee.No_Pay_Leave_Remaining}) <br />
                                           
-                                          <strong>Total Leave:</strong> {employee.Total_Leave_Balance} / {employee.Total_Leave_Entitlement} (Remaining: {employee.Total_Leave_Remaining})
+                                          <strong>Annual Leave:</strong> {employee.Annual_Leave_Balance} / {employee.Annual_Leave_Entitlement} (Taken: {employee.Annual_Leave_Taken}) <br />
+                                          <strong>Casual Leave:</strong> {employee.Casual_Leave_Balance} / {employee.Casual_Leave_Entitlement} (Taken: {employee.Casual_Leave_Taken}) <br />
+                                          <strong>Maternity Leave:</strong> {employee.Maternity_Leave_Balance} / {employee.Maternity_Leave_Entitlement} (Taken: {employee.Maternity_Leave_Taken}) <br />
+                                          <strong>No Pay Leave:</strong> {employee.No_Pay_Leave_Balance} / {employee.No_Pay_Leave_Entitlement} (Taken: {employee.No_Pay_Leave_Taken}) <br />
+                                          
+                                          <strong>Total Leave:</strong> {employee.Total_Leave_Balance} / {employee.Total_Leave_Entitlement} (Taken: {employee.Total_Leave_Taken})
                                       </Card.Text>
                                   </Card.Body>
                               </Card>
@@ -1505,17 +1686,13 @@ const GenRepHR = () => {
                       )}
                   </Modal.Body>
                   <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowLB(false)}>
-                      Dismiss
-                    </Button>
-                    <Button variant="primary" onClick={handleDownloadLB}>
-                      Download as PDF
-                    </Button>
+                      <Button variant="secondary" onClick={() => setShowLB(false)}>Dismiss</Button>
+                      <Button variant="primary" onClick={handleDownloadLB}>Download as PDF</Button>
                   </Modal.Footer>
-                </Modal>
+              </Modal>
               </div>
               <div className="leave-req-details-section bg-white p-3 rounded">
-                <h2 style={{ fontWeight: 'bold' }}>Leave request details</h2>
+                <h2 style={{ fontWeight: 'bold' }}>Approved leave request details</h2>
                 <Form noValidate validated={validated} onSubmit={handleLR}>
                   <Row className="mb-3">
                     <Col md="6">
@@ -1613,6 +1790,206 @@ const GenRepHR = () => {
                       </Button>
                   </Modal.Footer>
               </Modal>
+              </div>
+              <div className="leave-req-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Pending leave request details</h2>
+                <Form noValidate validated={validated} onSubmit={handleLPR}>
+                  <Row className="mb-3">
+                    <Col md="6">
+                      <Form.Group controlId="titSelE2">
+                        <Form.Label>Department</Form.Label>
+                        <Form.Select
+                          value={selectedDepartmentID}
+                          onChange={(e) => setSelectedDepartmentID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {departments.map((dep) => (
+                            <option key={dep.id} value={dep.id}>
+                              {dep.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="6">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Branch</Form.Label>
+                        <Form.Select
+                          value={selectedBranchID}
+                          onChange={(e) => setSelectedBranchID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {branches.map((bran) => (
+                            <option key={bran.id} value={bran.id}>
+                              {bran.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col md="6">
+                      <Form.Group controlId="dateInput">
+                        <Form.Label>From</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={selectedFromDate}
+                          onChange={(e) => setSelectedFromDate(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md="6">
+                    <Form.Group controlId="dateInput">
+                        <Form.Label>To</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={selectedToDate}
+                          onChange={(e) => setSelectedToDate(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={showLPR} onHide={() => setShowLPR(false)} backdrop="static" keyboard={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Download Pending Leave Request Report</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {fetchedData && fetchedData.length > 0 ? (
+                            fetchedData.map((employee, index) => (
+                                <Card key={index} className="mb-2">
+                                    <Card.Body>
+                                        <Card.Title>{employee.Full_Name}</Card.Title>
+                                        <Card.Text>
+                                            <strong>NIC:</strong> {employee.Employment_NIC} <br />
+                                            <strong>Title:</strong> {employee.Title} <br />
+                                            <strong>Pay Grade:</strong> {employee.Pay_Grade_Level} <br />
+                                            <strong>Leave Period:</strong> {employee.Start_Date} to {employee.End_Date} <br />
+                                            <strong>Reason:</strong> {employee.Reason} <br />
+                                            <strong>Supervisor:</strong> {employee.Supervisor_Full_Name} ({employee.Supervisor_Title}), NIC: {employee.Supervisor_NIC}
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            ))
+                        ) : (
+                            <p>No data available.</p>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowLPR(false)}>
+                            Dismiss
+                        </Button>
+                        <Button variant="primary" onClick={handleDownloadLPR}>
+                            Download as PDF
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+              </div>
+              <div className="leave-req-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Rejected leave request details</h2>
+                <Form noValidate validated={validated} onSubmit={handleLRR}>
+                  <Row className="mb-3">
+                    <Col md="6">
+                      <Form.Group controlId="titSelE2">
+                        <Form.Label>Department</Form.Label>
+                        <Form.Select
+                          value={selectedDepartmentID}
+                          onChange={(e) => setSelectedDepartmentID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {departments.map((dep) => (
+                            <option key={dep.id} value={dep.id}>
+                              {dep.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md="6">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Branch</Form.Label>
+                        <Form.Select
+                          value={selectedBranchID}
+                          onChange={(e) => setSelectedBranchID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {branches.map((bran) => (
+                            <option key={bran.id} value={bran.id}>
+                              {bran.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col md="6">
+                      <Form.Group controlId="dateInput">
+                        <Form.Label>From</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={selectedFromDate}
+                          onChange={(e) => setSelectedFromDate(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md="6">
+                    <Form.Group controlId="dateInput">
+                        <Form.Label>To</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={selectedToDate}
+                          onChange={(e) => setSelectedToDate(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={showLRR} onHide={() => setShowLRR(false)} backdrop="static" keyboard={false}>
+                  <Modal.Header closeButton>
+                      <Modal.Title>Download Rejected Leave Request Report</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                      {fetchedData && fetchedData.length > 0 ? (
+                          fetchedData.map((employee, index) => (
+                              <Card key={index} className="mb-2">
+                                  <Card.Body>
+                                      <Card.Title>{employee.Full_Name}</Card.Title>
+                                      <Card.Text>
+                                          <strong>NIC:</strong> {employee.Employment_NIC} <br />
+                                          <strong>Title:</strong> {employee.Title} <br />
+                                          <strong>Pay Grade:</strong> {employee.Pay_Grade_Level} <br />
+                                          <strong>Leave Period:</strong> {employee.Start_Date} to {employee.End_Date} <br />
+                                          <strong>Reason:</strong> {employee.Reason} <br />
+                                          <strong>Supervisor:</strong> {employee.Supervisor_Full_Name} ({employee.Supervisor_Title}), NIC: {employee.Supervisor_NIC}
+                                      </Card.Text>
+                                  </Card.Body>
+                              </Card>
+                          ))
+                      ) : (
+                          <p>No data available.</p>
+                      )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                      <Button variant="secondary" onClick={() => setShowLRR(false)}>
+                          Dismiss
+                      </Button>
+                      <Button variant="primary" onClick={handleDownloadLRR}>
+                          Download as PDF
+                      </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
             </Tab>
             <Tab eventKey="customFields" title="Custom Field details">
