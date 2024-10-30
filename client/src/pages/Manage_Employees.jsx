@@ -101,7 +101,7 @@ const Manage_Employees = () => {
       >
         {/* Content Section */}
         <section className='bg-gray-950 px-5 py-5 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg'>
-          <h2 className="text-xl mb-4 text-white">Manage Employees</h2>
+          <h2 className="text-5xl font-bold text-center mb-4 text-white">Manage Employees</h2>
 
           {/* Add Employee Button */}
           <div className="mb-4">

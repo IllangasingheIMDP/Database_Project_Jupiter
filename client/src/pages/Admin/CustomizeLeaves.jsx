@@ -68,7 +68,7 @@ const CustomizeLeaves = () => {
       )}
       <div className="max-h-full h-full rounded-lg shadow-2xl shadow-black" style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <section className="bg-gray-950 px-4 py-5 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg" style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-6 text-white">Customize Leave Allowances</h2>
+          <h2 className="text-5xl font-bold text-center mb-6 text-white">Customize Leave Allowances</h2>
 
           <div className="flex w-full h-20 flex-row justify-start space-x-2 mb-4">
             {payGradeData.map((pg, index) => (
@@ -89,7 +89,7 @@ const CustomizeLeaves = () => {
               <thead>
                 <tr>
                   <th className="px-6 py w-1/5 -3 border-b-2 rounded-tl-lg border-gray-200 bg-gray-500 text-center text-md font-semibold text-white uppercase tracking-wider">
-                    Leave Type
+                    Level
                   </th>
                   <th className="px-6 py-3 w-1/5 border-b-2 border-gray-200 bg-gray-500 text-center text-md font-semibold text-white uppercase tracking-wider">
                     Annual

@@ -163,7 +163,7 @@ const EditTable = () => {
 
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', }}>
         <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
-          <h2 className="text-xl mb-4 text-white" style={{ textTransform: 'uppercase' }}>Editing Table: {tableName}</h2>
+          <h2 className="text-5xl font-bold text-center  mb-4 text-white" style={{ textTransform: 'uppercase' }}>Editing Table: {tableName}</h2>
           <MaterialButton
             table="Add Row"
             is_upper={true}
