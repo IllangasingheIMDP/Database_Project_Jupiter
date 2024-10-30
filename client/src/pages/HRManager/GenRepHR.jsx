@@ -20,6 +20,9 @@ import api from '../../axios';
 const GenRepHR = () => {
   const navigate = useNavigate();
   const [showOB, setShowOB] = useState(false);
+  const [showE, setShowE] = useState(false);
+  const [nic, setNic] = useState(""); 
+  const [name, setName] = useState("");
   const [showEBD, setShowEBD] = useState(false);
   const [showEBB, setShowEBB] = useState(false);
   const [showEBP, setShowEBP] = useState(false);
@@ -153,6 +156,114 @@ const GenRepHR = () => {
         alert('No data available to export.');
     }
   };
+
+  // Handle the form submission
+  const handleE = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleEGen();
+    }
+    setValidated(true);
+  };
+
+  const handleEGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_employee_details',  // Adjusted API endpoint
+        {
+          nic: nic || '',  // Default to 0 if not selected
+          name: name || '',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowE(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  };  
+
+  const handleDownloadE = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Employee Details", 10, 10);
+    
+    if (fetchedData && fetchedData.length > 0) {
+        const employee = fetchedData[0]; // Assuming we want to export the first employee record
+
+        // Set starting Y position for text
+        let y = 20;
+
+        // Define employee details to display
+        const employeeDetails = [
+            { label: "Full Name:", value: employee.Full_Name },
+            { label: "NIC:", value: employee.NIC },
+            { label: "Gender:", value: employee.Gender },
+            { label: "Work Email:", value: employee.Email_Work },
+            { label: "Private Email:", value: employee.Email_Private },
+            { label: "Phone:", value: employee.Phone },
+            { label: "Address:", value: employee.Address },
+            { label: "Department:", value: employee.Department },
+            { label: "Branch:", value: employee.Branch },
+            { label: "Organization:", value: employee.Organization },
+            { label: "Job Title:", value: employee.Job_Title },
+            { label: "Pay Grade:", value: employee.Pay_Grade },
+            { label: "Employment Status:", value: employee.Employment_Status },
+        ];
+
+        // Loop through employee details and add them to the PDF
+        employeeDetails.forEach(detail => {
+            doc.text(`${detail.label} ${detail.value}`, 10, y);
+            y += 10; // Move down for next line
+        });
+
+        // Add dependents if available
+        if (employee.Dependents && employee.Dependents.length > 0) {
+            doc.text("Dependents:", 10, y);
+            y += 10; // Move down for dependents
+
+            employee.Dependents.forEach(dependent => {
+                doc.text(`- ${dependent.Dependent_Name} (${dependent.Relationship})`, 10, y);
+                y += 10; // Move down for next dependent
+            });
+        }
+
+        // Add emergency contacts if available
+        if (employee.Emergency_Contact && employee.Emergency_Contact.length > 0) {
+            doc.text("Emergency Contacts:", 10, y);
+            y += 10; // Move down for emergency contacts
+
+            employee.Emergency_Contact.forEach(contact => {
+                doc.text(`- ${contact.Contact_Name} (${contact.Relationship}), Phone: ${contact.Phone}, Email: ${contact.Email}, Address: ${contact.Address}`, 10, y);
+                y += 10; // Move down for next contact
+            });
+        }
+
+        // Save the PDF with the filename based on employee name and NIC
+        const fileName = `${employee.Full_Name.replace(/\s+/g, "_")}_${employee.NIC}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert("No data available to export.");
+    }
+  };
+
+
 
   // Handle the form submission
   const handleEBD = async (event) => {
@@ -771,18 +882,99 @@ const GenRepHR = () => {
             <Tab eventKey="employee" title="Employee details">
               <div className="employee-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee details of an Employee</h2>
-                  <Form>
-                    <FloatingLabel
-                      controlId="floatingInput"
-                      label="Enter NIC or Employee ID"
-                      className="mb-3"
-                    >
-                      <Form.Control type="email" placeholder="name@example.com" />
-                    </FloatingLabel>
-                    <div className="d-flex justify-content-center">
-                      <Button variant="primary" type="submit">Search</Button>
-                    </div>
-                  </Form>
+                <Form noValidate validated={true} onSubmit={handleE}>
+                  <Row className="mb-3">
+                      <Col md="6">
+                          <Form.Group controlId="depSelE2">
+                              <Form.Label>NIC</Form.Label>
+                              <FloatingLabel controlId="floatingInputNIC" label="Enter NIC" className="mb-3">
+                                  <Form.Control 
+                                      type="text" 
+                                      placeholder="Enter NIC" 
+                                      value={nic} 
+                                      onChange={(e) => setNic(e.target.value)} 
+                                  />
+                              </FloatingLabel>
+                          </Form.Group>
+                      </Col>
+                      <Col md="6">
+                          <Form.Group controlId="titSelE2">
+                              <Form.Label>Name</Form.Label>
+                              <FloatingLabel controlId="floatingInputName" label="Enter Name" className="mb-3">
+                                  <Form.Control 
+                                      type="text" 
+                                      placeholder="Enter Name" 
+                                      value={name} 
+                                      onChange={(e) => setName(e.target.value)} 
+                                  />
+                              </FloatingLabel>
+                          </Form.Group>
+                      </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                      <Button type="submit">Generate</Button>
+                  </div>
+                  <Modal show={showE} onHide={() => setShowE(false)} backdrop="static" keyboard={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Download request</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {fetchedData ? (
+                            fetchedData.map((employee, index) => (
+                                <Card key={index} className="mb-2">
+                                    <Card.Body>
+                                        <Card.Title>{employee.Full_Name}</Card.Title>
+                                        <Card.Text>
+                                            <strong>NIC:</strong> {employee.NIC} <br />
+                                            <strong>Gender:</strong> {employee.Gender} <br />
+                                            <strong>Work Email:</strong> {employee.Email_Work} <br />
+                                            <strong>Private Email:</strong> {employee.Email_Private} <br />
+                                            <strong>Phone:</strong> {employee.Phone} <br />
+                                            <strong>Address:</strong> {employee.Address} <br />
+                                            <strong>Department:</strong> {employee.Department} <br />
+                                            <strong>Branch:</strong> {employee.Branch} <br />
+                                            <strong>Organization:</strong> {employee.Organization} <br />
+                                            <strong>Job Title:</strong> {employee.Job_Title} <br />
+                                            <strong>Pay Grade:</strong> {employee.Pay_Grade} <br />
+                                            <strong>Employment Status:</strong> {employee.Employment_Status} <br />
+                                        </Card.Text>
+                                        {employee.Dependents && (
+                                            <Card.Text>
+                                                <strong>Dependents:</strong>
+                                                {employee.Dependents.map((dependent, i) => (
+                                                    <div key={i}>
+                                                        - {dependent.Dependent_Name} ({dependent.Relationship})
+                                                    </div>
+                                                ))}
+                                            </Card.Text>
+                                        )}
+                                        {employee.Emergency_Contact && (
+                                            <Card.Text>
+                                                <strong>Emergency Contacts:</strong>
+                                                {employee.Emergency_Contact.map((contact, i) => (
+                                                    <div key={i}>
+                                                        - {contact.Contact_Name} ({contact.Relationship}), Phone: {contact.Phone}, Email: {contact.Email}, Address: {contact.Address}
+                                                    </div>
+                                                ))}
+                                            </Card.Text>
+                                        )}
+                                    </Card.Body>
+                                </Card>
+                            ))
+                        ) : (
+                            <p>No data available.</p>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowE(false)}>
+                            Dismiss
+                        </Button>
+                        <Button variant="primary" onClick={handleDownloadE}>
+                            Download as PDF
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                </Form>
               </div>
               <div className="employee-department-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Employee Details by Department</h2>
