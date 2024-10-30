@@ -21,14 +21,14 @@ const authController = {
 
         if (!resultData[firstKey].success) {
           return res
-            .status(404)
+            .status(200)
             .send({ message: "User not found", success: false });
         }
         const isMatch = await bcrypt.compare(req.body.password, user.Password);
         //const isMatch=(req.body.password===user.Password)
         if (!isMatch) {
           return res
-            .status(400)
+            .status(200)
             .send({ message: "Invalid Email or Password", success: false });
         } 
         const token = jwt.sign({ username: user.User_Name,authlevel:user.Auth_Level }, process.env.JWT_SECRET, {

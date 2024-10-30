@@ -33,6 +33,7 @@ const LoginForm = () => {
       
 
       if (res.data.success) {
+        
         localStorage.setItem('token', res.data.token);
         
         setAlertMessage(res.data.message); // Show success message with custom alert
@@ -40,6 +41,7 @@ const LoginForm = () => {
           navigate('/dashboard');
         }, 1000); 
       } else {
+        
         setAlertMessage(res.data.message); // Show error message with custom alert
       }
     } catch (error) {

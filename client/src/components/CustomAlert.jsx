@@ -23,7 +23,7 @@ const CustomAlert = ({ message, onClose }) => {
   // Determine the alert style based on message content
   const alertStyle = message.toLowerCase().includes('failed') ||
     message.toLowerCase().includes('error') ||
-    message.toLowerCase().includes('invalid')
+    message.toLowerCase().includes('invalid') || message.toLowerCase().includes('not')
     ? { backgroundColor: 'red', color: 'white' } // Error styles
     : message.toLowerCase().includes('warning') || message.toLowerCase().includes('caution')
     ? { backgroundColor: 'orange', color: 'black' } // Warning styles
