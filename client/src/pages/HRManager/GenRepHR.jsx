@@ -362,7 +362,7 @@ const GenRepHR = () => {
         '/genarateReport/get_leave_request_details',  // Adjusted API endpoint
         {
           department: selectedDepartmentID || 0,  // Default to 0 if not selected
-          title: selectedTitleID || 0,
+          branch: selectedBranchID || 0,
           fromDate: selectedFromDate || '2024-01-01',  // Default to a date if not selected
           toDate: selectedToDate || '2024-12-31',  // Default to a date if not selected
         },

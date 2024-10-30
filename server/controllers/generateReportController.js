@@ -111,7 +111,8 @@ const generateReportController={
     }
   },
   get_leave_request_details: async (req, res) => {
-    const { department, branch, fromDate, toDate } = req.body;  // Extract parameters from the request body
+    const { department, branch, fromDate, toDate } = req.body;  
+    // Extract parameters from the request body
     try {
       const data = await new Promise((resolve, reject) => {
         generateReportModel.get_leave_request_details(department, branch, fromDate, toDate, (err, result) => {
