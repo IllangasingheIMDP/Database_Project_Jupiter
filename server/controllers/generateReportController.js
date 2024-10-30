@@ -18,6 +18,29 @@ const generateReportController={
           return res.status(200).send({success:true, data:data.data});
       }
     },
+    get_branch_details: async (req, res) => {
+      const { organization } = req.body;  // Extract parameters from the request body
+      try {
+        const data = await new Promise((resolve, reject) => {
+          generateReportModel.get_branch_details(organization, (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+  
+        if (!data.success) {
+          return res.status(400).json({ success: false, message: "No relevant data found." });
+        } else {
+          return res.status(200).json({ success: true, data: data.data });
+        }
+      } catch (error) {
+        console.error('Error fetching employee details:', error);
+        return res.status(500).json({ success: false, message: "Error fetching employee details." });
+      }
+    },
     get_employee_detail_by_department: async (req, res) => {
         const { department, status, title } = req.body;  // Extract parameters from the request body
         try {

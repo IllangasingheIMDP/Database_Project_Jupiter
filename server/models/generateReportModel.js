@@ -12,6 +12,27 @@ const GenerateReportModel = {
       callback(null, results[0].result);
     });
   },
+  get_branch_details: (organizationID, callback) => {
+    const callQuery = `CALL db_get_organization_data(?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+  
+    db.query(callQuery, [organizationID], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+  
+        callback(null, result);
+      });
+    });
+  },
   get_employee_detail_by_department: (departmentID, statusID, titleID, callback) => {
     const callQuery = `CALL get_employee_detail_by_department(?, ?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;

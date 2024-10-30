@@ -19,6 +19,7 @@ import api from '../../axios';
 
 const GenRepHR = () => {
   const navigate = useNavigate();
+  const [showOB, setShowOB] = useState(false);
   const [showEBD, setShowEBD] = useState(false);
   const [showEBB, setShowEBB] = useState(false);
   const [showEBP, setShowEBP] = useState(false);
@@ -26,12 +27,14 @@ const GenRepHR = () => {
   const [showLR, setShowLR] = useState(false);
   const [showCF, setShowCF] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [organizations, setOrganizations] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [titles, setTitles] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [branches, setBranches] = useState([]);
   const [payGrades, setPayGrades] = useState([]);
   const [customFields, setCustomFields] = useState([]);
+  const [selectedOrganizationID, setSelectedOrganizationID] = useState('');
   const [selectedDepartmentID, setSelectedDepartmentID] = useState('');
   const [selectedTitleID, setSelectedTitleID] = useState('');
   const [selectedStatusID, setSelectedStatusID] = useState('');
@@ -53,6 +56,7 @@ const GenRepHR = () => {
       
         console.log(response.data);  // Check the structure of the fetched data
         if (response.data.success) {
+          setOrganizations(response.data.data.organization || []);
           setDepartments(response.data.data.departments || []);
           setTitles(response.data.data.titles || []);
           setStatuses(response.data.data.employment_statuses || []);
@@ -70,6 +74,85 @@ const GenRepHR = () => {
     
     fetchDropdownOptions();
   }, []);
+
+  // Handle the form submission
+  const handleOB = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      await handleOBGen();
+    }
+    setValidated(true);
+  };
+
+  const handleOBGen = async () => {
+    try {
+      const response = await api.post(
+        '/genarateReport/get_branch_details',  // Adjusted API endpoint
+        {
+          organization: selectedOrganizationID || 0,  // Default to 0 if not selected
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        console.log('Employee data fetched successfully:', response.data.data);
+        setFetchedData(response.data.data);  // Store data to display in the modal
+        setShowOB(true);  // Show the modal on success
+      } else {
+        setAlertMessage('Error: No matching data found');
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      setAlertMessage('Error: Unable to fetch employee details');
+      setShowAlert(true);
+    }
+  };  
+
+  const handleDownloadOB = () => {
+    const doc = new jsPDF();
+
+    const organization = organizations.find(org => org.id === Number(selectedOrganizationID))?.name || "All Organizations";
+    // Define the title for the PDF
+    const headingText = `Branches of ${organization}`;
+    
+    // Add the heading to the PDF at the top
+    doc.setFontSize(16);
+    doc.text(headingText, 10, 10);
+
+    // Define columns for the table
+    const columns = [
+        { header: 'Organization Name', dataKey: 'Organization Name' },
+        { header: 'Registration No', dataKey: 'Registration No' },
+        { header: 'Head Office', dataKey: 'Head Office' },
+        { header: 'Branch Name', dataKey: 'Branch Name' }
+    ];
+
+    // Check if there is data to export
+    if (fetchedData && fetchedData.length > 0) {
+        doc.autoTable({
+            head: [columns.map(col => col.header)],
+            body: fetchedData.map(org => columns.map(col => org[col.dataKey])),
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 10 }
+        });
+
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        const fileName = `Branches of ${organization} on ${formattedDate}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert('No data available to export.');
+    }
+  };
 
   // Handle the form submission
   const handleEBD = async (event) => {
@@ -624,11 +707,64 @@ const GenRepHR = () => {
           justify
         >
              <Tab eventKey="organization" title="Organizational details">
-              <div className="organization-department-details-section bg-white p-3 rounded">
-                <h2 style={{ fontWeight: 'bold' }}>Department Details</h2>
-              </div>
               <div className="organization-branch-details-section bg-white p-3 rounded">
                 <h2 style={{ fontWeight: 'bold' }}>Branch Details</h2>
+                <Form noValidate validated={validated} onSubmit={handleOB}>
+                  <Row className="mb-3">
+                      <Form.Group controlId="depSelE2">
+                        <Form.Label>Organization</Form.Label>
+                        <Form.Select
+                          value={selectedOrganizationID}
+                          onChange={(e) => setSelectedOrganizationID(e.target.value)}
+                          required
+                        >
+                          <option value="0">All</option>
+                          {organizations.map((org) => (
+                            <option key={org.id} value={org.id}>
+                              {org.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                  </Row>
+                  <div className="d-flex justify-content-center">
+                    <Button type="submit">Generate</Button>
+                  </div>
+                </Form>
+                <Modal show={showOB} onHide={() => setShowOB(false)} backdrop="static" keyboard={false}>
+                  <Modal.Header closeButton>
+                      <Modal.Title>Organization Data</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                      {fetchedData && fetchedData.length > 0 ? (
+                          fetchedData.map((org, index) => (
+                              <Card key={index} className="mb-2">
+                                  <Card.Body>
+                                      <Card.Title>{org['Organization Name']}</Card.Title>
+                                      <Card.Text>
+                                          <strong>Registration No:</strong> {org['Registration No']} <br />
+                                          <strong>Head Office:</strong> {org['Head Office']} <br />
+                                          <strong>Branch Name:</strong> {org['Branch Name']}
+                                      </Card.Text>
+                                  </Card.Body>
+                              </Card>
+                          ))
+                      ) : (
+                          <p>No data available.</p>
+                      )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                      <Button variant="secondary" onClick={() => setShowOB(false)}>
+                          Dismiss
+                      </Button>
+                      <Button variant="primary" onClick={handleDownloadOB}>
+                          Download as PDF
+                      </Button>
+                  </Modal.Footer>
+              </Modal>
+              </div>
+              <div className="organization-department-details-section bg-white p-3 rounded">
+                <h2 style={{ fontWeight: 'bold' }}>Department Details</h2>
               </div>
             </Tab>
 
