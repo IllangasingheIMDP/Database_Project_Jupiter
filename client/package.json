@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "firebase": "^11.0.1",
+    "font-awesome": "^4.7.0",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "mdb-react-ui-kit": "^9.0.0",

@@ -12,6 +12,9 @@ import Button from 'react-bootstrap/Button';
 import notificationIcon from '../../public/notification.png'
 import { hideLoading, showLoading } from "../redux/features/alertSlice";
 import api from '../axios';
+import './Layout.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 // Import your GIF and profile picture here
 
 
@@ -91,7 +94,7 @@ const Layout = ({ children }) => {
       dispatch(setUser(null));
       
       navigate('/login');
-    }, 2000);
+    }, 1000);
     
   };
   useEffect(()=>{
@@ -225,23 +228,26 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <div className="flex bg-red-400">
+      <div className="flex bg-gray-700">
         {/* Sidebar */}
-        <div className="w-1/5 bg-yellow-700 text-white min-h-screen">
+        <div className="w-1/5 bg-gray-800 text-white min-h-screen">
           
           <div className="p-4 text-xl">
             {SidebarMenu.filter(menu => !(menu.name === 'Approve / Reject Leave' && !hasTeam))
             .map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
-                <Link className='w-full overflow-hidden' to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item  ${isActive && "bg-red-300 text-black cursor-pointer hover:bg-red-400"} p-3 shadow-2xl overflow-hidden cursor-pointer rounded-md my-3 ${!isActive &&  `hover:bg-yellow-800`}`}>
-                  <i className={`${menu.icon} mr-2`}></i>
-                  {menu.name}
+                <Link className='w-full overflow-hidden' to={menu.path}> <div key={`${menu.path}-${index}`} className={`menu-item  ${isActive && "bg-blue-300 text-black cursor-pointer"} p-3 shadow-2xl  cursor-pointer rounded-md my-3 ${!isActive &&  `hover:bg-blue-900`}`}>
+                   <span className='w-full flex overflow-hidden flex-row justify-start items-center'>
+                   <FontAwesomeIcon icon={menu.icon} className='m-2' />
+                   
+                   <div className='ml-1 w-fit'>{menu.name} </div>
+                   </span>
                 </div></Link>
               );
             })}
             <div className="menu-item  p-3 rounded-md my-3 bg-yellow-100 text-black cursor-pointer hover:bg-yellow-200" onClick={handleLogout}>
-              <i className="fa-solid fa-right-from-bracket mr-2"></i>
+            <FontAwesomeIcon icon="fa-solid fa-right-from-bracket" className='mx-2' />
               <span >Logout</span>
             </div>
           </div>
@@ -249,14 +255,14 @@ const Layout = ({ children }) => {
 
         {/* Main content area */} 
         <div className="w-4/5">
-          <div className="bg-red-200 p-4 shadow-md flex justify-between items-center h-[calc(10vh)] ">
+          <div className="bg-gray-800 shadow-2xl p-4 topbar flex justify-between items-center h-[calc(10vh)] ">
             <div className="flex items-center space-x-4 w-3/5">
-              <i className="fa-solid fa-bell text-gray-600 cursor-pointer"></i>
-              <span className="text-gray-600 text-4xl "><strong>Hello,</strong> {user?.User_Name}</span> {/* Added Hello before user name */}
+              
+              <span className="text-gray-200 text-4xl "><strong>Hello,</strong> {user?.User_Name}</span> {/* Added Hello before user name */}
             </div>
-            <button className='relative w-2/5 justify-end flex flex-row h-16' onClick={notificationShow}>
-  <img src="/notification.png" alt="Notification Icon" className='h-16' />
-  {notifiAllRead ? <></> :<img src="/reddot.png" alt="Red Dot" className='absolute h-6 w-6 top-0 right-0' />}
+            <button className='relative w-fit justify-end flex flex-row' onClick={notificationShow}>
+  <img src="/notification.png" alt="Notification Icon" className='h-10' />
+  {notifiAllRead ? <></> :<img src="/reddot.png" alt="Red Dot" className='absolute h-3 w-3 top-0 right-0' />}
 </button>
 
           </div>

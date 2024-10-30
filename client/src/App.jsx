@@ -18,6 +18,10 @@ import Dashboard from './pages/Dashboard';
 import LeaveRequest from './pages/LeaveRequest';
 import ApproveLeave from './pages/Approve_page';
 import Unauthorized from './pages/Unauthorized';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+
+library.add(fas);
 
 function App() {
 
