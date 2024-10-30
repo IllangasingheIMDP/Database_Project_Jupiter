@@ -311,9 +311,9 @@ const handleSubmit = async (e) => {
 
   try {
 
-    const response = await api.post('/employeeTable/add_employee', formData, {
+    const response = await api.post('/employeeTable/add_employee', formattedData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });

@@ -199,6 +199,7 @@ const employeeController={
 
     createNewEmployee: async (req, res) => {
       try {
+        console.log("Request body received:", req.body); // Log incoming data
     
         // Parse dependents and emergency contacts if they are sent as JSON strings
         const dependents = req.body.dependents ? JSON.parse(req.body.dependents) : [];

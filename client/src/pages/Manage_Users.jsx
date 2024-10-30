@@ -144,7 +144,7 @@ const Manage_Users = () => {
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black'
            style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <section className='bg-gray-950 px-5 py-5 backdrop-blur-md bg-opacity-75 min-h-full h-full rounded-lg'>
-          <h2 className="text-5xl mb-4 font-bold text-center text-white">Manage users</h2>
+          <h2 className="text-5xl mb-4 font-bold text-center text-white">Manage Users</h2>
 
           <div className="mb-4">
             <MaterialButton
