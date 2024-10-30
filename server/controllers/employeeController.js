@@ -221,7 +221,9 @@ const employeeController={
           emailPrivate: req.body.email_private,
           address: req.body.address,
           picturePath:  req.body.picture,
-          dept: req.body.department,
+          dept: req.body.department
+            ? req.body.department.split(" : ")[0]
+            : "None",
           title: req.body.title,
           paygrade: req.body.paygrade,
           employmentStat: req.body.employment_stat,
