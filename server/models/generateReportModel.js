@@ -54,6 +54,27 @@ const GenerateReportModel = {
       });
     });
   },
+  get_employee_detail_by_pay_grade: (departmentID, branchID, payGradeID, callback) => {
+    const callQuery = `CALL get_employees_by_pay_grade(?, ?, ?, @result);`;
+    const selectQuery = `SELECT @result AS result;`;
+  
+    db.query(callQuery, [departmentID, branchID, payGradeID], (err) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      db.query(selectQuery, (err, results) => {
+        if (err) {
+          return callback(err);
+        }
+  
+        // Parse the JSON response from the stored procedure
+        const result = JSON.parse(results[0].result);
+  
+        callback(null, result);
+      });
+    });
+  },
   get_annual_leave_balance: (departmentID, branchID, callback) => {
     const callQuery = `CALL get_annual_leave_balance_report(?, ?, @result);`;
     const selectQuery = `SELECT @result AS result;`;
