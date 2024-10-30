@@ -758,8 +758,7 @@ const GenRepHR = () => {
     // Define the title using selected values
     const department = departments.find(dept => dept.id === Number(selectedDepartmentID))?.name || "All";
     const branch = branches.find(br => br.id === Number(selectedBranchID))?.name || "All";
-    const formattedDateRange = `${selectedFromDateDate} to ${selectedToDate}`;
-    const headingText = `Approved Leave Requests for ${department} Department, ${branch} Branch (${formattedDateRange})`;
+    const headingText = `Approved Leave Requests for ${department} Department, ${branch} Branch`;
 
     // Add the heading to the PDF at the top
     doc.setFontSize(16);
