@@ -650,15 +650,7 @@ const GenRepHR = () => {
     }
   }; 
 
-  const handleDownloadLB = async () => {
-    // Fetch data from the API
-    const fetchedData = await fetchLeaveBalanceData(selectedDepartmentID, selectedBranchID, selectedOrgID);
-    
-    if (!fetchedData || fetchedData.length === 0) {
-        alert('No data available to export.');
-        return;
-    }
-
+  const handleDownloadLB = () => {
     const doc = new jsPDF('landscape');
 
     // Define the title using selected values
@@ -666,11 +658,11 @@ const GenRepHR = () => {
     const department = departments.find(dep => dep.id === Number(selectedDepartmentID))?.name || "All Departments";
     const headingText = `Annual Leave Balance Report for ${department}, ${branch}`;
 
-    // Add heading to the PDF
+    // Add the heading to the PDF at the top
     doc.setFontSize(16);
     doc.text(headingText, 10, 10);
 
-    // Define columns for the table
+    // Define columns for the table with additional leave details
     const columns = [
         { header: 'Full Name', dataKey: 'Full_Name' },
         { header: 'Status', dataKey: 'Employment_Status' },
@@ -697,21 +689,25 @@ const GenRepHR = () => {
         { header: 'Total Taken', dataKey: 'Total_Leave_Taken' },
     ];
 
-    // Generate table in PDF
-    doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
-        startY: 20,
-        theme: 'grid',
-        styles: { fontSize: 8 },
-    });
+    // Check if there is data to export
+    if (fetchedData && fetchedData.length > 0) {
+        doc.autoTable({
+            head: [columns.map(col => col.header)],
+            body: fetchedData.map(employee => columns.map(col => employee[col.dataKey])),
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 8 },
+        });
 
-    // Save PDF
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-    const fileName = `Leave Balance Report - ${department}, ${branch} on ${formattedDate}.pdf`;
-    doc.save(fileName);
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        const fileName = `Leave_Balance_Report_${department}_${branch}_${formattedDate}.pdf`;
+        doc.save(fileName);
+    } else {
+        alert('No data available to export.');
+    }
   };
+
 
   // Handle the form submission
   const handleLR = async (event) => {
