@@ -5,7 +5,7 @@ import CustomAlert from '../components/CustomAlert';
 import MaterialButton from '../components/MaterialButton';
 import { useSelector } from 'react-redux'; // To get the current user's data
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { storage } from 'G:/project/hmrs/database/Database_Project_Jupiter/client/config/firebase.config.js'; // Adjust the path as needed
+import { storage } from '../../config/firebase.config'; // Adjust the path as needed
 import api from '../axios'; 
 
 

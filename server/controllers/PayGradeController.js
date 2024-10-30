@@ -159,7 +159,7 @@ const PayGradeController={
         try {
             
             const { PayGradeId, PayGradeData } = req.body; // Paygrade data should be come from front end with column value pairs in json
-            console.log(PayGradeId,PayGradeData);
+            
            
             const result=await new Promise((resolve,reject)=>{
                 PayGradeModel.updatedata(PayGradeId,PayGradeData,(err,result)=>{
