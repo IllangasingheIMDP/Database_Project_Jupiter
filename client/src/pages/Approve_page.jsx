@@ -56,7 +56,7 @@ const ApproveLeave = () => {
   const sendMail = async (Req_ID,Approved) => {
     setLoading(true);
     try {
-      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&status=${Approved}`, {
+      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&Approved=${Approved}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {

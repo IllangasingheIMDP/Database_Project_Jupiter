@@ -308,11 +308,11 @@ const handleClose = () => {setShowTeamModal(false)
                   ))}
                   {customFields ? 
                   customFields.map((row) => (
-                    <div key={row.Field} className='flex flex-col w-full bg-yellow-100 hover:bg-yellow-200'>
+                    <div key={row.Field} className='flex flex-col w-full rounded-lg hover:text-gray-300 hover:bg-blue-950 hover:bg-opacity-50'>
                       
                       <div className='flex flex-row py-4 px-2 w-full items-start'>
                         <div className=' text-start pl-10 text-1xl w-2/5'>{row.Field.replace(/_/g, ' ')}</div> {/* Replace underscores with spaces */}
-                        <div className="text-gray-500 text-1xl font-bold w-3/5 text-start px-8">{row.Data}</div>
+                        <div className="text-1xl font-bold w-3/5 text-start px-8">{row.Data}</div>
                       </div>
                       <hr />
                     </div>
