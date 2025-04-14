@@ -19,7 +19,7 @@ const PayGradeController={
         if(!resultData.success){
             return res.status(404).send({message:"Database Error on pay grade levels",success:false});
         }else{
-            console.log(resultData);
+            
             return res.status(200).send({success:true,data:resultData.data});
         }
     },

@@ -56,7 +56,7 @@ const ApproveLeave = () => {
   const sendMail = async (Req_ID,Approved) => {
     setLoading(true);
     try {
-      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&status=${Approved}`, {
+      const response = await api.get(`/leaveRequest/apprejmail?Req_ID=${Req_ID}&Approved=${Approved}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.success) {
@@ -161,7 +161,7 @@ const ApproveLeave = () => {
         />
       )}
       <div className='max-h-full h-full rounded-lg shadow-2xl shadow-black' style={{ backgroundImage: 'url("/../../public/dashboard.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <section className='bg-gray-950 px-2.5 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
+        <section className='bg-gray-950 py-4 backdrop-blur-md bg-opacity-65 min-h-full h-full rounded-lg py-5 px-5' style={{ overflowY: 'auto' }}>
           <h2 className="text-5xl text-center mb-5 font-bold text-white">Approve / Reject leave requests</h2>
           
          
